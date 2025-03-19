@@ -1,0 +1,14 @@
+AtomicPolygon
+Centerline
+Median
+MilePost
+Node
+NonStreetFeature
+Rail
+ReferenceMarker
+Shoreline
+Subway
+CenterlinesHaveAddresses
+CenterlinesHaveMileposts
+CenterlinesHaveReferenceMarkers
+CSCL_Topology
