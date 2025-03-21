@@ -30,19 +30,15 @@ where
 ### Approach 1: Recreate
 
 
-1.	Source: Set up a dummy feature class in a dev schema 
-
-2.	Source: Perform some archivable edits. Post them up to default.
-
-3.	Copy the feature class to a target schema. It will be registered with the geodatabase but not registered as versioned, not archiving.
+1.	Copy the feature class to a target schema. It will be registered with the geodatabase but not registered as versioned, not archiving.
 
 In the real workflow the data will move to an interim file geodatabase here.
 
-4.	Source: Stop archiving in source schema to excrete the _H table. You will need an exclusive lock for this.
+2.	Source: Stop archiving in source schema to excrete the _H table. You will need an exclusive lock for this.
 
-5.	Copy the _H table to target schema and paste-very-special to rename to _H_BAK
+3.	Copy the _H table to target schema and paste-very-special to rename to _H_BAK
 
-6.	Target: objectid update
+4.	Target: objectid update
 
     The row count in the base table will be different than _H_BAK. The goal here is to update altered objectids in the _H_BAK table to match the base table objectids. Unmatched objectids will exist in _H_BAK this is OK they are history. (TODO: confirm this bold statement and also investigate if this has any consequences)
 
@@ -83,14 +79,14 @@ where exists
     
     See the src/py/resources directory of this repo for lists of CSCL feature classes and tables.  Consider stupid simple generating the final list of update SQLs by starting with these lists and typing out the update statement in "column mode" of a text editor. 
 
-7. Target: Register as versioned and archiving.
+5. Target: Register as versioned and archiving.
 
-8. Target: Delete all records from the new _H table  
+6. Target: Delete all records from the new _H table  
 
     (TODO: confirm this since this wasn't included in the initial procedure)
     (TODO: confirm delete vs truncate. Delete fires triggers and does not reset identity sequences)
 
-9.	Target: Insert records from _H_backup to _H 
+7.	Target: Insert records from _H_backup to _H 
 
     First verify that we didn't accidentally get any xxFEATURECLASSxx_H1 etc tables.  
 
@@ -126,22 +122,19 @@ select
     'from xxFEATURECLASSxx_h_bak;' from dual
 ```
 
-10.	See what we’ve got
+8.	See what we’ve got
 
 Gold.  We've got gold.  
 
 
 ### Approach 2: Registration Update
 
-1.	Source: Set up a dummy feature class in a dev schema 
 
-2.	Source: Perform some archivable edits. Post them up to default.
-
-3.	Copy the feature class to a target schema. It will be registered with the geodatabase. Register as versioned.  Do not register as archiving.
+1.	Copy the feature class to a target schema. It will be registered with the geodatabase. Register as versioned.  Do not register as archiving.
 
 In the real workflow the data will move to an interim file geodatabase here.
 
-4.	Source: Unset IS_HISTORY to make source _H table visible
+2.	Source: Unset IS_HISTORY to make source _H table visible
 
 The ID in the where clause below is of the history table not the featureclass.
 
@@ -159,9 +152,9 @@ WHERE  REGISTRATION_ID = <HISTORY_REGID from SDE.SDE_ARCHIVES>;
 Commit and refresh ESRI software.
 
 
-5.	Copy the _H table to target schema and paste-NOT-special. It will be named xxFEATURECLASSxx_H
+3.	Copy the _H table to target schema and paste-NOT-special. It will be named xxFEATURECLASSxx_H
 
-6. Source: set is_history back to 1 to restore archiving
+4. Source: set is_history back to 1 to restore archiving
 
 ```sql
 -- Set IS_HISTORY
@@ -178,7 +171,7 @@ WHERE
     REGISTRATION_ID = <HISTORY_REGID from SDE.SDE_ARCHIVES>; 
 ```
 
-7. Target: objectid update 
+5. Target: objectid update 
 
     The row count in the base table will be different than _H. The goal here is to update altered objectids in the _H table to match the base table objectids. Unmatched objectids will exist in _H this is OK they are history. (TODO: confirm this bold statement)
 
@@ -214,7 +207,7 @@ set
     
     See the src/py/resources directory of this repo for lists of CSCL feature classes and tables.  Consider stupid simple generating the final list of update SQLs by starting with these lists and typing out the update statement in "column mode" of a text editor. 
 
-8. Target: Manually “register” the parent as archiving and _H table is the history table as follows:
+6. Target: Manually “register” the parent as archiving and _H table is the history table as follows:
 
     The ARCHIVING feature class or table has to have its IS_ARCHIVING bit (bit 18 zero-based) set.    
 
@@ -276,4 +269,104 @@ set
         ,1234567890 --todo: unix epoch time in seconds should be same as source?
         ,0
     );
+    ```
+
+
+### Approach 3: Direct Load Target History Tables
+
+1.	Copy the feature class to the target schema. It will be registered with the geodatabase. Register as versioned.  Register as archiving.
+
+    In the real workflow the data will move to an interim file geodatabase along the way. When registerd and archive-enabled on the target ensure correct tolerance and resolution.
+
+2. Target: Truncate the _H table. 
+
+3.	Source: Unset IS_HISTORY to make source _H table visible to ESRI software.
+
+The ID in the where clause below is of the history table not the featureclass.
+
+```sql
+-- Unset IS_HISTORY
+UPDATE sde.table_registry
+SET    OBJECT_FLAGS = CASE
+                        WHEN MOD(TRUNC(OBJECT_FLAGS / POWER(2, 20)), 2) = 1 THEN
+                        OBJECT_FLAGS - POWER(2, 20)
+                        ELSE OBJECT_FLAGS
+                      END
+WHERE  REGISTRATION_ID = <HISTORY_REGID from SDE.SDE_ARCHIVES>;
+```
+
+Commit and refresh ESRI software.
+
+4. Target: Unset IS_HISTORY to make the target _H table visible to ESRI software.
+
+```sql
+-- Unset IS_HISTORY
+UPDATE sde.table_registry
+SET    OBJECT_FLAGS = CASE
+                        WHEN MOD(TRUNC(OBJECT_FLAGS / POWER(2, 20)), 2) = 1 THEN
+                        OBJECT_FLAGS - POWER(2, 20)
+                        ELSE OBJECT_FLAGS
+                      END
+WHERE  REGISTRATION_ID = <HISTORY_REGID from SDE.SDE_ARCHIVES>;
+```
+
+5.	Direct load the _H table on the target from source.
+
+6. Source: set is_history back to 1 to restore archiving
+
+```sql
+-- Set IS_HISTORY
+UPDATE 
+    sde.table_registry
+SET 
+    OBJECT_FLAGS = CASE
+                       WHEN MOD(TRUNC(OBJECT_FLAGS / POWER(2, 20)), 2) = 0 
+                       THEN
+                          OBJECT_FLAGS + POWER(2, 20)
+                       ELSE OBJECT_FLAGS
+                   END
+WHERE  
+    REGISTRATION_ID = <HISTORY_REGID from SDE.SDE_ARCHIVES>; 
+```
+
+7. Target: objectid update 
+
+    TBD. Recently we have discussed bringing the full universe of (objectid,globalid) pairs from the source and updating base and _H table objectids to match the source.
+
+    What about the .NEXT objectid after this? Do we need to attend to a database sequence?
+
+
+8. Target: Set IS_HISTORY to re-hide the _H
+
+    The ARCHIVING feature class or table should already have its IS_ARCHIVING bit (bit 18 zero-based) set.  Confirm this. 
+
+    The HISTORY feature class or table has to have IS_HISTORY (bit 20) set.
+
+    ```sql
+    UPDATE sde.table_registry
+    SET    OBJECT_FLAGS = CASE
+                        WHEN MOD(TRUNC(OBJECT_FLAGS / POWER(2, 20)), 2) = 0 THEN
+                        OBJECT_FLAGS + POWER(2, 20)
+                        ELSE OBJECT_FLAGS
+                      END
+    WHERE  REGISTRATION_ID = (select registration_id from sde.table_registry
+                              where owner = 'xxOWNERxx'
+                              and table_name = 'xxFEATURECLASSxx_H');
+    ```
+
+9. Target: Update archive_date 
+
+    The record in SDE.SDE_ARCHIVES needs to be updated.
+
+    Archive date should be set to archive_date in the source.
+
+    Untested:
+
+    ```sql
+    update sde.sde_archives
+    set
+        archive_date = 1234567890 --todo: unix epoch time in seconds from source
+    where 
+        archiving_regid = xx
+    and history_regid = yy;
     ```
