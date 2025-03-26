@@ -1,0 +1,67 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36" version="26.1.3">
+  <diagram name="Page-1" id="sP9q07cmoK6qD1yFAlWt">
+    <mxGraphModel dx="1112" dy="1235" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="vqAeB16aoys2C8DzuAtK-1" value="" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
+          <mxGeometry x="-57.75" y="46" width="133" height="138" as="geometry" />
+        </mxCell>
+        <mxCell id="vqAeB16aoys2C8DzuAtK-7" value="CSCL Enterprise Geodatabase&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-25" y="12" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="vqAeB16aoys2C8DzuAtK-9" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-30.5" y="85.5" width="78.5" height="38.5" as="geometry" />
+        </mxCell>
+        <mxCell id="vqAeB16aoys2C8DzuAtK-11" value="CSCL Schema" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-21.25" y="89.75" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="vqAeB16aoys2C8DzuAtK-14" value="Class Extensions" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-23" y="124" width="58" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="vqAeB16aoys2C8DzuAtK-15" value="" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
+          <mxGeometry x="129" y="234" width="133" height="138" as="geometry" />
+        </mxCell>
+        <mxCell id="vqAeB16aoys2C8DzuAtK-18" value="&lt;div&gt;Feature Dataset&lt;/div&gt;&lt;div&gt;Topology&lt;/div&gt;Feature Classes&lt;div&gt;Feature&amp;nbsp; Tables&lt;/div&gt;&lt;div&gt;Relationship Classes&lt;/div&gt;&lt;div&gt;Domains&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="126" y="309" width="145" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="vqAeB16aoys2C8DzuAtK-20" value="File Geodatabase" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="159" y="201" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="vqAeB16aoys2C8DzuAtK-22" value="" style="endArrow=classic;html=1;rounded=0;fontSize=12;startSize=8;endSize=8;curved=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="vqAeB16aoys2C8DzuAtK-9" target="vqAeB16aoys2C8DzuAtK-20">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="175" y="225" as="sourcePoint" />
+            <mxPoint x="140" y="194" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vqAeB16aoys2C8DzuAtK-23" value="" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
+          <mxGeometry x="285" y="43" width="133" height="138" as="geometry" />
+        </mxCell>
+        <mxCell id="vqAeB16aoys2C8DzuAtK-24" value="CSCL Enterprise Geodatabase&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="317.75" y="9" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="vqAeB16aoys2C8DzuAtK-27" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="308.5" y="86.75" width="78.5" height="38.5" as="geometry" />
+        </mxCell>
+        <mxCell id="vqAeB16aoys2C8DzuAtK-28" value="CSCL Schema" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="317.75" y="88.75" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="vqAeB16aoys2C8DzuAtK-29" value="" style="endArrow=classic;html=1;rounded=0;fontSize=12;startSize=8;endSize=8;curved=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="vqAeB16aoys2C8DzuAtK-9" target="vqAeB16aoys2C8DzuAtK-27">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="175" y="225" as="sourcePoint" />
+            <mxPoint x="225" y="175" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vqAeB16aoys2C8DzuAtK-30" value="Archive Data" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="149" y="59.75" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="vqAeB16aoys2C8DzuAtK-31" value="" style="endArrow=classic;html=1;rounded=0;fontSize=12;startSize=8;endSize=8;curved=1;entryX=0;entryY=1;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="vqAeB16aoys2C8DzuAtK-20" target="vqAeB16aoys2C8DzuAtK-27">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="175" y="225" as="sourcePoint" />
+            <mxPoint x="225" y="175" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -4,14 +4,19 @@ We wish to migrate the New York City Citywide Street Centerline (CSCL) database 
 
 See also related https://github.com/mattyschell/cscl-refresh. 
 
-The New York City Department of City Planning will produce the editing software in the target environment.  This repo is initially focused on migrating data to support this software development.
+The New York City Department of City Planning will produce the editing software in the target environment.  This repo is initially focused on migrating data to support their software development.
 
 ### Overall Migration Plan
 
-For now see doc\migration-bigpicture.md
+For now see [doc\bigpicture.md](doc/bigpicture.md)
 
 ### Migrate Archive Classes
 
-For now see doc\archive-migration.md
+For now see [doc\archive-migration.md](doc\archive-migration.md)
+
+
+### Special Reproject Step to Correct Resolution and Tolerannce.
+
+
 
 

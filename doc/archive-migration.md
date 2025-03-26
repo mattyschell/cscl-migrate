@@ -274,13 +274,15 @@ set
 
 ### Approach 3: Direct Load Target History Tables
 
-1.	Copy the feature class to the target schema. It will be registered with the geodatabase. Register as versioned.  Register as archiving.
+1. Copy the feature class to a file geodatabase. Perform any required sprucing up in the file geodatabase.
 
-    In the real workflow the data will move to an interim file geodatabase along the way. When registerd and archive-enabled on the target ensure correct tolerance and resolution.
+2.	Copy the feature class from the file geodatabase to the target schema. It will be registered with the geodatabase. Register as versioned.  Register as archiving.
 
-2. Target: Truncate the _H table. 
+3. Verify expected tolerance and resolution.
 
-3.	Source: Unset IS_HISTORY to make source _H table visible to ESRI software.
+4. Target: Truncate the _H table. 
+
+5.	Source: Unset IS_HISTORY to make source _H table visible to ESRI software.
 
 The ID in the where clause below is of the history table not the featureclass.
 
@@ -297,7 +299,7 @@ WHERE  REGISTRATION_ID = <HISTORY_REGID from SDE.SDE_ARCHIVES>;
 
 Commit and refresh ESRI software.
 
-4. Target: Unset IS_HISTORY to make the target _H table visible to ESRI software.
+6. Target: Unset IS_HISTORY to make the target _H table visible to ESRI software.
 
 ```sql
 -- Unset IS_HISTORY
@@ -310,9 +312,14 @@ SET    OBJECT_FLAGS = CASE
 WHERE  REGISTRATION_ID = <HISTORY_REGID from SDE.SDE_ARCHIVES>;
 ```
 
-5.	Direct load the _H table on the target from source.
+7. Direct load the _H table on the target from source
 
-6. Source: set is_history back to 1 to restore archiving
+    Possible risk: The history geometries do not pass through the file geodatabase and any updates related to tolerance and resolution.
+
+    This does not initially appear to work. See https://github.com/mattyschell/cscl-migrate/issues/6
+
+
+8. Source: set is_history back to 1 to restore archiving
 
 ```sql
 -- Set IS_HISTORY
@@ -329,14 +336,14 @@ WHERE
     REGISTRATION_ID = <HISTORY_REGID from SDE.SDE_ARCHIVES>; 
 ```
 
-7. Target: objectid update 
+9. Target: objectid update 
 
     TBD. Recently we have discussed bringing the full universe of (objectid,globalid) pairs from the source and updating base and _H table objectids to match the source.
 
     What about the .NEXT objectid after this? Do we need to attend to a database sequence?
 
 
-8. Target: Set IS_HISTORY to re-hide the _H
+10. Target: Set IS_HISTORY to re-hide the _H
 
     The ARCHIVING feature class or table should already have its IS_ARCHIVING bit (bit 18 zero-based) set.  Confirm this. 
 
@@ -354,7 +361,7 @@ WHERE
                               and table_name = 'xxFEATURECLASSxx_H');
     ```
 
-9. Target: Update archive_date 
+11. Target: Update archive_date 
 
     The record in SDE.SDE_ARCHIVES needs to be updated.
 

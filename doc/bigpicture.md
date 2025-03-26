@@ -1,16 +1,12 @@
 # BIG PICTURE
 
-Frame for big picture picture:
 
-| COOL CAT LIKES BIG PICTURES   |
-|---|
-|   /\\_/\ <br> ( o.o )  <br>  > ^ < |
-
+![big picture](bigpicture.png)
 
 
 ### Not big picture
 
-### Questions
+### Questions 
 
 1. Is our initial use of this workflow to set up a dev environment for CSCL modernization work to begin?  Or should we think final production-ey thoughts while looking at it?
 
