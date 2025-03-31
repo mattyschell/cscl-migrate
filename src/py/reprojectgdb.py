@@ -4,6 +4,7 @@ import os
 import openpyxl
 import time
 import shutil
+import stat
 
 import arcpy
 
@@ -15,7 +16,7 @@ import arcpy
 # I think ESRI developed that sub to ingest CSCL into their locators?
 # We have modified and wrapped up reproject here
 # We will use this to correct tolerance and resolution issues in CSCL
-#    when migrating from legacy CSCL data (with class extensions) to modern CSCL
+# migrating from legacy CSCL data (with class extensions) to modern CSCL
 
 class localgdb(object):
 
@@ -32,6 +33,7 @@ class localgdb(object):
                        ,path
                        ,_):
         
+        arcpy.Compact_management(self.gdb)
         os.chmod(path, stat.S_IWRITE)
         func(path)
 
@@ -134,7 +136,8 @@ def reproject (
     if not arcpy.Exists(input_spec_xlsx):
         raise RuntimeError(f"INPUT SPEC File {input_spec_xlsx} not found. Cannot continue.")
 
-    gdbout.clean()
+    if arcpy.Exists(gdbout.gdb):
+        gdbout.clean()
 
     ## Begin reprojection process
     logger.info(f"Creating Target Geodatabase {gdbout.gdb}")
@@ -142,7 +145,9 @@ def reproject (
                                                   ,gdbout.gdb)
 
     logger.info(f"Creating object mapping database for data Load Process - {object_map_gdb.gdb}")
-    object_map_gdb.clean()
+    
+    if arcpy.Exists(object_map_gdb.gdb):
+        object_map_gdb.clean()
 
     arcpy.topographic.CreateCrossReferenceGeodatabase(gdbin.gdb
                                                      ,gdbout.gdb
@@ -188,12 +193,9 @@ def reproject (
             else:
                 counts[object_type] = 1
 
-            # TODO: write and uncomment pad_fields
-            # when we can get this far and see what the other values look like
-
-            #logger.debug(
-            #    f"Name = {pad_field(filename, 40)} - Type = {pad_field(object_type, 30)} - TargetGDB = {target_gdb}"
-            #)
+            #logger.debug((f"FileName:{filename} - object_name:{object_type} - object_type:{gdbout.gdb}"))
+            logger.debug((f"Name = {filename} - Type = {object_type} - TargetGDB = {target_gdb}"))
+                #f"Name = {pad_field(filename, 40)} - Type = {pad_field(object_type, 30)} - TargetGDB = {target_gdb}"
 
             if object_type == "Table":
                 tables[filename] = (dirpath, target_gdb)
@@ -203,6 +205,7 @@ def reproject (
     total_items = 0
     for tbl_name in counts:
         #logger.info(f"----- {pad_field(tbl_name, 17)} - {counts[tbl_name]}")
+        logger.info(f"----- {tbl_name} - {counts[tbl_name]}")
         total_items += counts[tbl_name]
     logger.info(f"-- TOTAL NUMBER OF ITEMS = {total_items}")
 
@@ -226,7 +229,9 @@ def reproject (
                 target_gdb = gdbout.gdb
 
             if object_type == "RelationshipClass":
+                logger.info(f"{filename} - {object_type} - {dirpath}  ")
                 #logger.info(f"{pad_field(filename, 50)} - {pad_field(object_type, 15)} - {dirpath}  ")
+                logger.info(f"{filename} - {object_type} - {dirpath}  ")
                 rel_class = os.path.join(dirpath, filename)
                 desc = arcpy.da.Describe(rel_class)
                 logger.info(f"--- out_relationship_class  = {desc['name']} - GDB = {target_gdb}")
@@ -401,9 +406,13 @@ if __name__ == '__main__':
     poutgdb  = sys.argv[2]
     pworkdir = sys.argv[3]
 
+    # aka "Topographic Production Tools"
+    # aka "ArcGIS Production Mapping"
+    requiredextension = 'Foundation'
+
     localgdbin  = localgdb(pingdb)
     localgdbout = localgdb(poutgdb)
-
+    
     timestr = time.strftime("%Y%m%d-%H%M%S")
 
     # ..\logs\reprojectgdb-ditcspd1-cscl-20250319-110230.log
@@ -424,13 +433,20 @@ if __name__ == '__main__':
     # Create a logger object
     logger = logging.getLogger(__name__)
 
-    logger.info("Reprojecting {0} to {1}".format(localgdbin.gdb
-                                                ,localgdbout.gdb))
+    if arcpy.CheckExtension(requiredextension) == "Available":
+        arcpy.CheckOutExtension(requiredextension)
+    else:
+        logger.error("Extension {0} is not available".format(requiredextension))
+        sys.exit(1)
 
     reproject(localgdbin
              ,localgdbout
              ,logger
              ,pworkdir)
     
+    arcpy.CheckInExtension(requiredextension)
+
     logger.info("Completed reprojecting {0} to {1}".format(localgdbin.gdb
                                                           ,localgdbout.gdb))
+    
+    sys.exit(0)

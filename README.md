@@ -8,11 +8,11 @@ The New York City Department of City Planning will produce the editing software 
 
 ### Overall Migration Plan
 
-For now see [doc\bigpicture.md](doc/bigpicture.md)
+For now see [doc/bigpicture.md](doc/bigpicture.md)
 
 ### Migrate Archive Classes
 
-For now see [doc\archive-migration.md](doc\archive-migration.md)
+For now see [doc/archive-migration.md](doc/archive-migration.md)
 
 
 ### Special Reproject Step to Correct Resolution and Tolerannce.

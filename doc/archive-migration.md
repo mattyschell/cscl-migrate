@@ -316,7 +316,7 @@ WHERE  REGISTRATION_ID = <HISTORY_REGID from SDE.SDE_ARCHIVES>;
 
     Possible risk: The history geometries do not pass through the file geodatabase and any updates related to tolerance and resolution.
 
-    This does not initially appear to work. See https://github.com/mattyschell/cscl-migrate/issues/6
+    This does not appear to work. See https://github.com/mattyschell/cscl-migrate/issues/6
 
 
 8. Source: set is_history back to 1 to restore archiving
