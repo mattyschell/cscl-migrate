@@ -10,6 +10,18 @@ The New York City Department of City Planning will produce the editing software 
 
 For now see [doc/bigpicture.md](doc/bigpicture.md)
 
+### Extract and Prepare CSCL
+
+1. Create an empty file geodatabase. Convention:
+
+    \[dev|stg|prd]\cscl-migrate.gdb
+
+2. Use python 2 arcpy with class extension readers to copy/paste from the Enterprise Geodatabase to the file geodatabase
+
+3. Remove class extensions from the file geodatabase
+
+4. Run reproject code on the file geodatabase
+
 ### Migrate Archive Classes
 
 For now see [doc/archive-migration.md](doc/archive-migration.md)

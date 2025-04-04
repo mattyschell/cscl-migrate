@@ -1,3 +1,4 @@
+import arcpy
 import sys
 import logging
 import os
@@ -6,7 +7,8 @@ import time
 import shutil
 import stat
 
-import arcpy
+from filegeodatabasemanager import localgdb 
+
 
 # arcpy.topographic
 # requires an Esri ArcGIS Production Mapping license
@@ -17,30 +19,7 @@ import arcpy
 # We have modified and wrapped up reproject here
 # We will use this to correct tolerance and resolution issues in CSCL
 # migrating from legacy CSCL data (with class extensions) to modern CSCL
-
-class localgdb(object):
-
-    def __init__(self
-                ,filegdb):
-
-        self.gdb      = filegdb
-        self.name     = os.path.basename(self.gdb)
-        self.path     = os.path.dirname(self.gdb)
-        self.basename = self.name.split('.')[0]
-
-    def remove_readonly(self
-                       ,func
-                       ,path
-                       ,_):
-        
-        arcpy.Compact_management(self.gdb)
-        os.chmod(path, stat.S_IWRITE)
-        func(path)
-
-    def clean(self):
-
-        shutil.rmtree(self.gdb, onerror=self.remove_readonly)    
-            
+       
 
 def reproject (
     gdbin
