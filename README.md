@@ -4,30 +4,47 @@ We wish to migrate the New York City Citywide Street Centerline (CSCL) database 
 
 See also related https://github.com/mattyschell/cscl-refresh. 
 
-The New York City Department of City Planning will produce the editing software in the target environment.  This repo is initially focused on migrating data to support their software development.
+The New York City Department of City Planning will produce the editing software in the target environment.  This repo is initially focused on migrating data to support this future software development.
 
 ### Overall Migration Plan
 
 For now see [doc/bigpicture.md](doc/bigpicture.md)
 
-### Extract and Prepare CSCL
+### 1. Extract and Prepare CSCL
 
-1. Create an empty file geodatabase. Convention:
+Review and update the environmentals.
+
+```sh
+> geodatabase-scripts\sample-cscl-extract.bat
+```
+
+What does that do?  Glad you asked. 
+
+It creates an empty file geodatabase. Then it use python 2 arcpy with class extension readers to copy/paste from the Enterprise Geodatabase to cscl-migrate.gdb. 
 
     \[dev|stg|prd]\cscl-migrate.gdb
 
-2. Use python 2 arcpy with class extension readers to copy/paste from the Enterprise Geodatabase to the file geodatabase
 
-3. Remove class extensions from the file geodatabase
+### 2. Remove class extensions from the file geodatabase
 
-4. Run reproject code on the file geodatabase
+TOP SECRET
 
-### Migrate Archive Classes
+### 3. Correct resolution and tolerance
+
+Review and update the environmentals.
+
+```
+> geodatabase-scripts\sample-reprojectgdb.bat
+```
+
+### 4. Migrate Archive Classes
 
 For now see [doc/archive-migration.md](doc/archive-migration.md)
 
 
-### Special Reproject Step to Correct Resolution and Tolerannce.
+### 5. Load to final Enterprise Geodatabase
+
+TBD
 
 
 
