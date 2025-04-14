@@ -99,8 +99,8 @@ if __name__ == "__main__":
     # make a list with one element: tables
     # case is sensitive
     listname   = sys.argv[1]
+    gdb2verify = sys.argv[2]
 
-    gdb2verify = os.environ['SDEFILE']
     arcpy.env.workspace = gdb2verify
 
     timestr = time.strftime("%Y%m%d-%H%M%S")
@@ -143,10 +143,11 @@ if __name__ == "__main__":
         logger.info('Verified {0} geodatabase objects'.format(len(expectedobjects)))
         logger.info('PASS: completed qa of {0} at at {1}'.format(gdb2verify
                                                                 ,datetime.datetime.now()))
+        exit(0)
     else:
         for missing in expectednotexisting:
             logger.warning('{0} is missing!'.format(missing))
-
+        exit(1)
 
 
 

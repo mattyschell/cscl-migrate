@@ -4,3 +4,6 @@ scratch/*
 *__pycache__*
 test-*.bat
 *.pyc
+dev-*
+stg-*
+prd-*
