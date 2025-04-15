@@ -37,7 +37,8 @@ With ArcCatalog 10.7 or superior
 DANGER ZONE
 
 7. Select the file geodatabase and run the AddIn.
-8. Review the log. It should look (confusingly) like:
+8. Review the log. It should look (confusingly) like the snippet below
+9. Remove the toolbar.  CODE YELLOW
 
 ```
 Inspecting item 'STREETSHAVEINTERSECTIONS', OID: 82
