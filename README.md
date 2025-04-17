@@ -22,35 +22,26 @@ It creates an empty file geodatabase. Then it use python 2 arcpy with class exte
 
     \[dev|stg|prd]\cscl-migrate.gdb
 
-
 ### 2. Remove class extensions from the file geodatabase
 
-With ArcCatalog 10.7 or superior
+With ArcClassic ArcCatalog 10.7 or superior. 
 
-1. Clone https://github.com/nicogis/RemoveClassExtension
-2. As admin (?) and with ArcCatalog closed (?) double click "Config.esriaddinx"
-3. Nothing will happen. 
-4. From ArcCatalog add a new toolbar (customize-toolbars-customize)
-5. From ArcCatalog Customize - AddIn Manager - Select ResetCLSIDs - Click Customize
-6. Select the Commands tab and search for "Reset CLSIDs." Drag it to the new toolbar
-
-DANGER ZONE
-
-7. Select the file geodatabase and run the AddIn.
-8. Review the log. It should look (confusingly) like the snippet below
-9. Remove the toolbar.  CODE YELLOW
-
+1. Double click src/addin/ResetCLSIDs.esriaddin. In the utility window select "Install Add-In."  No admin rights required.
+2. From ArcCatalog select Customize-Customize Mode - Toolbars. Create a new toolbar named your choice and check the box next it.
+3. From ArcCatalog Customize-Customize Mode select the commands tab.  Search  for "Reset CLSIDs." Drag it to the toolbar.
+🔴DANGER ZONE. CODE RED🔴
+4. In ArcCatalog select the file geodatabase and run the ResetCLSIDs AddIn.
+5. It should be quick and return "Completed without errors"
+6. Review the log. It should look (confusingly) like the snippet below
+7. Remove the toolbar. 🟡CODE YELLOW🟡
 ```
-Inspecting item 'STREETSHAVEINTERSECTIONS', OID: 82
+Inspecting item 'AddressPoint', OID: 73
 	Expected CLSID equals Actual CLSID, no change needed.
 	Expected EXTCLSID: 
-	Actual EXTCLSID: {19DC51F2-D817-4623-BBEA-FB5E0A88385E}
-Inspecting item 'COMPLEXINTERSECTION', OID: 83
-	Expected CLSID equals Actual CLSID, no change needed.
-	Expected EXTCLSID equals Actual EXTCLSID, no change needed.
+	Actual EXTCLSID: {D9D37706-8C4F-4C38-8849-3C407FC0AC84}
+Inspecting item 'ALTSEGMENTDATA', OID: 74
+<snip>
 ```
-
-
 
 ### 3. Correct resolution and tolerance
 
