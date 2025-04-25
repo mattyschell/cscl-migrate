@@ -50,7 +50,7 @@ AS
             execute immediate psql into p_hregistration_id
                                        ,p_htable_name 
                               using upper(p_featureclass)
-                                         ,SYS_CONTEXT('USERENV','CURRENT_USER');
+                                         ,SYS_CONTEXT('USERENV','SESSION_USER');
 
         exception
         when others 
@@ -58,7 +58,7 @@ AS
             raise_application_error(-20001, 'ERROR > ' || SQLERRM || ' < on ' 
                                  || psql || ' with binds '
                                  || upper(p_featureclass) || ' ' 
-                                 || SYS_CONTEXT('USERENV','CURRENT_USER'));
+                                 || SYS_CONTEXT('USERENV','SESSION_USER'));
         end;
 
     END fetch_h_table;
@@ -70,6 +70,10 @@ AS
     AS
 
         -- mschell! 20250423
+
+        -- The ID in the where clause below is of the history table 
+        -- not the featureclass.
+        -- This unsets the IS_HISTORY bit to make the (source) _H table visible
 
         h_registration_id   number;
         h_table_name        varchar2(64);
@@ -99,6 +103,7 @@ AS
         commit;
 
     END reveal_history;
+
 
     PROCEDURE conceal_history (
         p_featureclass  IN VARCHAR2
@@ -171,7 +176,7 @@ AS
         
         execute immediate psql into f_registration_id
                                using p_featureclass
-                                    ,SYS_CONTEXT('USERENV','CURRENT_USER');
+                                    ,SYS_CONTEXT('USERENV','SESSION_USER');
 
         psql := 'insert into '
              || '   sde.sde_archives ( '
