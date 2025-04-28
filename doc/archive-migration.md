@@ -10,24 +10,7 @@ See the src/py/resources directory of this repo for lists of CSCL feature classe
 
 Objectid gets toasted on the target. Globalids will serve as a persistent unique identifier.
 
-```sql
-select 
-    distinct table_name 
-from 
-    user_tab_columns
-where 
-    not REGEXP_LIKE(table_name, '^[DFS][0-9]+$')
-    and table_name not like 'KEYSET%'
-    and table_name not like 'SDE%'
-    and table_name not like 'T_1%'
-minus
-select 
-    table_name 
-from 
-    user_tab_columns 
-where 
-    column_name = 'GLOBALID';
-```
+See src\sql\confirm-globalid.sql for helper sql.
 
 
 ### Migrate Archive Manual Steps

@@ -6,7 +6,9 @@ The New York City Department of City Planning will produce the editing software 
 
 ### Overall Migration Plan
 
-For now see [doc/bigpicture.md](doc/bigpicture.md)
+Here's a picture of the big picture.
+
+![big picture](doc\bigpicture.png)
 
 ### 1. Extract and Prepare CSCL
 
