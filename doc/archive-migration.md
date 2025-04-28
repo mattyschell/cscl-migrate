@@ -58,44 +58,15 @@ call sde.nyc_archive_utils.conceal_history('BOROUGH');
 
 5. Target: objectid update 
 
-The row count in the base table should be less than the _H table. The _H table contains a superset of all possible objectids. Since objectids don't matter to anyone (they are synthetic keys) we will update the base table objectids to match their _H table bretheren and sisteren.
+The row count in the base table should be less than the _H table. The _H table contains a superset of all possible objectids. Unmatched objectids will exist in _H. This is OK they are history.
 
-Unmatched objectids will exist in _H. This is OK they are history.
-
-It is probably a good idea to regather any stale statistics.  We are pushing around a lot of rows.
+Since objectids don't matter to anyone (they are synthetic keys) we will update the base table objectids to match their _H table bretheren and sisteren. Then restart the feature class objectid sequence.
 
 ```sql
-BEGIN
-    DBMS_STATS.GATHER_SCHEMA_STATS(
-        ownname          => USER, 
-        options          => 'GATHER STALE', 
-        estimate_percent => DBMS_STATS.AUTO_SAMPLE_SIZE, 
-        degree           => DBMS_STATS.DEFAULT_DEGREE
-    );
-END;
+call owner_archive_utils.update_base_ids('BOROUGH');
 ```
-
-```sql
-merge into 
-    borough a
-using
-    borough_h b
-ON 
-    (a.globalid = b.globalid)
-when matched then
-update 
-    set a.objectid = b.objectid;
-``` 
-
-Then restart the objectid sequence at a number higher than the maximum objectid  in the _h table.
-
-```sql
-alter sequence r<registration_id> restart start with 5000;
-```
-
 
 6. Target: Manually “register” the parent as archiving and _H table is the history table as follows
-
 
 
 ```sql
@@ -120,6 +91,8 @@ The copied _H table has to be made history. Call from CSCL to this utility in SD
 ```sql
 call sde.nyc_archive_utils.conceal_history('BOROUGH');
 ```
+
+TODO: Test this and replace docs with package call
 
 The record in SDE.SDE_ARCHIVES needs to be populated.
 
