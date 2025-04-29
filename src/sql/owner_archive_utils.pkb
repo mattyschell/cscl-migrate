@@ -12,7 +12,6 @@ AS
         -- mschell! 20250422
         -- not exactly a duplicate of nyc_archive_utils
         -- session_user vs current_user
-        -- todo: refactor
 
         -- sample call. as CSCL 
         --
@@ -21,9 +20,9 @@ AS
         --          registrationid number;
         --          htablename varchar2(64);
         --    begin
-        --          cscl.owner_archive_utils.fetch_h_table(featureclass
-        --                                                ,registrationid
-        --                                                ,htablename);
+        --          owner_archive_utils.fetch_h_table(featureclass
+        --                                           ,registrationid
+        --                                           ,htablename);
         --    end;
 
         psql        varchar2(4000);              
@@ -67,7 +66,6 @@ AS
 
     PROCEDURE refresh_stats 
     AS
-
     BEGIN
 
         DBMS_STATS.GATHER_SCHEMA_STATS(
@@ -84,6 +82,8 @@ AS
        ,p_htable_name       IN VARCHAR2
     )
     AS
+
+        -- mschell! 20250428
 
         psql                varchar2(4000);
         registration_id     number;
@@ -130,6 +130,8 @@ AS
     )
     AS
 
+        -- mschell! 20250428
+
         psql                varchar2(4000);
         h_registration_id   number;
         h_table_name        varchar2(64);
@@ -138,13 +140,8 @@ AS
 
         owner_archive_utils.refresh_stats();
 
-        h_table_name := p_featureclass || '_H';
-
         -- _H table is not in sde.sde_archives at this point
-        -- in our workflow
-        --owner_archive_utils.fetch_h_table(p_featureclass
-        --                                 ,h_registration_id
-        --                                 ,h_table_name);
+        h_table_name := p_featureclass || '_H';
 
         psql := 'merge into '
              || '   ' || p_featureclass || ' a '

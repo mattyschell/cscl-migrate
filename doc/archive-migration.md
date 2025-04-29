@@ -10,16 +10,25 @@ See the src/py/resources directory of this repo for lists of CSCL feature classe
 
 Objectid gets toasted on the target. Globalids will serve as a persistent unique identifier.
 
-See src\sql\confirm-globalid.sql for helper sql.
+See doc\confirm-globalid.sql for helper sql.
 
+### Compile Packages
 
-### Migrate Archive Manual Steps
+Compile 2 packages in 3 schemas. SDE source, SDE target, and data owner target.
+
+```bat
+sqlplus sde/****@srcdb @geodatabase-scripts\setup-sde-source.sql
+sqlplus sde/****@targetdb @geodatabase-scripts\setup-sde-target.sql
+sqlplus cscl/****@targetdb @geodatabase-scripts\setup-owner-target.sql
+```
+
+### Migrate Archive
 
 In the commit history of this file we started with 3 archive migration approaches. This was originally "approach 2."
 
-1.	Copy the feature class to a target schema. It will be registered with the geodatabase. Register as versioned.  Do not register as archiving.
+1.	Copy the feature class to the target schema. It will be registered with the geodatabase. Register as versioned.  Do not register as archiving.
 
-In the real workflow the data will move to an interim file geodatabase here.
+In the real workflow the data will move to the target via an interim file geodatabase or two.
 
 2.	Source: Make the _H table visible to ESRI clients.
 
@@ -49,56 +58,19 @@ Since objectids don't matter to anyone (they are synthetic keys) we will update 
 call owner_archive_utils.update_base_ids('BOROUGH');
 ```
 
-6. Target: Manually “register” the parent as archiving and _H table is the history table as follows
+6. Target: Manually “register” the parent as archiving and _H table is the history table.  Call from CSCL to this utility in SDE.
 
+Archive date should be set to archive_date in the source or sde.table_registry.Verify that these values are equal. (wut?)
 
 ```sql
-update 
-    sde.table_registry
-set 
-    object_flags = CASE
-                        WHEN MOD(TRUNC(OBJECT_FLAGS / POWER(2, 18)), 2) = 0 
-                        THEN
-                            OBJECT_FLAGS + POWER(2, 18)
-                        ELSE 
-                            OBJECT_FLAGS
-                    END
-where 
-    registration_id = (select registration_id from sde.table_registry
-                        where owner = 'xxOWNERxx'
-                        and table_name = 'xxFEATURECLASSxx');
+call sde.nyc_archive_utils.register_archiving('BOROUGH',1273245334);
 ```
 
-The copied _H table has to be made history. Call from CSCL to this utility in SDE. 
+The copied _H table has to be concealed. 
 
 ```sql
 call sde.nyc_archive_utils.conceal_history('BOROUGH');
 ```
 
-TODO: Test this and replace docs with package call
 
-The record in SDE.SDE_ARCHIVES needs to be populated.
 
-Archive date should be set to archive_date in the source or sde.table_registry.registration_date of the source _H table. Verify that these values are equal. 
-
-```sql
-insert into sde.sde_archives
-    (archiving_regid --parents regid
-    ,history_regid   --history regid
-    ,from_date
-    ,to_date
-    ,archive_date
-    ,archive_flags)
-values (
-    (select registration_id 
-        from sde.table_registry where owner = USER
-        and table_name = 'xxFEATURECLASSxx')
-    ,(select registration_id 
-        from sde.table_registry where owner = USER
-        and table_name = 'xxFEATURECLASSxx_H')
-    ,'GDB_FROM_DATE'
-    ,'GDB_TO_DATE'
-    ,1234567890 --todo: unix epoch time in seconds should be same as source?
-    ,0
-);
-```

@@ -1,6 +1,11 @@
 CREATE OR REPLACE PACKAGE NYC_ARCHIVE_UTILS
-AUTHID DEFINER --CURRENT_USER
+AUTHID DEFINER
 AS
+
+-- authid definer
+-- data owner calls in to SDE, SDE updates self
+-- this package is the only permitted updates to SDE data
+-- must be compiled and available on both source and target
 
 --   *****     *****
 --  ********* *********

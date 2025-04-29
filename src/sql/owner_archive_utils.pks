@@ -2,6 +2,10 @@ CREATE OR REPLACE PACKAGE OWNER_ARCHIVE_UTILS
 AUTHID CURRENT_USER
 AS
 
+-- authid current_user
+-- data owner updates self
+-- only available on target
+
 --   *****     *****
 --  ********* *********
 -- *********** **********

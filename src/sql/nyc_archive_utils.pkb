@@ -9,10 +9,8 @@ AS
     AS
 
         -- mschell! 20250422
-        -- consider making private
 
-        -- sample call. as CSCL 
-        -- or just look at every other procedure in this package!
+        -- sample call. as the data owner 
         --
         --    declare
         --          featureclass varchar2(64) := 'ADDRESSPOINT';
@@ -72,8 +70,8 @@ AS
         -- mschell! 20250423
 
         -- The ID in the where clause below is of the history table 
-        -- not the featureclass.
-        -- This unsets the IS_HISTORY bit to make the (source) _H table visible
+        -- not the featureclass. This unsets the IS_HISTORY bit 
+        -- to make the (source) _H table visible
 
         h_registration_id   number;
         h_table_name        varchar2(64);
@@ -111,7 +109,6 @@ AS
     AS
 
         -- mschell! 20250423
-        -- maybe combine conceal/reveal with con vs rev input
 
         h_registration_id   number;
         h_table_name        varchar2(64);
@@ -151,10 +148,11 @@ AS
     AS
 
         -- mschell! 20250423
+        -- call on target database from data owner to sde
         -- p_archive_date comes from the source afaik
         -- "unix epoch time in seconds"
         -- so this is gonna be scripted out for a list of feature classes
-
+        
         h_registration_id   number;
         h_table_name        varchar2(64);
         psql                varchar2(4000);
@@ -162,9 +160,9 @@ AS
 
     BEGIN
 
-        nyc_archive_utils.fetch_h_table(p_featureclass
-                                       ,h_registration_id
-                                       ,h_table_name);
+        -- we can't use fetch_h_table since we have not
+        -- registered on the target
+        h_table_name := p_featureclass || '_H';
 
         psql := 'select '
              || '    a.registration_id '
@@ -177,6 +175,27 @@ AS
         execute immediate psql into f_registration_id
                                using p_featureclass
                                     ,SYS_CONTEXT('USERENV','SESSION_USER');
+
+        execute immediate psql into h_registration_id
+                               using h_table_name
+                                    ,SYS_CONTEXT('USERENV','SESSION_USER');
+
+        psql := 'update '
+             || '    sde.table_registry '
+             || 'set '
+             || '    object_flags = CASE '
+             || '                   WHEN mod(trunc(object_flags / power(2, 18)), 2) = :p1 '
+             || '                   THEN '
+             || '                       object_flags + power(2, 18) '
+             || '                   ELSE '
+             || '                       object_flags '
+             || '                   END '
+             || 'where '
+             || '    registration_id = :p2 ';
+
+        execute immediate psql using 0
+                                    ,f_registration_id;
+        commit;
 
         psql := 'insert into '
              || '   sde.sde_archives ( '
@@ -201,7 +220,7 @@ AS
                                     ,'GDB_TO_DATE'
                                     ,p_archive_date
                                     ,0;
-        
+
         commit;
 
     END register_archiving;
