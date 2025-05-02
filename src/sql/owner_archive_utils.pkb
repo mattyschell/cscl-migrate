@@ -16,9 +16,9 @@ AS
         -- sample call. as CSCL 
         --
         --    declare
-        --          featureclass varchar2(64) := 'ADDRESSPOINT';
+        --          featureclass   varchar2(64) := 'ADDRESSPOINT';
         --          registrationid number;
-        --          htablename varchar2(64);
+        --          htablename     varchar2(64);
         --    begin
         --          owner_archive_utils.fetch_h_table(featureclass
         --                                           ,registrationid
@@ -117,6 +117,7 @@ AS
 
         execute immediate psql into startwith; 
 
+        -- objectid sequences increment by 16. curious
         psql := 'alter sequence r' || registration_id || ' '
              || 'restart start with ' || startwith;
 

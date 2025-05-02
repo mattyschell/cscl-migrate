@@ -49,19 +49,30 @@ Inspecting item 'ALTSEGMENTDATA', OID: 74
 
 Review and update the environmentals.
 
-```
+```bat
 > geodatabase-scripts\sample-reprojectgdb.bat
 ```
 
-### 4. Migrate Archive Classes
+### 4. Load to final Enterprise Geodatabase
 
-For now see [doc/archive-migration.md](doc/archive-migration.md)
+```bat
+> geodatabase-scripts\sample-cscl-load.bat
+```
+
+### 5. Migrate Archive Classes
+
+WIP. See [doc/archive-migration.md](doc/archive-migration.md)
 
 
-### 5. Load to final Enterprise Geodatabase
+### 6. Teardown
 
-TBD
+Practice makes perfect.
 
+To prevent catastrophe the teardown script will only proceed if there exists in the schema a registered feature table named UNLOCK_MIGRATE_TEARDOWN. Manually create this empty feature table to allow teardown. 
+
+```bat
+> geodatabase-scripts\sample-cscl-teardown.bat
+```
 
 
 

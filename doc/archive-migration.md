@@ -28,7 +28,7 @@ In the commit history of this file we started with 3 archive migration approache
 
 1.	Copy the feature class to the target schema. It will be registered with the geodatabase. Register as versioned.  Do not register as archiving.
 
-In the real workflow the data will move to the target via an interim file geodatabase or two.
+In the real workflow the data will move to the target via an interim file geodatabase or two. The file geodatabase processing will involve all datasets and can take place prior to or in parallel to the archive steps below.
 
 2.	Source: Make the _H table visible to ESRI clients.
 
@@ -38,9 +38,7 @@ Call from CSCL to this utility in SDE. Then refresh the ESRI client to see the _
 call sde.nyc_archive_utils.reveal_history('BOROUGH');
 ```
 
-3.	Copy the _H table to target schema and paste-NOT-special. It will be named xxFEATURECLASSxx_H
-
-It may be necessary to use FeatureClassToGeodatabase instead of copy paste.
+3.	Copy the _H table to target schema using 32 bit ESRI clients and paste-NOT-special. It will be named FEATURECLASSNAME_H just like the source.
 
 4. Source: Hide _H table from ESRI clients.
 
@@ -60,17 +58,14 @@ call owner_archive_utils.update_base_ids('BOROUGH');
 
 6. Target: Manually “register” the parent as archiving and _H table is the history table.  Call from CSCL to this utility in SDE.
 
-Archive date should be set to archive_date in the source or sde.table_registry.Verify that these values are equal. (wut?)
+Archive date should be set to archive_date in the source sde.table_registry. 
 
 ```sql
 call sde.nyc_archive_utils.register_archiving('BOROUGH',1273245334);
 ```
 
-The copied _H table has to be concealed. 
+The copied _H table must be concealed. Call from CSCL on the target.
 
 ```sql
 call sde.nyc_archive_utils.conceal_history('BOROUGH');
 ```
-
-
-

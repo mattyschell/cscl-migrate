@@ -3,6 +3,9 @@ import os
 import stat
 import shutil
 
+# imports from both python 2.7 and 3
+# So far so good KISS
+
 class localgdb(object):
 
     def __init__(self
