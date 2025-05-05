@@ -66,9 +66,7 @@ WIP. See [doc/archive-migration.md](doc/archive-migration.md)
 
 ### 6. Teardown
 
-Practice makes perfect.
-
-To prevent catastrophe the teardown script will only proceed if there exists in the schema a registered feature table named UNLOCK_MIGRATE_TEARDOWN. Manually create this empty feature table to allow teardown. 
+To prevent catastrophe the teardown script will only proceed if there exists in the schema a registered feature table named UNLOCK_TEARDOWN. Manually create this empty feature table to allow teardown. 
 
 ```bat
 > geodatabase-scripts\sample-cscl-teardown.bat
