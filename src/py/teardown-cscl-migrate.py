@@ -42,6 +42,10 @@ def deleteitem(ptargetgdb
                                              ,'DELETE') 
 
         return arcpy.Delete_management(item)
+    
+    else:
+        
+        return False
 
 
 if __name__ == '__main__':
@@ -63,11 +67,7 @@ if __name__ == '__main__':
         filemode='w'                         
     )
     
-    listbuckets = ['featuredatasets'
-                  ,'featureclasses'
-                  ,'tables'
-                  ,'relationshipclasses'
-                  ,'publicsafetyfeatureclasses']
+    listbuckets = Resourcelistmanager('listoflists').names
     
     for listbucket in listbuckets:
 
