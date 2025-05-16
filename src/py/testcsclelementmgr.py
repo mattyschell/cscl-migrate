@@ -4,6 +4,8 @@ import pathlib
 
 import csclelementmgr
 
+# C:\Progra~1\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe
+#   ./src/py/testcsclelementmgr.py
 
 class CsclelementmgrTestCase(unittest.TestCase):
 
@@ -28,6 +30,17 @@ class CsclelementmgrTestCase(unittest.TestCase):
         self.assertIsNone(atable.featuredataset)
 
         self.assertEqual(atable.gdbtype, 'featuretable')
+
+    def testcdeceitfulfeaturedataset(self):
+
+        # case sensitive
+        adeceitfulfeaturedataset = csclelementmgr.CSCLElement('CSCL')
+        
+        self.assertEqual(adeceitfulfeaturedataset.name,'CSCL')
+
+        self.assertIsNone(adeceitfulfeaturedataset.featuredataset)
+
+        self.assertEqual(adeceitfulfeaturedataset.gdbtype, 'featuredataset')
 
 
 if __name__ == '__main__':
