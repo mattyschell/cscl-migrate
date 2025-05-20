@@ -85,7 +85,10 @@ def reproject (
             'PARAMETER["Latitude_Of_Origin",40.16666666666666],UNIT["Foot_US",0.3048006096012192]]'
         )
         ws_sr["F2"] = -1
-        ws_sr["K2"] = "3048.006096"
+        # make the beardy old fellas happy
+        ws_sr["K2"] = "3048.006096012195121164435877261997627062" 
+        # previously 
+        # ws_sr["K2"] = "3048.006096"  
         ws_sr["N2"] = "10000."
         ws_sr["Q2"] = "10000."
 
@@ -380,6 +383,7 @@ def reproject (
     return
 
 if __name__ == '__main__':
+
 
     pingdb   = sys.argv[1]
     poutgdb  = sys.argv[2]
