@@ -28,7 +28,7 @@
 
     Not sure on this.
 
-6. Is the "FGDB" at the bottom of the diagram the cscl file geodatabase replica? Or is this something new? ("Remove Class Ext" = not replica, right?)
+6. Is the "FGDB" at the bottom of the diagram (refers to an old diagram) the cscl file geodatabase replica? Or is this something new? ("Remove Class Ext" = not replica, right?)
 
 
     It is a new file geodatabase created  in this workflow.
@@ -43,9 +43,9 @@
 
 ### Comments
 
-1. To simplify our discussion I suggest we use ESRI approach 2 ("registration update") for the archive migration.  Approach 1 is ourS backup option until further notice.
+1. To simplify our discussion I suggest we use ESRI approach 2 ("registration update") for the archive migration.  Approach 1 is our backup option until further notice.
 
-    Nope.  We now have an approach 3!
+    Nope.  We now have an approach 3! (later abandoned)
 
 2. The default storage type for ESRI Enterprise Geodatabases is SDE.ST_GEOMETRY. So it's not strictly a "task" or "change."
 

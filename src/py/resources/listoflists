@@ -1,5 +1,5 @@
-CSCL
-featureclasses
-publicsafetyfeatureclasses
-relationshipclasses
-tables
+allfeaturedataset
+allfeatureclass
+allfeaturetable
+allrelationshipclass
+alltopology

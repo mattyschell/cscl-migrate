@@ -16,6 +16,11 @@ if %ERRORLEVEL% NEQ 0 (
 echo. >> %BATLOG% && echo verified input %INGDB% >> %BATLOG%
 echo. >> %BATLOG% && echo starting load to %TARGETGDB% >> %BATLOG%
 %PROPY% %BASEPATH%\cscl-migrate\src\py\load-cscl-migrate.py %INGDB% %TARGETGDB%
+if %ERRORLEVEL% NEQ 0 (
+    echo. >> %BATLOG%
+    echo failed load of %INGDB% to %TARGETGDB% >> %BATLOG%
+    GOTO :EOF
+)
 %PROPY% %BASEPATH%\cscl-migrate\src\py\verifycatalog.py listoflists %TARGETGDB%
 if %ERRORLEVEL% NEQ 0 (
     echo. >> %BATLOG%

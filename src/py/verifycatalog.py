@@ -3,18 +3,10 @@ import os
 import logging
 import datetime
 import time
+
 import arcpy
+import csclelementmgr
 
-
-def fetchlist(whichlist):
-
-    with open(os.path.join(os.path.dirname(__file__)
-                          ,'resources'
-                          ,whichlist)) as l:
-
-        contents = [line.strip() for line in l if line.strip()]
-
-    return contents  
 
 def filterschema(gdbobjects
                 ,schema='CSCL'):
@@ -96,8 +88,9 @@ if __name__ == "__main__":
 
     # this must be a list of lists
     # if we only want to check tables for example
-    # make a list with one element: tables
+    # make a list with one element: alltable
     # case is sensitive
+
     listname   = sys.argv[1]
     gdb2verify = sys.argv[2]
 
@@ -107,8 +100,9 @@ if __name__ == "__main__":
     # ..\logs\verifycatalog-ditcsdv1-20250403-160745.log
     targetlog = \
         os.path.join(os.environ['TARGETLOGDIR'] 
-                    ,'verifycatalog-{0}-{1}.log'.format(os.path.basename(gdb2verify).split(".")[0]
-                                                        ,timestr))
+                    ,'verifycatalog-{0}-{1}.log'.format( \
+                        os.path.basename(gdb2verify).split(".")[0]
+                       ,timestr))
 
     logging.basicConfig (
         level=logging.DEBUG,  
@@ -126,17 +120,35 @@ if __name__ == "__main__":
     # what can this user see
     existingobjects = getallobjects(arcpy.env.workspace)
 
-    listnames = fetchlist(listname) 
+    listnames = csclelementmgr.Resourcelistmanager(listname).names
 
     expectedobjects = []
     
-    for name in listnames:
+    for listname in listnames:
 
-        objectnames = fetchlist(name) 
-        expectedobjects = expectedobjects + objectnames
+        objectnames = csclelementmgr.Resourcelistmanager(listname).names
+
+        # must loop again due to deceitful feature datasets
+        # we may get duplicates added to our lists when there are overlaps
+        # this is OK, we set(expectedobjects) below
+
+        for objectname in objectnames:
+
+            csclelement = csclelementmgr.CSCLElement(objectname)
+
+            if csclelement.getgdbtype() == 'featuredataset':
+
+                deepobjectnames = csclelementmgr.Resourcelistmanager(csclelement.name).names
+                expectedobjects = expectedobjects + deepobjectnames
+
+            else:
+
+                expectedobjects.append(objectname) 
 
     # we dont check the other direction (for now)
-    # extra objects are allowed
+    # extra objects in the database are allowed
+    # missing objects in the database -> we messed up
+
     expectednotexisting = set(expectedobjects).difference(set(existingobjects))
 
     if len(expectednotexisting) == 0:

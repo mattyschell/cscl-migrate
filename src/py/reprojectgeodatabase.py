@@ -85,7 +85,14 @@ def reproject (
             'PARAMETER["Latitude_Of_Origin",40.16666666666666],UNIT["Foot_US",0.3048006096012192]]'
         )
         ws_sr["F2"] = -1
-        # make the beardy old fellas happy
+        # the inverse of the XY resolution
+        # 1 / 0.000328083333333333 = 3048.006096012195121164435877261997627062
+        # reminder: This is the size of the squares of the graph paper
+        # This is not the real world decimal places being collected and maintained 
+        # These extra digits do not significantly change the distance between lines on the paper
+        # CCHEN wisely:
+        # "I want .5 pounds of Virginia Ham vs I want .5123456789 pounds of Virginia ham"
+        # "--> same price" 
         ws_sr["K2"] = "3048.006096012195121164435877261997627062" 
         # previously 
         # ws_sr["K2"] = "3048.006096"  

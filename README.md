@@ -10,6 +10,14 @@ Here's a picture of the big picture.
 
 ![big picture](doc/bigpicture.png)
 
+### You Will Need
+* arcpy from ArcGIS Pro 
+* arcpy from ArcMap (32 bit classic)
+* Classic 32 bit ArcCatalog
+* ArcGIS Pro Topographic Production toolbox
+* SQL access to the target database as the data owner and as SDE
+
+
 ### 1. Extract and Prepare CSCL
 
 Review and update the environmentals.

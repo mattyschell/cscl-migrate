@@ -1,6 +1,8 @@
 ## Migrating Archive Classes
 
-We wish to migrate CSCL via an interim step like a file geodatabase.  In this interim step we will lose the archive.
+We will to migrate CSCL via an interim step like a file geodatabase.  In this interim step we will lose the archive.
+
+The CSCL maintenance team uses the archive to investigate the source of bad data.  Ther are also expectations for data retention from public safety outfits and next generation 911.
 
 The steps below describe our preferred archive restoration strategy. This strategy is not supported by the COTS software.
 

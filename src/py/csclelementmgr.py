@@ -8,6 +8,7 @@ import arcpy
 class Resourcelistmanager(object):
 
     # fun little class :0) clown
+    # and why is it everywhere
 
     def __init__(self
                 ,whichlist):
@@ -23,24 +24,27 @@ class Resourcelistmanager(object):
 class CSCLElement(object):
 
     def __init__(self
-                 ,elementname):
+                ,elementname):
          
         self.name = elementname
 
         # featureclass, featuredataset, etc
         self.gdbtype = self.getgdbtype()
 
-        # if a child of a deceitful featuredataset, this is the parent fd name
+        # if this element is a child of a deceitful featuredataset
+        # this is the deceitfule parents name (spoiler: its CSCL)
         self.featuredataset = self.getfeaturedataset()
 
         if self.featuredataset is None:
             self.itempath = self.name
         else:
+            # todo: double check syntax do not care till error
             self.itempath = '{0}/{1}'.format(self.featuredataset
                                             ,self.name)  
 
     def getgdbtype(self):
 
+        # EZ singular names. English can take the L
         typelist = ['featureclass'
                    ,'featuredataset'
                    ,'featuretable'
@@ -68,11 +72,12 @@ class CSCLElement(object):
                  ,psrcgdb
                  ,ptargetgdb):
         
+        retval = 0
+
         if self.gdbtype == 'featuredataset':
             return self.copypastefeaturedataset(psrcgdb
                                                ,ptargetgdb)
-
-        retval = 0
+        
 
         srcitem = os.path.join(psrcgdb, self.itempath)
         targetitem = os.path.join(ptargetgdb, self.itempath)
