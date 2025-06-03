@@ -63,6 +63,10 @@ Review and update the environmentals.
 
 ### 4. Load to final Enterprise Geodatabase
 
+In ArcGIS Pro copy all items in the file geodatabase. Paste into the enterprise geodatabase. This should run for about 2 hours.
+
+Then finalize the load with versioning, grants, topology rules, etc.
+
 ```bat
 > geodatabase-scripts\sample-cscl-load.bat
 ```

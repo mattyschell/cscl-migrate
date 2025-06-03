@@ -32,7 +32,7 @@ class CSCLElement(object):
         self.gdbtype = self.getgdbtype()
 
         # if this element is a child of a deceitful featuredataset
-        # this is the deceitfule parents name (spoiler: its CSCL)
+        # this is the deceitful parents name (spoiler: its CSCL)
         self.featuredataset = self.getfeaturedataset()
 
         if self.featuredataset is None:
@@ -41,8 +41,18 @@ class CSCLElement(object):
             # todo: double check syntax do not care till error
             self.itempath = '{0}/{1}'.format(self.featuredataset
                                             ,self.name)  
+            
+    def exists(self
+              ,gdb):
+
+        if arcpy.Exists(os.path.join(gdb, self.itempath)):
+            return True
+        else:
+            return False
 
     def getgdbtype(self):
+
+        # what type of geodatabase item is self
 
         # EZ singular names. English can take the L
         typelist = ['featureclass'
@@ -57,6 +67,8 @@ class CSCLElement(object):
   
     def getfeaturedataset(self):
 
+        # if self is in a feature dataset tell us the feature dataset name
+
         featuredatasets = Resourcelistmanager('allfeaturedataset').names
 
         for featuredatasetname in featuredatasets:
@@ -68,92 +80,66 @@ class CSCLElement(object):
             
         return None
     
-    def copypaste(self
-                 ,psrcgdb
-                 ,ptargetgdb):
+    def version(self
+               ,ptargetgdb):
         
         retval = 0
 
-        if self.gdbtype == 'featuredataset':
-            return self.copypastefeaturedataset(psrcgdb
-                                               ,ptargetgdb)
+        if self.featuredataset is not None:
+            # child of a deceitful feature dataset parent
+            # the parent versions its children
+            return 1
         
+        logging.info('versioning {0}'.format(self.name))
 
-        srcitem = os.path.join(psrcgdb, self.itempath)
-        targetitem = os.path.join(ptargetgdb, self.itempath)
-
-        logging.debug("srcitem {0}".format(srcitem))
-        logging.debug("targetitem {0}".format(targetitem))
-
-        if arcpy.Exists(targetitem):
-
-            logging.info('skipping already existing {0}'.format(targetitem))
-            return retval
+        elementfullpath = os.path.join(ptargetgdb, self.itempath)
 
         try:
-            arcpy.management.Copy(srcitem
-                                 ,targetitem)
-            
-            if arcpy.Exists(targetitem):
-                logging.info('Successfully copied {0} to {1}'.format(srcitem
-                                                                    ,targetitem))
+            arcpy.management.RegisterAsVersioned(elementfullpath)
+            return 1
+        except arcpy.ExecuteError:
+            logging.error('RegisterAsVersioned error on {0}: {1}'.format(elementfullpath
+                                                                        ,arcpy.GetMessages(2)))
+        except Exception as e:
+            print('RegisterAsVersioned unexpected error on {0}: {1}'.format(elementfullpath
+                                                                           ,e))
+ 
+        return retval
+    
+    def grant(self
+             ,ptargetgdb
+             ,esripriv
+             ,esriuser):
+
+        elementfullpath = os.path.join(ptargetgdb, self.itempath)
+
+        if esripriv == 'VIEW':
+
+            try:
+                arcpy.management.ChangePrivileges(elementfullpath
+                                                ,esriuser
+                                                ,'GRANT'
+                                                ,'AS_IS') 
                 return 1
             
-            else:
-                logging.error('Copy operation failed for {0}'.format(srcitem))
+            except:
+                
                 return 0
-        except arcpy.ExecuteError:
-            logging.error(f"ArcPy error: {arcpy.GetMessages(2)}")
-            return 0
-        
-        except Exception as e:
-            logging.error(f"Unexpected error: {str(e)}")
-            return 0
+
+        elif esripriv == 'EDIT':
+
+            try:
+
+                arcpy.management.ChangePrivileges(elementfullpath
+                                                ,esriuser
+                                                ,'AS_IS'
+                                                ,'GRANT') 
+                return 1
             
-    def copypastefeaturedataset(self
-                               ,psrcgdb
-                               ,ptargetgdb):
+            except:
+                
+                return 0
 
-        retval = 0
+       
 
-        # xx.gdb\CSCL
-        # yy.sde\CSCL
-        srcitem = os.path.join(psrcgdb, self.itempath)
-        targetitem = os.path.join(ptargetgdb, self.itempath)
     
-        if arcpy.Exists(targetitem):
-            # all or nothing when migrating deceitful feature datasets
-            logging.info('skipping already existing feature dataset {0}'.format(targetitem))
-            return retval
-        
-        try:
-            arcpy.management.CreateFeatureDataset(ptargetgdb
-                                                 ,self.name
-                                                 ,os.path.join(os.path.dirname(__file__)
-                                                              ,'resources'
-                                                              ,'epsg_2263.prj'))
-            
-            if arcpy.Exists(targetitem):
-                logging.info('Successfully created {0}'.format(targetitem))
-            else:
-                logging.error('CreateFeatureDataset_management failed silently for {0}'.format(targetitem))
-                return 0
-            
-        except arcpy.ExecuteError:
-            logging.error(f"ArcPy error: {arcpy.GetMessages(2)}")
-            return 0        
-        except Exception as e:
-            logging.error(f"Unexpected error: {str(e)}")
-            return 0
-        
-        #loop over elements
-        for childname in Resourcelistmanager(self.name).names:
-
-            #feel clever now. mad at self.me later
-            childretval = CSCLElement(childname).copypaste(psrcgdb
-                                                          ,ptargetgdb)
-            if childretval == 0:
-                # all or nothing for deceitful feature datasets. exit on first 
-                logging.info('child copy paste failed for {0}'.format(childname))
-
-        return 1

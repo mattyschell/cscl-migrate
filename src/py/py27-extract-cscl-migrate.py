@@ -82,7 +82,7 @@ if __name__ == '__main__':
         logging.info("failed {0}".format(srcbucket))
 
 
-    srcbucket = 'featureclasses'   
+    srcbucket = 'allfeatureclass'   
     srcitems = Resourcelistmanager(srcbucket)
 
     for srcitem in srcitems.names:
@@ -98,7 +98,7 @@ if __name__ == '__main__':
             logging.info("skipped {0}".format(srcitem))
 
 
-    srcbucket = 'tables'   
+    srcbucket = 'alltable'   
     srcitems  = Resourcelistmanager(srcbucket)
 
     for srcitem in srcitems.names:
@@ -113,7 +113,7 @@ if __name__ == '__main__':
 
             logging.info("skipped {0}".format(srcitem))
 
-    srcbucket = 'relationshipclasses'   
+    srcbucket = 'allrelationshipclass'   
     srcitems  = Resourcelistmanager(srcbucket)
 
     for srcitem in srcitems.names:
@@ -127,23 +127,6 @@ if __name__ == '__main__':
         if extracted == 0:
 
             logging.info("skipped {0}".format(srcitem))
-
-    srcbucket = 'publicsafetyfeatureclasses'   
-    srcitems  = Resourcelistmanager(srcbucket)
-
-    for srcitem in srcitems.names:
-
-        logging.info("extracting {0}".format(srcitem))
-        
-        extracted = copypaste(psrcgdb
-                             ,srcitem
-                             ,targetgdb.gdb)
-            
-        if extracted == 0:
-
-            logging.info("skipped {0}".format(srcitem))
-
-
 
     logging.info("end")
 
