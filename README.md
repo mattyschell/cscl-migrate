@@ -65,7 +65,7 @@ Review and update the environmentals.
 
 In ArcGIS Pro copy all items in the file geodatabase. Paste into the enterprise geodatabase. This should run for about 2 hours.
 
-Then finalize the load with versioning, grants, topology rules, etc.
+Then complete the load by applying topology rules, versioning, grants, etc.
 
 ```bat
 > geodatabase-scripts\sample-cscl-load.bat
@@ -78,7 +78,7 @@ WIP. See [doc/archive-migration.md](doc/archive-migration.md)
 
 ### 6. Teardown
 
-To prevent catastrophe the teardown script will only proceed if there exists in the schema a registered feature table named UNLOCK_TEARDOWN. Manually create this empty feature table to allow teardown. 
+To prevent catastrophe the teardown script will only proceed if a registered table named UNLOCK_TEARDOWN exists in the schema. Manually create this empty table to unlock teardown. 
 
 ```bat
 > geodatabase-scripts\sample-cscl-teardown.bat

@@ -42,6 +42,9 @@ class CSCLElement(object):
             self.itempath = '{0}/{1}'.format(self.featuredataset
                                             ,self.name)  
             
+        self.tolerance  = .00328083333333333
+        self.resolution = .000328083333333333
+            
     def exists(self
               ,gdb):
 
