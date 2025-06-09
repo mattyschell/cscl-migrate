@@ -7,9 +7,6 @@ import arcpy
 
 class Resourcelistmanager(object):
 
-    # fun little class :0) clown
-    # and why is it everywhere
-
     def __init__(self
                 ,whichlist):
 
@@ -41,21 +38,17 @@ class CSCLElement(object):
             # todo: double check syntax do not care till error
             self.itempath = '{0}/{1}'.format(self.featuredataset
                                             ,self.name)  
-            
-        self.tolerance  = .00328083333333333
-        self.resolution = .000328083333333333
-            
-    def exists(self
-              ,gdb):
-
-        if arcpy.Exists(os.path.join(gdb, self.itempath)):
-            return True
+        
+        if self.gdbtype in ('featureclass','featuredataset'):
+            self.tolerance  = .00328083333333333
+            self.resolution = .000328083333333333
         else:
-            return False
+            self.tolerance  = None
+            self.resolution = None
 
     def getgdbtype(self):
 
-        # what type of geodatabase item is self
+        # what type of geodatabase item is this
 
         # EZ singular names. English can take the L
         typelist = ['featureclass'
@@ -82,6 +75,14 @@ class CSCLElement(object):
                 return featuredatasetname
             
         return None
+
+    def exists(self
+              ,gdb):
+
+        if arcpy.Exists(os.path.join(gdb, self.itempath)):
+            return True
+        else:
+            return False    
     
     def version(self
                ,ptargetgdb):

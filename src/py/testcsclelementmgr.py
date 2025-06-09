@@ -20,9 +20,10 @@ class CsclelementmgrTestCase(unittest.TestCase):
 
         self.assertEqual(afeatureclass.gdbtype, 'featureclass')
 
+        self.assertEqual(afeatureclass.tolerance, .00328083333333333)
+
     def testbtable(self):
 
-        # case sensitive
         atable = csclelementmgr.CSCLElement('STREETNAME')
         
         self.assertEqual(atable.name,'STREETNAME')
@@ -31,9 +32,10 @@ class CsclelementmgrTestCase(unittest.TestCase):
 
         self.assertEqual(atable.gdbtype, 'featuretable')
 
+        self.assertIsNone(atable.tolerance)
+
     def testcdeceitfulfeaturedataset(self):
 
-        # case sensitive
         adeceitfulfeaturedataset = csclelementmgr.CSCLElement('CSCL')
         
         self.assertEqual(adeceitfulfeaturedataset.name,'CSCL')
@@ -41,6 +43,39 @@ class CsclelementmgrTestCase(unittest.TestCase):
         self.assertIsNone(adeceitfulfeaturedataset.featuredataset)
 
         self.assertEqual(adeceitfulfeaturedataset.gdbtype, 'featuredataset')
+
+        self.assertEqual(adeceitfulfeaturedataset.tolerance, .00328083333333333)
+
+    def testdrelationshipclass(self):
+
+        arelationshipclass = csclelementmgr.CSCLElement('CenterlinesHaveAddresses')
+
+        self.assertEqual(arelationshipclass.name,'CenterlinesHaveAddresses')
+        
+        self.assertEqual(arelationshipclass.featuredataset,'CSCL')
+
+        self.assertEqual(arelationshipclass.gdbtype, 'relationshipclass')
+
+        self.assertIsNone(arelationshipclass.tolerance)
+
+    def testetopology(self):
+
+        atopology = csclelementmgr.CSCLElement('CSCL_Topology')
+
+        self.assertEqual(atopology.name,'CSCL_Topology')
+        
+        self.assertEqual(atopology.featuredataset,'CSCL')
+
+        self.assertEqual(atopology.gdbtype, 'topology')
+
+        self.assertIsNone(atopology.tolerance)
+
+    def testfexists(self):
+
+        afeatureclass = csclelementmgr.CSCLElement('Centerline')
+
+        self.assertFalse(afeatureclass.exists('C:\\dev\\null'))
+
 
 
 if __name__ == '__main__':
