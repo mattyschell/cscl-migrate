@@ -29,7 +29,6 @@ def filterschema(gdbobjects
     
     return cleangdbobjects
 
-
 def get_relationshipclasses(workspace):
 
     relclasses = []
@@ -116,6 +115,12 @@ if __name__ == "__main__":
     
     logger.info('starting catalog verification of {0} at {1}'.format(gdb2verify
                                                                     ,datetime.datetime.now()))
+    try:
+        desc = arcpy.Describe(arcpy.env.workspace)
+    except:
+        logger.error("Cant validate this: {0} Check paths and sde file names".format(gdb2verify))
+        exit(1)
+
 
     # what can this user see
     existingobjects = getallobjects(arcpy.env.workspace)

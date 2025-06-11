@@ -18,7 +18,7 @@ if %ERRORLEVEL% NEQ 0 (
 %PROPY% %BASEPATH%\cscl-migrate\src\py\create-cscl-migrate.py %WORKDIR%
 echo. >> %BATLOG% && echo created empty cscl-migrate geodatabase >> %BATLOG%
 echo. >> %BATLOG% && echo starting extraction with arcpy 2 >> %BATLOG%
-%OLDPY% %BASEPATH%\cscl-migrate\src\py\py27-extract-cscl-migrate.py %WORKDIR% %INGDB%
+%OLDPY% %BASEPATH%\cscl-migrate\src\py\py27-extract-cscl-migrate.py %WORKDIR% %INGDB% listoflists
 %PROPY% %BASEPATH%\cscl-migrate\src\py\verifycatalog.py listoflists %WORKDIR%\cscl-migrate.gdb
 if %ERRORLEVEL% NEQ 0 (
     echo. >> %BATLOG%

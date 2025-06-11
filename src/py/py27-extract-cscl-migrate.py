@@ -4,6 +4,8 @@ import sys
 import logging
 import arcpy
 from filegeodatabasemanager import localgdb 
+# pressing our luck here. crossing the py2 py3 chasm
+import csclelementmgr
 
 
 # PY27 
@@ -35,8 +37,6 @@ def copypaste(psrcgdb
     targetitem = os.path.join(ptargetgdb
                              ,psrcitem)
 
-    # print("targetitem {0}".format(targetitem))
-
     if arcpy.Exists(targetitem):
         
         return retval
@@ -47,11 +47,11 @@ def copypaste(psrcgdb
                              ,targetitem)
 
 
-
 if __name__ == '__main__':
 
-    pworkdir = sys.argv[1]
-    psrcgdb  = sys.argv[2]
+    pworkdir  = sys.argv[1]
+    psrcgdb   = sys.argv[2]
+    plistname = sys.argv[3]
     
     timestr = time.strftime("%Y%m%d-%H%M%S")
 
@@ -69,65 +69,29 @@ if __name__ == '__main__':
     targetgdb = localgdb(os.path.join(pworkdir
                                     ,'cscl-migrate.gdb'))
 
-    
-    srcbucket = 'CSCL'
-    logging.info("extracting {0}".format(srcbucket))
+    listnames = csclelementmgr.Resourcelistmanager(plistname).names
 
-    extracted = copypaste(psrcgdb
-                         ,srcbucket
-                         ,targetgdb.gdb)
+    # allfeaturedataset CSCL should be first in the list of lists
+
+    for listname in listnames:
+
+        logging.info("extracting objects in list {0}".format(listname))
+
+        objectnames = csclelementmgr.Resourcelistmanager(listname).names
+
+        for objectname in objectnames:
+
+            logging.info("extracting object {0}".format(objectname))
+
+            extracted = copypaste(psrcgdb
+                                 ,objectname
+                                 ,targetgdb.gdb)
             
-    if extracted == 0:
+            if extracted == 0:
 
-        logging.info("failed {0}".format(srcbucket))
-
-
-    srcbucket = 'allfeatureclass'   
-    srcitems = Resourcelistmanager(srcbucket)
-
-    for srcitem in srcitems.names:
-
-        logging.info("extracting {0}".format(srcitem))
-        
-        extracted = copypaste(psrcgdb
-                             ,srcitem
-                             ,targetgdb.gdb)
-            
-        if extracted == 0:
-
-            logging.info("skipped {0}".format(srcitem))
+                logging.info("skipped {0}".format(objectname))
 
 
-    srcbucket = 'alltable'   
-    srcitems  = Resourcelistmanager(srcbucket)
-
-    for srcitem in srcitems.names:
-
-        logging.info("extracting {0}".format(srcitem))
-        
-        extracted = copypaste(psrcgdb
-                             ,srcitem
-                             ,targetgdb.gdb)
-            
-        if extracted == 0:
-
-            logging.info("skipped {0}".format(srcitem))
-
-    srcbucket = 'allrelationshipclass'   
-    srcitems  = Resourcelistmanager(srcbucket)
-
-    for srcitem in srcitems.names:
-
-        logging.info("extracting {0}".format(srcitem))
-        
-        extracted = copypaste(psrcgdb
-                             ,srcitem
-                             ,targetgdb.gdb)
-            
-        if extracted == 0:
-
-            logging.info("skipped {0}".format(srcitem))
-
-    logging.info("end")
+    logging.info("finished extracting all lists from {0}".format(plistname))
 
     sys.exit(0)
