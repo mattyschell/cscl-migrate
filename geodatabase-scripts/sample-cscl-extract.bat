@@ -6,7 +6,7 @@ set INGDB=%BASEPATH%\Connections\oracle19c\%ENV%\CSCL-%SRCDB%\cscl.sde
 set TARGETLOGDIR=%BASEPATH%\cscl-migrate\geodatabase-scripts\logs\
 set PROPY=C:\Progra~1\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe
 set OLDPY=C:\Python27\ArcGIS10.7\python.exe
-set BATLOG=%TARGETLOGDIR%cscl-extract.log
+set BATLOG=%TARGETLOGDIR%%ENV%-cscl-extract.log
 echo starting cscl-extract on %date% at %time% > %BATLOG%
 REM verify input catalog
 %PROPY% %BASEPATH%\cscl-migrate\src\py\verifycatalog.py listoflists %INGDB%  
@@ -26,5 +26,5 @@ if %ERRORLEVEL% NEQ 0 (
     GOTO :EOF
 ) 
 echo. >> %BATLOG% && echo verified output %WORKDIR%\cscl-migrate.gdb >> %BATLOG% 
-echo. >> %BATLOG% && %~n0 extracted %INGDB% to %WORKDIR% >> %BATLOG%
+echo. >> %BATLOG% && echo extracted %INGDB% to %WORKDIR% >> %BATLOG%
  

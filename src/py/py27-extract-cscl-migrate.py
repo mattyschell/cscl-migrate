@@ -7,35 +7,23 @@ from filegeodatabasemanager import localgdb
 # pressing our luck here. crossing the py2 py3 chasm
 import csclelementmgr
 
-
 # PY27 
 # source geodatabase has class extensions
 # it can only be read by classic arcmap
 
-class Resourcelistmanager(object):
-
-    def __init__(self,
-                 whichlist):
-
-        with open(os.path.join(os.path.dirname(__file__)
-                              ,'resources'
-                              ,whichlist)) as l:
-
-            contents = [line.strip() for line in l]
-
-        self.names = contents  
-
 def copypaste(psrcgdb
-             ,psrcitem
+             ,psrcitempath
              ,ptargetgdb):
     
     retval = 0
 
     srcitem = os.path.join(psrcgdb
-                          ,psrcitem)
+                          ,psrcitempath)
 
     targetitem = os.path.join(ptargetgdb
-                             ,psrcitem)
+                             ,psrcitempath)
+
+    # consider using csclementmgr.exists()
 
     if arcpy.Exists(targetitem):
         
@@ -81,17 +69,24 @@ if __name__ == '__main__':
 
         for objectname in objectnames:
 
-            logging.info("extracting object {0}".format(objectname))
+            csclobject = csclelementmgr.CSCLElement(objectname)
 
-            extracted = copypaste(psrcgdb
-                                 ,objectname
-                                 ,targetgdb.gdb)
+            extracted = 0
+
+            if csclobject.gdbtype != 'topology':
+
+                logging.info("extracting object {0}".format(csclobject.name))
+
+                extracted = copypaste(psrcgdb
+                                    ,csclobject.itempath
+                                    ,targetgdb.gdb)
             
             if extracted == 0:
 
-                logging.info("skipped {0}".format(objectname))
+                logging.info("skipped {0}".format(csclobject.name))
 
 
     logging.info("finished extracting all lists from {0}".format(plistname))
 
     sys.exit(0)
+
