@@ -3,7 +3,7 @@ set TARGETGDB=C:\xxx\Connections\oracle19c\%ENV%\GIS-ditGSdv1\xxxx.sde
 set BASEPATH=C:\xxx
 set TARGETLOGDIR=%BASEPATH%\cscl-migrate\geodatabase-scripts\logs\
 set PROPY=C:\Progra~1\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe
-set BATLOG=%TARGETLOGDIR%loadcscl.log
+set BATLOG=%TARGETLOGDIR%%ENV%-cscl-load.log
 echo. >> %BATLOG% && echo finalizing load to %TARGETGDB% >> %BATLOG%
 %PROPY% %BASEPATH%\cscl-migrate\src\py\loadcscl.py %TARGETGDB%
 if %ERRORLEVEL% NEQ 0 (

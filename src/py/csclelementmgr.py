@@ -117,32 +117,38 @@ class CSCLElement(object):
 
         elementfullpath = os.path.join(ptargetgdb, self.itempath)
 
-        if esripriv == 'VIEW':
-
-            try:
-                arcpy.management.ChangePrivileges(elementfullpath
-                                                ,esriuser
-                                                ,'GRANT'
-                                                ,'AS_IS') 
-                return 1
-            
-            except:
+        if  self.getgdbtype() not in ('relationshipclass','topology'):
+          
+            if esripriv == 'VIEW':
+    
+                try:
+                    arcpy.management.ChangePrivileges(elementfullpath
+                                                     ,esriuser
+                                                     ,'GRANT'
+                                                     ,'AS_IS') 
+                    return 1
                 
-                return 0
-
-        elif esripriv == 'EDIT':
-
-            try:
-
-                arcpy.management.ChangePrivileges(elementfullpath
-                                                ,esriuser
-                                                ,'AS_IS'
-                                                ,'GRANT') 
-                return 1
-            
-            except:
+                except:
+                    
+                    return 0
+    
+            elif esripriv == 'EDIT':
+    
+                try:
+    
+                    arcpy.management.ChangePrivileges(elementfullpath
+                                                     ,esriuser
+                                                     ,'GRANT'
+                                                     ,'GRANT') 
+                    return 1
                 
-                return 0
+                except:
+                    
+                    return 0
+                
+        else:
+
+            return None
 
        
 

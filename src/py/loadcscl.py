@@ -190,7 +190,6 @@ if __name__ == '__main__':
 
                     logging.info("skipped or failed {0}".format(gdbitem))
  
-
     readonlyusers = Resourcelistmanager('allreadonly').names
     editors       = Resourcelistmanager('alleditor').names
 
@@ -222,7 +221,7 @@ if __name__ == '__main__':
                 if granted == 0:
 
                     logging.info("failed to grant edit on {0} to {1}".format(gdbitem
-                                                                            ,readonlyuser))
+                                                                            ,editor))
 
     logging.info("{0} load complete. Spread love. Its the Brooklyn way".format(ptargetgdb))
 

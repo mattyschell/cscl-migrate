@@ -9,74 +9,82 @@ import csclelementmgr
 
 class CsclelementmgrTestCase(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(self):
+
+        self.centerlinefeatureclass = csclelementmgr.CSCLElement('Centerline')
+
+        self.streetnametable = csclelementmgr.CSCLElement('STREETNAME')
+
+        self.csclfeaturedataset = csclelementmgr.CSCLElement('CSCL')
+
+        self.charelationshipclass = csclelementmgr.CSCLElement('CenterlinesHaveAddresses')
+
+        self.cscltopology = csclelementmgr.CSCLElement('CSCL_Topology')
+
     def test_afeatureclass(self):
-
-        # case sensitive
-        afeatureclass = csclelementmgr.CSCLElement('Centerline')
         
-        self.assertEqual(afeatureclass.name,'Centerline')
+        self.assertEqual(self.centerlinefeatureclass.name,'Centerline')
 
-        self.assertEqual(afeatureclass.featuredataset, 'CSCL')
+        self.assertEqual(self.centerlinefeatureclass.featuredataset, 'CSCL')
 
-        self.assertEqual(afeatureclass.gdbtype, 'featureclass')
+        self.assertEqual(self.centerlinefeatureclass.gdbtype, 'featureclass')
 
-        self.assertEqual(afeatureclass.tolerance, .00328083333333333)
+        self.assertEqual(self.centerlinefeatureclass.tolerance, .00328083333333333)
 
     def testbtable(self):
-
-        atable = csclelementmgr.CSCLElement('STREETNAME')
         
-        self.assertEqual(atable.name,'STREETNAME')
+        self.assertEqual(self.streetnametable.name,'STREETNAME')
 
-        self.assertIsNone(atable.featuredataset)
+        self.assertIsNone(self.streetnametable.featuredataset)
 
-        self.assertEqual(atable.gdbtype, 'featuretable')
+        self.assertEqual(self.streetnametable.gdbtype, 'featuretable')
 
-        self.assertIsNone(atable.tolerance)
+        self.assertIsNone(self.streetnametable.tolerance)
 
     def testcdeceitfulfeaturedataset(self):
-
-        adeceitfulfeaturedataset = csclelementmgr.CSCLElement('CSCL')
         
-        self.assertEqual(adeceitfulfeaturedataset.name,'CSCL')
+        self.assertEqual(self.csclfeaturedataset.name,'CSCL')
 
-        self.assertIsNone(adeceitfulfeaturedataset.featuredataset)
+        self.assertIsNone(self.csclfeaturedataset.featuredataset)
 
-        self.assertEqual(adeceitfulfeaturedataset.gdbtype, 'featuredataset')
+        self.assertEqual(self.csclfeaturedataset.gdbtype, 'featuredataset')
 
-        self.assertEqual(adeceitfulfeaturedataset.tolerance, .00328083333333333)
+        self.assertEqual(self.csclfeaturedataset.tolerance, .00328083333333333)
 
     def testdrelationshipclass(self):
 
-        arelationshipclass = csclelementmgr.CSCLElement('CenterlinesHaveAddresses')
-
-        self.assertEqual(arelationshipclass.name,'CenterlinesHaveAddresses')
+        self.assertEqual(self.charelationshipclass.name,'CenterlinesHaveAddresses')
         
-        self.assertEqual(arelationshipclass.featuredataset,'CSCL')
+        self.assertEqual(self.charelationshipclass.featuredataset,'CSCL')
 
-        self.assertEqual(arelationshipclass.gdbtype, 'relationshipclass')
+        self.assertEqual(self.charelationshipclass.gdbtype, 'relationshipclass')
 
-        self.assertIsNone(arelationshipclass.tolerance)
+        self.assertIsNone(self.charelationshipclass.tolerance)
 
     def testetopology(self):
 
-        atopology = csclelementmgr.CSCLElement('CSCL_Topology')
-
-        self.assertEqual(atopology.name,'CSCL_Topology')
+        self.assertEqual(self.cscltopology.name,'CSCL_Topology')
         
-        self.assertEqual(atopology.featuredataset,'CSCL')
+        self.assertEqual(self.cscltopology.featuredataset,'CSCL')
 
-        self.assertEqual(atopology.gdbtype, 'topology')
+        self.assertEqual(self.cscltopology.gdbtype, 'topology')
 
-        self.assertIsNone(atopology.tolerance)
+        self.assertIsNone(self.cscltopology.tolerance)
 
     def testfexists(self):
 
-        afeatureclass = csclelementmgr.CSCLElement('Centerline')
+        self.assertFalse(self.centerlinefeatureclass.exists('C:\\dev\\null'))
 
-        self.assertFalse(afeatureclass.exists('C:\\dev\\null'))
+    def testggrants(self):
 
+        # fail
+        self.assertEqual(self.centerlinefeatureclass.grant('nope.sde','VIEW','MALTAGOYA'),0)
 
+        # exit none
+        self.assertIsNone(self.cscltopology.grant('nope.sde','VIEW','MALTAGOYA'))
+        self.assertIsNone(self.charelationshipclass.grant('nope.sde','VIEW','MALTAGOYA'))
+        
 
 if __name__ == '__main__':
     unittest.main()
