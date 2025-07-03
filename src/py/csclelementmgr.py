@@ -39,7 +39,7 @@ class CSCLElement(object):
             self.itempath = '{0}/{1}'.format(self.featuredataset
                                             ,self.name)  
         
-        if self.gdbtype in ('featureclass','featuredataset'):
+        if self.gdbtype in ('featureclass','featuredataset','archiveclass'):
             self.tolerance  = .00328083333333333
             self.resolution = .000328083333333333
         else:
@@ -55,7 +55,8 @@ class CSCLElement(object):
                    ,'featuredataset'
                    ,'featuretable'
                    ,'relationshipclass'
-                   ,'topology']
+                   ,'topology'
+                   ,'archiveclass']
         
         for itemtype in typelist:
             if self.name in Resourcelistmanager('all' + itemtype).names:

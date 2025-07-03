@@ -4,7 +4,7 @@ import pathlib
 
 import csclelementmgr
 
-# C:\Progra~1\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe
+# C:\Users\<user>\AppData\Local\Programs\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe
 #   ./src/py/testcsclelementmgr.py
 
 class CsclelementmgrTestCase(unittest.TestCase):
@@ -21,6 +21,8 @@ class CsclelementmgrTestCase(unittest.TestCase):
         self.charelationshipclass = csclelementmgr.CSCLElement('CenterlinesHaveAddresses')
 
         self.cscltopology = csclelementmgr.CSCLElement('CSCL_Topology')
+
+        self.archiveclass = csclelementmgr.CSCLElement('ADDRESSPOINT_H')
 
     def test_afeatureclass(self):
         
@@ -85,6 +87,18 @@ class CsclelementmgrTestCase(unittest.TestCase):
         self.assertIsNone(self.cscltopology.grant('nope.sde','VIEW','MALTAGOYA'))
         self.assertIsNone(self.charelationshipclass.grant('nope.sde','VIEW','MALTAGOYA'))
         
+    def testharchivclass(self):
+
+        self.assertEqual(self.archiveclass.name,'ADDRESSPOINT_H')
+
+        self.assertIsNone(self.archiveclass.featuredataset)
+
+        self.assertEqual(self.archiveclass.gdbtype, 'archiveclass')
+
+        self.assertEqual(self.archiveclass.tolerance, .00328083333333333)
+
+        self.assertEqual(self.archiveclass.resolution, .000328083333333333)
+
 
 if __name__ == '__main__':
     unittest.main()
