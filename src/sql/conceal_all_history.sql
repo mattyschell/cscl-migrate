@@ -3,7 +3,7 @@ call sde.nyc_archive_utils.conceal_history('ACCESSPOINTSTOENTRANCEPOINTS');
 call sde.nyc_archive_utils.conceal_history('ACCESSPOINTTOADDRESSPOINT');
 call sde.nyc_archive_utils.conceal_history('ADDRESSPOINT');
 call sde.nyc_archive_utils.conceal_history('ADDRESSPOINTLGCS');
-call sde.nyc_archive_utils.conceal_history('ADJACENTBOROUGHBOUNDARY');
+--call sde.nyc_archive_utils.conceal_history('ADJACENTBOROUGHBOUNDARY');
 call sde.nyc_archive_utils.conceal_history('ADMINBOUNDARIES');
 call sde.nyc_archive_utils.conceal_history('ALARMBOX');
 call sde.nyc_archive_utils.conceal_history('ALARMBOXAREA');
@@ -107,3 +107,4 @@ call sde.nyc_archive_utils.conceal_history('URBANRENEWALAREA');
 call sde.nyc_archive_utils.conceal_history('VIRTUALCENTERLINE');
 call sde.nyc_archive_utils.conceal_history('VIRTUALINTERSECTION');
 call sde.nyc_archive_utils.conceal_history('ZIPCODE');
+EXIT

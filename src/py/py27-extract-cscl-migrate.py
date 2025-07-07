@@ -78,8 +78,8 @@ if __name__ == '__main__':
                 logging.info("extracting object {0}".format(csclobject.name))
 
                 extracted = copypaste(psrcgdb
-                                    ,csclobject.itempath
-                                    ,targetgdb.gdb)
+                                     ,csclobject.itempath
+                                     ,targetgdb.gdb)
             
             if extracted == 0:
 

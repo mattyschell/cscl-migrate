@@ -107,3 +107,4 @@ call sde.nyc_archive_utils.reveal_history('URBANRENEWALAREA');
 call sde.nyc_archive_utils.reveal_history('VIRTUALCENTERLINE');
 call sde.nyc_archive_utils.reveal_history('VIRTUALINTERSECTION');
 call sde.nyc_archive_utils.reveal_history('ZIPCODE');
+EXIT

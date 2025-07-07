@@ -1,0 +1,25 @@
+set ENV=xxx
+set SRCSCHEMA=xxx
+set SRCPASSWORD=xxx
+set SRCDB=xxx
+set TARGETSCHEMA=%SRCSCHEMA%
+set TARGETPASSWORD=%SRCPASSWORD%
+set TARGETDB=xxx
+set BASEPATH=C:\xxx
+set SRCGDB=%BASEPATH%\Connections\oracle19c\%ENV%\CSCL-%SRCDB%\%SRCSCHEMA%.sde
+set TARGETGDB=%BASEPATH%\Connections\oracle19c\%ENV%\CSCL-%TARGETDB%\%TARGETSCHEMA%.sde
+set TARGETLOGDIR=%BASEPATH%\cscl-migrate\geodatabase-scripts\logs\
+set PROPY=C:\Users\%USERNAME%\AppData\Local\Programs\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe
+set OLDPY=C:\Python27\ArcGIS10.7\python.exe
+set BATLOG=%TARGETLOGDIR%%ENV%-migrate-archive.log
+echo starting %ENV%-migrate-archive on %date% at %time% > %BATLOG%
+echo. >> %BATLOG% && echo starting reveal_all_history in %SRCSCHEMA% on %SRCDB% on %date% at %time% >> %BATLOG%
+sqlplus %SRCSCHEMA%/"%SRCPASSWORD%"@%SRCDB% @src/sql/reveal_all_history.sql
+echo. >> %BATLOG% && echo finished reveal_all_history in %SRCSCHEMA% on %SRCDB% on %date% at %time% >> %BATLOG%
+echo. >> %BATLOG% && echo starting py27 migrate archive from %SRCGDB% to %TARGETGDB% on %date% at %time% >> %BATLOG%
+%OLDPY% %BASEPATH%\cscl-migrate\src\py\py27-migrate-archive.py %SRCGDB% %TARGETGDB% allarchiveclass
+echo. >> %BATLOG% && echo finished py27 migrate archive from %SRCGDB% to %TARGETGDB% on %date% at %time% >> %BATLOG%
+REM objectid update TBD here
+sqlplus %SRCSCHEMA%/"%SRCPASSWORD%"@%SRCDB% @src/sql/conceal_all_history.sql
+
+
