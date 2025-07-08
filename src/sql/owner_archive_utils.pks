@@ -35,6 +35,7 @@ AS
 
     PROCEDURE update_base_ids (
         p_featureclass  IN VARCHAR2
+       ,p_htable_name   IN VARCHAR2
     );
 
 

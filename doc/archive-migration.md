@@ -6,11 +6,11 @@ The CSCL maintenance team uses the archive to investigate the source of bad data
 
 The steps below describe our preferred archive restoration strategy. This strategy is not supported by the COTS software.
 
-See the src/py/resources directory of this repo for lists of CSCL feature classes and tables.  Consider stupid simple generating scripts by starting with these lists and typing out the actions in "column mode" of a text editor. 
+See the src/py/resources directory of this repo for lists of CSCL feature classes and tables.  Update these resources to accomodate for different universes of CSCL data or to perform a partial archive migration.
 
 ### Confirm All Datasets Have a Globalid
 
-Objectid gets toasted on the target. Globalids will serve as a persistent unique identifier.
+The geodatabase does not guarantee objectid consistency during the base data migration. Globalids will serve as a persistent unique identifier.
 
 See doc\confirm-globalid.sql for helper sql.
 
@@ -26,7 +26,7 @@ sqlplus cscl/****@targetdb @geodatabase-scripts\setup-owner-target.sql
 
 ### Migrate Archive
 
-In the commit history of this file we started with 3 archive migration approaches. This was originally "approach 2."
+In the commit history of this file we started with 3 archive migration strategies. This one was creatively named "approach 2" in our initial exploration.
 
 1.	Copy the feature class to the target schema. It will be registered with the geodatabase. Register as versioned.  Do not register as archiving.
 
@@ -40,7 +40,7 @@ Call from CSCL to this utility in SDE. Then refresh the ESRI client to see the _
 call sde.nyc_archive_utils.reveal_history('BOROUGH');
 ```
 
-3.	Copy the _H table to target schema using 32 bit ESRI clients and paste-NOT-special. It will be named FEATURECLASSNAME_H just like the source.
+3.	Copy the _H table to target schema using 32 bit ESRI clients and paste-NOT-special. It will be named FEATURECLASSNAME_H (or similar) just like the source.
 
 4. Source: Hide _H table from ESRI clients.
 
@@ -52,10 +52,10 @@ call sde.nyc_archive_utils.conceal_history('BOROUGH');
 
 The row count in the base table should be less than the _H table. The _H table contains a superset of all possible objectids. Unmatched objectids will exist in _H. This is OK they are history.
 
-Since objectids don't matter to anyone (they are synthetic keys) we will update the base table objectids to match their _H table bretheren and sisteren. Then restart the feature class objectid sequence.
+Since objectids don't matter to anyone (they are synthetic keys) we will update the base table objectids to match their _H table bretheren and sisteren. Then we will modify the feature class objectid sequence.
 
 ```sql
-call owner_archive_utils.update_base_ids('BOROUGH');
+call cscl.owner_archive_utils.update_base_ids('BOROUGH');
 ```
 
 6. Target: Manually “register” the parent as archiving and _H table is the history table.  Call from CSCL to this utility in SDE.

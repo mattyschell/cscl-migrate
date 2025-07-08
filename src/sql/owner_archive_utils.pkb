@@ -106,48 +106,53 @@ AS
         psql := 'select '
              || '   max(a.maxid) + 1 '
              || 'from (select '
-             || '          max(objectid) as maxid '
+             || '          nvl(max(objectid),0) as maxid '
              || '      from '
              || '          ' || p_featureclass || ' '
              || '      union '
              || '      select '
-             || '         max(objectid) as maxid '
+             || '         nvl(max(objectid),0) as maxid '
              || '      from '
              || '         ' || p_htable_name || ') a ';
 
         execute immediate psql into startwith; 
 
-        -- objectid sequences increment by 16. curious
-        psql := 'alter sequence r' || registration_id || ' '
-             || 'restart start with ' || startwith;
+        if startwith > 1
+        then
 
-        execute immediate psql;
+            -- objectid sequences increment by 16. curious
+            psql := 'alter sequence r' || registration_id || ' '
+                 || 'restart start with ' || startwith;
+
+            execute immediate psql;
+
+        end if;
 
     END alter_objectid_sequence;
 
 
     PROCEDURE update_base_ids (
         p_featureclass  IN VARCHAR2
+       ,p_htable_name   IN VARCHAR2
     )
     AS
 
         -- mschell! 20250428
+        -- In our workflow the _H table is not yet registered  
+        -- with the geodatabase as an archive class.
+        -- We cant use fetch_h_table. It must be passed in
 
         psql                varchar2(4000);
         h_registration_id   number;
-        h_table_name        varchar2(64);
 
     BEGIN
 
         owner_archive_utils.refresh_stats();
 
-        -- _H table is not in sde.sde_archives at this point
-        h_table_name := p_featureclass || '_H';
-
         psql := 'merge into '
              || '   ' || p_featureclass || ' a '
              || 'using '
-             || '   ' || h_table_name || ' b '
+             || '   ' || p_htable_name || ' b '
              || 'on '
              || '   (a.globalid = b.globalid) '
              || 'when matched then '
@@ -167,7 +172,7 @@ AS
         end;
 
         owner_archive_utils.alter_objectid_sequence(p_featureclass
-                                                   ,h_table_name);
+                                                   ,p_htable_name);
 
     END update_base_ids;
 
