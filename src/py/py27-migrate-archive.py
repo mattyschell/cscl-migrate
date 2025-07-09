@@ -94,7 +94,15 @@ if __name__ == '__main__':
 
         else:
 
-            logging.error("skipped {0} because it exists on target or doesnt exist on source".format(archiveobject.name))
+            if archiveobject.exists(psrcgdb):
+
+                logging.error("skipped {0} because it exists on the target".format(archiveobject.name))
+
+            elif not archiveobject.exists(psrcgdb):
+
+                logging.error("skipped {0} because it doesnt exist on the source".format(archiveobject.name))
+
+                
 
     logging.info("done migrating all archive classes in {0}".format(plistname))
 

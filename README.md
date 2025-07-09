@@ -61,6 +61,8 @@ Inspecting item 'ALTSEGMENTDATA', OID: 74
 <snip>
 ```
 
+Sanity check success by viewing the file geodatabase from ArcGIS Pro.
+
 ### 3. Correct resolution and tolerance
 
 Review and update the environmentals.
@@ -68,6 +70,8 @@ Review and update the environmentals.
 ```bat
 > geodatabase-scripts\sample-reprojectgdb.bat
 ```
+
+This step will end with a warning "CSCL_Topology is missing!" This is expected. We will manually recreate the topology in the next step.
 
 ### 4. Load to final Enterprise Geodatabase
 
