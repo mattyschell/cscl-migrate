@@ -143,6 +143,7 @@ AS
 
     PROCEDURE register_archiving (
         p_featureclass  IN VARCHAR2
+       ,p_htable_name   IN VARCHAR2
        ,p_archive_date  IN NUMBER
     )
     AS
@@ -152,6 +153,9 @@ AS
         -- p_archive_date comes from the source afaik
         -- "unix epoch time in seconds"
         -- so this is gonna be scripted out for a list of feature classes
+
+        -- sample call as data owner (CSCL)
+        -- call sde.register_archiving('ACCESSPOINTSTOENTRANCEPOINTS' ,'ACCESSPOINTSTOENTRANCEPOINTS_H' ,1399742968);
         
         h_registration_id   number;
         h_table_name        varchar2(64);
@@ -160,9 +164,6 @@ AS
 
     BEGIN
 
-        -- we can't use fetch_h_table since we have not
-        -- registered on the target
-        h_table_name := p_featureclass || '_H';
 
         psql := 'select '
              || '    a.registration_id '
@@ -177,7 +178,7 @@ AS
                                     ,SYS_CONTEXT('USERENV','SESSION_USER');
 
         execute immediate psql into h_registration_id
-                               using h_table_name
+                               using p_htable_name
                                     ,SYS_CONTEXT('USERENV','SESSION_USER');
 
         psql := 'update '
@@ -213,6 +214,8 @@ AS
              || '       ,:p5 '
              || '       ,:p6 '
              || '        ) ';
+        
+        -- if rerun this will fail with a unique constraint violation
         
         execute immediate psql using f_registration_id
                                     ,h_registration_id

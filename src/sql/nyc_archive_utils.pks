@@ -38,6 +38,7 @@ AS
 
     PROCEDURE register_archiving (
         p_featureclass  IN VARCHAR2
+       ,p_htable_name   IN VARCHAR2
        ,p_archive_date  IN NUMBER
     );
 
