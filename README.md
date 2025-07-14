@@ -22,11 +22,11 @@ Here's a picture of the big picture.
 8. SQL access to the target database as the data owner and as SDE
 
 
-### 0. Stop all edits
+### 0. Stop Edits
 
 Step 1 exports to a file geodatabase. The data flowing into that pipeline must continue to match the source environment until we export the archive in step 5.
 
-### 1. Extract and Prepare CSCL
+### 1. Extract And Prepare CSCL
 
 Review and update the environmentals.
 
@@ -38,7 +38,7 @@ Step 1 creates an empty file geodatabase. Then it use python 2 arcpy with class 
 
     \[dev|stg|prd]\cscl-migrate.gdb
 
-### 2. Remove class extensions from the file geodatabase
+### 2. Remove Class Extensions 
 
 With ArcCatalog 10.7 or superior. 
 
@@ -63,7 +63,7 @@ Inspecting item 'ALTSEGMENTDATA', OID: 74
 
 Sanity check success by viewing the file geodatabase from ArcGIS Pro.
 
-### 3. Correct resolution and tolerance
+### 3. Correct Resolution And Tolerance
 
 Review and update the environmentals.
 
@@ -73,7 +73,7 @@ Review and update the environmentals.
 
 This step will end with a warning "CSCL_Topology is missing!" This is expected. We will manually recreate the topology in the next step.
 
-### 4. Load to final Enterprise Geodatabase
+### 4. Load To Enterprise Geodatabase
 
 In ArcGIS Pro copy all items in the file geodatabase. Paste into the enterprise geodatabase. This should run for about 2 hours. This step can't be scripted easily, only the magic GUI can deal with dependencies and avoid _1s.
 
@@ -85,6 +85,8 @@ Then complete the load by applying topology rules, versioning, grants, etc.
 
 ### 5. Migrate Archive Classes
 
+This step concludes by updating objectids of the base tables. Do not get clever and think that it can be run in parallel to earlier steps.
+
 See [doc/archive-migration.md](doc/archive-migration.md) for details.
 
 First compile 2 pl/sql packages in the source and target. 
@@ -95,17 +97,28 @@ sqlplus sde/****@targetdb @geodatabase-scripts\setup-sde-target.sql
 sqlplus cscl/****@targetdb @geodatabase-scripts\setup-owner-target.sql
 ```
 
-Then migrate.  This will transfer all archive data and update object ids on the target.  
+Then migrate. This will transfer all archive data and update object ids on the target.  
 
 ```bat
 > geodatabase-scripts\sample-migrate-archive.bat
 ```
 
-### Non-Prod Teardown Target For Reruns
+### Teardown 
 
 To prevent catastrophe the teardown script will only proceed if a registered table named UNLOCK_TEARDOWN exists in the schema. Manually create this empty table to unlock teardown. 
 
 ```bat
 > geodatabase-scripts\sample-cscl-teardown.bat
 ```
+
+### Time Estimates
+
+| Step        | Duration in Hours        |
+|-------------|--------------------------|
+| 1. Extract And Prepare CSCL         | 1   |
+| 2. Remove Class Extensions          | 0   |
+| 3. Correct Resolution And Tolerance | .5   |
+| 4. Load To Enterprise Geodatabase   | 1.5   |
+| 5. Migrate Archive Classes          | 1   |
+| Teardown                            | .1   |
 

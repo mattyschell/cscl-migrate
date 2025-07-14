@@ -29,6 +29,18 @@ def filterschema(gdbobjects
     
     return cleangdbobjects
 
+def get_domains(workspace):
+
+    # domains are not individual data elements
+    # they are geodatabase metadata
+
+    domains = arcpy.da.ListDomains(workspace)
+
+    # workspace should filter schema
+    domainnames = [domain.name for domain in domains]
+
+    return domainnames
+
 def get_relationshipclasses(workspace):
 
     relclasses = []
@@ -81,7 +93,8 @@ def getallobjects(workspace):
          + get_feature_datasets() \
          + get_feature_classes() \
          + get_relationshipclasses(workspace) \
-         + get_topologies(workspace)
+         + get_topologies(workspace) \
+         + get_domains(workspace)
 
 if __name__ == "__main__":
 

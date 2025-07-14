@@ -43,9 +43,16 @@ def deleteitem(ptargetgdb
 
         return arcpy.Delete_management(item)
     
-    else:
-        
-        return False
+    elif arcpy.Exists(unlockkey):
+
+        try:
+            arcpy.management.DeleteDomain(ptargetgdb
+                                         ,pitem)
+            return True
+        except:
+            return False
+    
+    return False
 
 
 if __name__ == '__main__':
