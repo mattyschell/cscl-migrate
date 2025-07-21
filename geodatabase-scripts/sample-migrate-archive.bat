@@ -22,5 +22,6 @@ echo. >> %BATLOG% && echo starting py27 migrate archive from %SRCGDB% to %TARGET
 echo. >> %BATLOG% && echo finished py27 migrate archive from %SRCGDB% to %TARGETGDB% on %date% at %time% >> %BATLOG%
 sqlplus %TARGETSCHEMA%/"%TARGETPASSWORD%"@%TARGETDB% @src/sql/update_all_base_ids.sql %BASESQLLOG%update_all_base_ids.log %BASESQLLOG%-update_all_base_ids.log
 sqlplus %SRCSCHEMA%/"%SRCPASSWORD%"@%SRCDB% @src/sql/conceal_all_history.sql
+sqlplus %TARGETSCHEMA%/"%TARGETPASSWORD%"@%TARGETDB% @src/sql/conceal_all_history.sql
 
 

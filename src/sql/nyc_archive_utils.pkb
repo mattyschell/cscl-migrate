@@ -158,7 +158,6 @@ AS
         -- call sde.register_archiving('ACCESSPOINTSTOENTRANCEPOINTS' ,'ACCESSPOINTSTOENTRANCEPOINTS_H' ,1399742968);
         
         h_registration_id   number;
-        h_table_name        varchar2(64);
         psql                varchar2(4000);
         f_registration_id   number;
 
@@ -180,6 +179,9 @@ AS
         execute immediate psql into h_registration_id
                                using p_htable_name
                                     ,SYS_CONTEXT('USERENV','SESSION_USER');
+
+        -- set IS_ARCHIVING bit (bit 18 zero-based) 
+        -- for the parent archiving feature class
 
         psql := 'update '
              || '    sde.table_registry '
@@ -227,6 +229,80 @@ AS
         commit;
 
     END register_archiving;
+
+    PROCEDURE deregister_archiving (
+        p_featureclass  IN VARCHAR2
+       ,p_htable_name   IN VARCHAR2
+    )
+    AS
+
+        -- mschell! 20250716
+        -- call on target database from data owner to sde
+        -- this is intended for teardown
+        -- we are reversing archive migration
+        -- to teardown the same way we built up
+        -- https://github.com/mattyschell/cscl-migrate/issues/26
+
+        -- sample call as data owner (CSCL)
+        -- call sde.deregister_archiving('BOROUGH','BOROUGH_H');
+        
+        h_registration_id   number;
+        psql                varchar2(4000);
+        f_registration_id   number;
+
+    BEGIN
+
+
+        psql := 'select '
+             || '    a.registration_id '
+             || 'from '
+             || '    sde.table_registry a '
+             || 'where '
+             || '    a.table_name = :p1 '
+             || 'and a.owner = :p2 ';
+        
+        execute immediate psql into f_registration_id
+                               using p_featureclass
+                                    ,SYS_CONTEXT('USERENV','SESSION_USER');
+
+        execute immediate psql into h_registration_id
+                               using p_htable_name
+                                    ,SYS_CONTEXT('USERENV','SESSION_USER');
+
+        -- unset IS_ARCHIVING bit (bit 18 zero-based) 
+        -- for the parent archiving feature class
+        -- I assume this impacts the behavior of the parent delete
+        -- When we delete there will be no keep/destroy _H table
+
+        psql := 'update '
+             || '    sde.table_registry '
+             || 'set '
+             || '    object_flags = CASE '
+             || '                   WHEN mod(trunc(object_flags / power(2, 18)), 2) = :p1 '
+             || '                   THEN '
+             || '                       object_flags - power(2, 18) '
+             || '                   ELSE '
+             || '                       object_flags '
+             || '                   END '
+             || 'where '
+             || '    registration_id = :p2 ';
+
+        execute immediate psql using 1
+                                    ,f_registration_id;
+        commit;
+
+        psql := 'delete from '
+             || '    sde.sde_archives a '
+             || 'where '
+             || '    a.archiving_regid = :p1 '
+             || 'and a.history_regid = :p2 ';
+        execute immediate psql using f_registration_id
+                                    ,h_registration_id;
+                                    
+        commit;
+
+    END deregister_archiving;
+
 
 END NYC_ARCHIVE_UTILS;
 /

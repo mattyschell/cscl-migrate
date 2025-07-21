@@ -38,6 +38,8 @@ def deleteitem(ptargetgdb
             # verified that this pattern works for feature datasets too
 
             # disable archiving and delete the _H table
+            # this may create _H1 _H2s etc due to our 
+            # archive migration approach
             arcpy.management.DisableArchiving(item
                                              ,'DELETE') 
 
@@ -59,6 +61,11 @@ if __name__ == '__main__':
 
     ptargetgdb = sys.argv[1]
 
+    if len(sys.argv) > 2:
+        plist = sys.argv[2]
+    else:
+        plist = 'listoflists'
+
     secretkey = 'UNLOCK_TEARDOWN'
     
     timestr = time.strftime("%Y%m%d-%H%M%S")
@@ -74,7 +81,7 @@ if __name__ == '__main__':
         filemode='w'                         
     )
     
-    listbuckets = Resourcelistmanager('listoflists').names
+    listbuckets = Resourcelistmanager(plist).names
     
     for listbucket in listbuckets:
 
