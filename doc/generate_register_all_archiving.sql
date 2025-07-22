@@ -1,10 +1,10 @@
 -- This is helper sql to create src/sql/register_all_archiving.sql
 -- The universe of _H tables is different in dev/stg/prd
--- Also different is the archiving start date (this is expected)
+-- The archiving start date may also differ
 -- We will create [dev|stg|prd]_register_all_archiving scripts in June 2025
--- They will be ready to copy/paste into src/sql/register_all_archiving.sql
+-- They will be called from batch files like @src/sql/%ENV%_register_all_archiving.sql
 -- But who knows what will happen between now and whenever you are reading this
--- You reader will probably want to regenerate src/sql/register_all_archiving.sql
+-- You reader will probably want to regenerate src/sql/xxx_register_all_archiving.sql
 -- 
 -- run as CSCL
 -- output looks like 100+ 

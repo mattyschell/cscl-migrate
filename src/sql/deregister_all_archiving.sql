@@ -7,6 +7,8 @@ call sde.nyc_archive_utils.deregister_archiving('ACCESSPOINTTOADDRESSPOINT' ,'AC
 call sde.nyc_archive_utils.deregister_archiving('ACCESSPOINT' ,'ACCESSPOINT_H');
 call sde.nyc_archive_utils.deregister_archiving('ADDRESSPOINTLGCS' ,'ADDRESSPOINTLGCS_H');
 call sde.nyc_archive_utils.deregister_archiving('ADDRESSPOINT' ,'ADDRESSPOINT_H');
+-- ADJACENTBOROUGHBOUNDARY only archives in production
+call sde.nyc_archive_utils.deregister_archiving('ADJACENTBOROUGHBOUNDARY' ,'ADJACENTBOROUGHBOUNDARY_H');
 call sde.nyc_archive_utils.deregister_archiving('ADMINBOUNDARIES' ,'ADMINBOUNDARIES_H');
 call sde.nyc_archive_utils.deregister_archiving('ALARMBOXAREA' ,'ALARMBOXAREA_H');
 call sde.nyc_archive_utils.deregister_archiving('ALARMBOX' ,'ALARMBOX_H');

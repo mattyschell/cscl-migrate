@@ -4,7 +4,7 @@ set BASEPATH=C:\xxx
 set TARGETLOGDIR=%BASEPATH%\cscl-migrate\geodatabase-scripts\logs\
 set PROPY=C:\Progra~1\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe
 set BATLOG=%TARGETLOGDIR%%ENV%-cscl-load.log
-echo. >> %BATLOG% && echo finalizing load to %TARGETGDB% >> %BATLOG%
+echo starting %ENV% cscl-load on %date% at %time% > %BATLOG%
 %PROPY% %BASEPATH%\cscl-migrate\src\py\loadcscl.py %TARGETGDB%
 if %ERRORLEVEL% NEQ 0 (
    echo. >> %BATLOG%
@@ -19,3 +19,4 @@ if %ERRORLEVEL% NEQ 0 (
 ) 
 echo. >> %BATLOG% && echo verified output %TARGETGDB% >> %BATLOG% 
 echo. >> %BATLOG% && echo finalized CSCL in %TARGETGDB% >> %BATLOG%
+echo. >> %BATLOG% && echo starting %ENV% cscl-load on %date% at %time% >> %BATLOG%

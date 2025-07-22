@@ -6,6 +6,7 @@ set BASEPATH=C:\xxx
 set TARGETLOGDIR=%BASEPATH%\cscl-migrate\geodatabase-scripts\logs\
 set PROPY=c:\Progra~1\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe
 set BATLOG=%TARGETLOGDIR%%ENV%-reprojectgdb.log
+echo starting %ENV% reprojectgdb on %date% at %time% > %BATLOG%
 REM verify input catalog
 %PROPY% %BASEPATH%\cscl-migrate\src\py\verifycatalog.py listoflists %INGDB% && (
     echo. >> %BATLOG% && echo verified input %INGDB% >> %BATLOG%
@@ -15,11 +16,11 @@ REM verify input catalog
 ) 
 REM this is the reproject 
 %PROPY% %BASEPATH%\cscl-migrate\src\py\reprojectgeodatabase.py %INGDB% %OUTGDB% %WORKDIR%
-REM verify output catalog
+REM verify output catalog we expect topology to be missing 
 %PROPY% %BASEPATH%\cscl-migrate\src\py\verifycatalog.py listoflists %OUTGDB% && (
     echo. >> %BATLOG% && echo verified output %OUTGDB% >> %BATLOG%
 ) || (
     echo. >> %BATLOG% && echo failed verification of output %OUTGDB%  >> %BATLOG%
-    GOTO :EOF
 ) 
 echo. >> %BATLOG% && echo reprojected %INGDB% to %OUTGDB% >> %BATLOG%
+echo. >> %BATLOG% && echo completed %ENV% reprojectgdb on %date% at %time% >> %BATLOG%

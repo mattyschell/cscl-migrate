@@ -2,6 +2,17 @@ SET LINESIZE 200
 SET PAGESIZE 100
 DEFINE outfile = '&1'
 SPOOL &outfile
+call sde.nyc_archive_utils.register_archiving('ACCESSPOINTSTOENTRANCEPOINTS' ,'ACCESSPOINTSTOENTRANCEPOINTS_H' ,1399742968);
+call sde.nyc_archive_utils.register_archiving('ACCESSPOINTTOADDRESSPOINT' ,'ACCESSPOINTTOADDRESSPOINT4_H' ,1399742720);
+call sde.nyc_archive_utils.register_archiving('ACCESSPOINT' ,'ACCESSPOINT_H' ,1273245334);
+call sde.nyc_archive_utils.register_archiving('ADDRESSPOINTLGCS' ,'ADDRESSPOINTLGCS_H' ,1272900564);
+call sde.nyc_archive_utils.register_archiving('ADDRESSPOINT' ,'ADDRESSPOINT_H' ,1273245334);
+call sde.nyc_archive_utils.register_archiving('ADJACENTBOROUGHBOUNDARY' ,'ADJACENTBOROUGHBOUNDARY_H' ,1748009919);
+call sde.nyc_archive_utils.register_archiving('ADMINBOUNDARIES' ,'ADMINBOUNDARIES_H' ,1272900568);
+call sde.nyc_archive_utils.register_archiving('ALARMBOXAREA' ,'ALARMBOXAREA_H' ,1273245334);
+call sde.nyc_archive_utils.register_archiving('ALARMBOX' ,'ALARMBOX_H' ,1273245334);
+call sde.nyc_archive_utils.register_archiving('ALTSEGMENTDATA' ,'ALTSEGMENTDATA_H' ,1272900572);
+call sde.nyc_archive_utils.register_archiving('ASSEMBLYDISTRICT' ,'ASSEMBLYDISTRICT_H' ,1273245334);
 call sde.nyc_archive_utils.register_archiving('ATOMICPOLYGON' ,'ATOMICPOLYGON_H' ,1273244647);
 call sde.nyc_archive_utils.register_archiving('BLOCKFACE' ,'BLOCKFACE_H' ,1272903360);
 call sde.nyc_archive_utils.register_archiving('BOROUGH' ,'BOROUGH_H' ,1273245334);

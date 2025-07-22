@@ -28,7 +28,7 @@ Step 1 exports to a file geodatabase. The data flowing into that pipeline must c
 
 ### 1. Extract And Prepare CSCL
 
-Review and update the environmentals.
+Review and update the environmentals in the batch file.
 
 ```sh
 > geodatabase-scripts\sample-cscl-extract.bat
@@ -65,7 +65,7 @@ Sanity check success by viewing the file geodatabase from ArcGIS Pro.
 
 ### 3. Correct Resolution And Tolerance
 
-Review and update the environmentals.
+Review and update the environmentals in the batch file.
 
 ```bat
 > geodatabase-scripts\sample-reprojectgdb.bat
@@ -85,7 +85,7 @@ Then complete the load by applying topology rules, versioning, grants, etc.
 
 ### 5. Migrate Archive Classes
 
-This step concludes by updating objectids of the base tables. Do not get clever and think that it can be run in parallel to earlier steps.
+When migrating the archive we will update the base table objectids on the target database. These base tables do not exist until successfully completing step 4.  Do not get clever and think that archive migration can be run in parallel to earlier steps.
 
 See [doc/archive-migration.md](doc/archive-migration.md) for details.
 
@@ -113,12 +113,14 @@ To prevent catastrophe the teardown script will only proceed if a registered tab
 
 ### Time Estimates
 
+"Half a (work) day."
+
 | Step        | Duration in Hours        |
 |-------------|--------------------------|
-| 1. Extract And Prepare CSCL         | 1   |
-| 2. Remove Class Extensions          | 0   |
-| 3. Correct Resolution And Tolerance | .5   |
-| 4. Load To Enterprise Geodatabase   | 1.5   |
-| 5. Migrate Archive Classes          | 1   |
-| Teardown                            | .1   |
+| 1. Extract And Prepare CSCL         | 1 |
+| 2. Remove Class Extensions          | 0 |
+| 3. Correct Resolution And Tolerance | .5 |
+| 4. Load To Enterprise Geodatabase   | 1 |
+| 5. Migrate Archive Classes          | 1  |
+| Teardown                            | .1 |
 
