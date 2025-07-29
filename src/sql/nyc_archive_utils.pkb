@@ -116,6 +116,7 @@ AS
 
     BEGIN
 
+        -- this will fail when no data found
         nyc_archive_utils.fetch_h_table(p_featureclass
                                        ,h_registration_id
                                        ,h_table_name);
@@ -137,6 +138,19 @@ AS
                                     ,h_registration_id;
         commit;
 
+        --https://github.com/mattyschell/cscl-migrate/issues/28
+        
+        -- should delete nothing on source
+        psql := 'delete from '
+             || '   sde.gdb_items '
+             || 'where '
+             || '    name = :p1 '
+             || 'and physicalname = :p2 ';
+
+        execute immediate psql using SYS_CONTEXT('USERENV','SESSION_USER') || '.' || h_table_name
+                                    ,SYS_CONTEXT('USERENV','SESSION_USER') || '.' || h_table_name;
+
+        commit;
 
     END conceal_history;
 

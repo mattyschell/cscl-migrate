@@ -113,7 +113,7 @@ To prevent catastrophe the teardown script will only proceed if a registered tab
 
 ### Time Estimates
 
-"Half a (work) day."
+"A (work) day."
 
 | Step        | Duration in Hours        |
 |-------------|--------------------------|
@@ -121,6 +121,6 @@ To prevent catastrophe the teardown script will only proceed if a registered tab
 | 2. Remove Class Extensions          | 0 |
 | 3. Correct Resolution And Tolerance | .5 |
 | 4. Load To Enterprise Geodatabase   | 1 |
-| 5. Migrate Archive Classes          | 1  |
+| 5. Migrate Archive Classes          | 2  |
 | Teardown                            | .1 |
 
