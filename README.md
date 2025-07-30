@@ -40,28 +40,21 @@ Step 1 creates an empty file geodatabase. Then it use python 2 arcpy with class 
 
 ### 2. Remove Class Extensions 
 
-With ArcCatalog 10.7 or superior. 
+From classic ArcCatalog 10.7 or superior. Administrator rights not required.
 
-1. Double click src/addin/ResetCLSIDs.esriaddin. In the utility window select "Install Add-In."  No admin rights required.
-2. From ArcCatalog select Customize-Customize Mode - Toolbars. Create a new toolbar named your choice and check the box next it.
-3. From ArcCatalog Customize-Customize Mode select the commands tab.  Search  for "Reset CLSIDs." Drag it to the toolbar.
+1. Double click src/addin/ResetCLSIDs.esriaddin. In the utility window select "Install Add-In."  
+2. From ArcCatalog select Customize-Customize Mode - Toolbars. 
+3. Create a new toolbar named "removecalss" and check the box next it.
+4. From ArcCatalog Customize-Customize Mode select the commands tab.  Search  for "Reset CLSIDs." Drag it to the toolbar.
 🔴DANGER ZONE. CODE RED🔴
-4. In ArcCatalog select the file geodatabase and run the ResetCLSIDs AddIn.
-5. It should be quick and return "Completed without errors"
-6. Review the log. It should look (confusingly!) like the snippet below
-7. Remove the toolbar. 🟡CODE YELLOW🟡
-
-```
-<snip>
-Inspecting item 'AddressPoint', OID: 73
-	Expected CLSID equals Actual CLSID, no change needed.
-	Expected EXTCLSID: 
-	Actual EXTCLSID: {D9D37706-8C4F-4C38-8849-3C407FC0AC84}
-Inspecting item 'ALTSEGMENTDATA', OID: 74
-<snip>
-```
-
-Sanity check success by viewing the file geodatabase from ArcGIS Pro.
+5. In ArcCatalog select the file geodatabase. 
+6. Click the ResetCLSIDs toolbar button.
+7. _Pause_ _for_ _a_ _moment_. Verify that the "GDB to modify" is a file geodatabase.
+8. Fill in the output log location and click OK.
+9. It should be quick and return: "Completed without errors."
+10. Review the log. 
+11. Remove the toolbar. 🟡CODE YELLOW🟡
+12. Sanity check success by viewing the file geodatabase from ArcGIS Pro.
 
 ### 3. Correct Resolution And Tolerance
 
