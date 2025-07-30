@@ -6,104 +6,8 @@ import time
 
 import arcpy
 import csclelementmgr
+import dataownermanager
 
-# this should be refactored into a class
-
-
-def filterschema(gdbobjects
-                ,schema):
-
-    #input
-    #   CSCL.ADDRESSPOINT
-    #   JDOE.FOO
-    #   CSCL_PUB.ADDRESSPOINT
-    #output
-    #   CSCL.ADDRESSPOINT
-
-    cleangdbobjects = []
-
-    # must go case insensitive workspace user schema is lowercase
-
-    for gdbobject in gdbobjects:
-        if gdbobject.lower().startswith('{0}.'.format(schema.lower())):
-            cleangdbobjects.append(gdbobject.partition('.')[2])
-        elif not "." in gdbobject:
-            # NA for file gdb
-            cleangdbobjects.append(gdbobject)
-    
-    return cleangdbobjects
-
-def get_domains(workspace):
-
-    # domains are not individual data elements
-    # they are geodatabase metadata
-
-    domains = arcpy.da.ListDomains(workspace)
-
-    # workspace should filter schema
-    domainnames = [domain.name for domain in domains]
-
-    return domainnames
-
-def get_relationshipclasses(workspace):
-
-    relclasses = []
-    walk = arcpy.da.Walk(workspace
-                        ,datatype="RelationshipClass")
-
-    for dirpath, dirnames, filenames in walk:
-        for relationshipclass in filenames:
-            relclasses.append(relationshipclass)
-
-    return filterschema(relclasses
-                       ,arcpy.Describe(workspace).connectionProperties.user)
-
-def get_topologies(workspace):
-
-    # consider combining all of these to limit arcpy.da.Walk calls
-    topologies = []
-    walk = arcpy.da.Walk(workspace
-                        ,datatype="Topology")
-
-    for dirpath, dirnames, filenames in walk:
-        for topology in filenames:
-            topologies.append(topology)
-
-    return filterschema(topologies
-                       ,arcpy.Describe(workspace).connectionProperties.user)
-
-def get_tables(workspace):
-
-    return filterschema(arcpy.ListTables()
-                       ,arcpy.Describe(workspace).connectionProperties.user)
-
-def get_feature_datasets(workspace):
-    
-   return filterschema(arcpy.ListDatasets()
-                      ,arcpy.Describe(workspace).connectionProperties.user)
-
-def get_feature_classes(workspace):
-
-    feature_classes = arcpy.ListFeatureClasses()
-
-    for dataset in arcpy.ListDatasets():
-        dataset_fcs = arcpy.ListFeatureClasses(feature_dataset = dataset)
-
-        #add feature classes to ongoing list
-        for fc in dataset_fcs:
-            feature_classes.append(fc)
-
-    return filterschema(feature_classes
-                       ,arcpy.Describe(workspace).connectionProperties.user)
-
-def getallobjects(workspace):
-
-    return get_tables(workspace) \
-         + get_feature_datasets(workspace) \
-         + get_feature_classes(workspace) \
-         + get_relationshipclasses(workspace) \
-         + get_topologies(workspace) \
-         + get_domains(workspace)
 
 if __name__ == "__main__":
 
@@ -126,7 +30,7 @@ if __name__ == "__main__":
                        ,timestr))
 
     logging.basicConfig (
-        level=logging.DEBUG,  
+        level=logging.INFO,  
         format='%(asctime)s - %(levelname)s - %(message)s',  
         handlers=[
             logging.FileHandler(targetlog),  # log messages 
@@ -143,9 +47,9 @@ if __name__ == "__main__":
         logger.error("Cant validate this: {0} Check paths and sde file names".format(gdb2verify))
         exit(1)
 
-
+    gdb = dataownermanager.DataOwner(arcpy.env.workspace)
     # what can this user see
-    existingobjects = getallobjects(arcpy.env.workspace)
+    existingobjects = gdb.getallobjects()
 
     # this is typically "listoflists" 
     # allfeatureclass
