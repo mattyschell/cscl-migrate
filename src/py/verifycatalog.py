@@ -7,9 +7,11 @@ import time
 import arcpy
 import csclelementmgr
 
+# this should be refactored into a class
+
 
 def filterschema(gdbobjects
-                ,schema='CSCL'):
+                ,schema):
 
     #input
     #   CSCL.ADDRESSPOINT
@@ -20,8 +22,10 @@ def filterschema(gdbobjects
 
     cleangdbobjects = []
 
+    # must go case insensitive workspace user schema is lowercase
+
     for gdbobject in gdbobjects:
-        if gdbobject.startswith('{0}.'.format(schema)):
+        if gdbobject.lower().startswith('{0}.'.format(schema.lower())):
             cleangdbobjects.append(gdbobject.partition('.')[2])
         elif not "." in gdbobject:
             # NA for file gdb
@@ -51,7 +55,8 @@ def get_relationshipclasses(workspace):
         for relationshipclass in filenames:
             relclasses.append(relationshipclass)
 
-    return filterschema(relclasses)
+    return filterschema(relclasses
+                       ,arcpy.Describe(workspace).connectionProperties.user)
 
 def get_topologies(workspace):
 
@@ -64,17 +69,20 @@ def get_topologies(workspace):
         for topology in filenames:
             topologies.append(topology)
 
-    return filterschema(topologies)
+    return filterschema(topologies
+                       ,arcpy.Describe(workspace).connectionProperties.user)
 
-def get_tables():
+def get_tables(workspace):
 
-    return filterschema(arcpy.ListTables())
+    return filterschema(arcpy.ListTables()
+                       ,arcpy.Describe(workspace).connectionProperties.user)
 
-def get_feature_datasets():
+def get_feature_datasets(workspace):
     
-   return filterschema(arcpy.ListDatasets())
+   return filterschema(arcpy.ListDatasets()
+                      ,arcpy.Describe(workspace).connectionProperties.user)
 
-def get_feature_classes():
+def get_feature_classes(workspace):
 
     feature_classes = arcpy.ListFeatureClasses()
 
@@ -85,13 +93,14 @@ def get_feature_classes():
         for fc in dataset_fcs:
             feature_classes.append(fc)
 
-    return filterschema(feature_classes)
+    return filterschema(feature_classes
+                       ,arcpy.Describe(workspace).connectionProperties.user)
 
 def getallobjects(workspace):
 
-    return get_tables() \
-         + get_feature_datasets() \
-         + get_feature_classes() \
+    return get_tables(workspace) \
+         + get_feature_datasets(workspace) \
+         + get_feature_classes(workspace) \
          + get_relationshipclasses(workspace) \
          + get_topologies(workspace) \
          + get_domains(workspace)
@@ -138,6 +147,9 @@ if __name__ == "__main__":
     # what can this user see
     existingobjects = getallobjects(arcpy.env.workspace)
 
+    # this is typically "listoflists" 
+    # allfeatureclass
+    # allfeaturetable etc
     listnames = csclelementmgr.Resourcelistmanager(listname).names
 
     expectedobjects = []
