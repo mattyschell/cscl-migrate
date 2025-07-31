@@ -56,7 +56,8 @@ class CSCLElement(object):
                    ,'featuretable'
                    ,'relationshipclass'
                    ,'topology'
-                   ,'archiveclass']
+                   ,'archiveclass'
+                   ,'domain']
         
         for itemtype in typelist:
             if self.name in Resourcelistmanager('all' + itemtype).names:
@@ -118,7 +119,7 @@ class CSCLElement(object):
 
         elementfullpath = os.path.join(ptargetgdb, self.itempath)
 
-        if  self.getgdbtype() not in ('relationshipclass','topology'):
+        if  self.getgdbtype() not in ('relationshipclass','topology','domain'):
           
             if esripriv == 'VIEW':
     
@@ -127,11 +128,11 @@ class CSCLElement(object):
                                                      ,esriuser
                                                      ,'GRANT'
                                                      ,'AS_IS') 
-                    return 1
+                    return 0
                 
                 except:
                     
-                    return 0
+                    return 1
     
             elif esripriv == 'EDIT':
     
@@ -141,15 +142,15 @@ class CSCLElement(object):
                                                      ,esriuser
                                                      ,'GRANT'
                                                      ,'GRANT') 
-                    return 1
+                    return 0
                 
                 except:
                     
-                    return 0
+                    return 1
                 
         else:
 
-            return None
+            return 0
 
        
 

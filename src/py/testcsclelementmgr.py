@@ -24,6 +24,8 @@ class CsclelementmgrTestCase(unittest.TestCase):
 
         self.archiveclass = csclelementmgr.CSCLElement('ADDRESSPOINT_H')
 
+        self.domain = csclelementmgr.CSCLElement('dYesNo')
+
     def test_afeatureclass(self):
         
         self.assertEqual(self.centerlinefeatureclass.name,'Centerline')
@@ -81,11 +83,12 @@ class CsclelementmgrTestCase(unittest.TestCase):
     def testggrants(self):
 
         # fail
-        self.assertEqual(self.centerlinefeatureclass.grant('nope.sde','VIEW','MALTAGOYA'),0)
+        self.assertEqual(self.centerlinefeatureclass.grant('nope.sde','VIEW','MALTAGOYA'),1)
 
-        # exit none
-        self.assertIsNone(self.cscltopology.grant('nope.sde','VIEW','MALTAGOYA'))
-        self.assertIsNone(self.charelationshipclass.grant('nope.sde','VIEW','MALTAGOYA'))
+        # exit 0 success grants dont exist for these
+        self.assertEqual(self.cscltopology.grant('nope.sde','VIEW','MALTAGOYA'),0)
+        self.assertEqual(self.charelationshipclass.grant('nope.sde','VIEW','MALTAGOYA'),0)
+        self.assertEqual(self.domain.grant('nope.sde','VIEW','MALTAGOYA'),0)
         
     def testharchivclass(self):
 
@@ -98,6 +101,14 @@ class CsclelementmgrTestCase(unittest.TestCase):
         self.assertEqual(self.archiveclass.tolerance, .00328083333333333)
 
         self.assertEqual(self.archiveclass.resolution, .000328083333333333)
+
+    def testidomain(self):
+
+        self.assertEqual(self.domain.name,'dYesNo')
+
+        self.assertIsNone(self.domain.featuredataset)
+
+        self.assertEqual(self.domain.gdbtype, 'domain')
 
 
 if __name__ == '__main__':

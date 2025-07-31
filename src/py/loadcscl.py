@@ -207,7 +207,7 @@ if __name__ == '__main__':
                                            ,'VIEW'
                                            ,readonlyuser)
                 
-                if granted == 0:
+                if granted == 1:
 
                     logging.info("failed to grant view on {0} to {1}".format(gdbitem
                                                                             ,readonlyuser))
@@ -218,7 +218,7 @@ if __name__ == '__main__':
                                            ,'EDIT'
                                            ,editor)
                 
-                if granted == 0:
+                if granted == 1:
 
                     logging.info("failed to grant edit on {0} to {1}".format(gdbitem
                                                                             ,editor))
