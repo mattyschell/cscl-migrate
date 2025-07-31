@@ -11,25 +11,23 @@ class DataOwner(object):
         
         desc = arcpy.Describe(arcpy.env.workspace)
         
+        self.user = None
+
+        # user only exists for enterprise geodatabases
+
         if hasattr(desc, "connectionProperties"):
+            conn = desc.connectionProperties
+            if hasattr(conn, "user"):
+                self.user = conn.user
 
-            # enterprise geodatabase
-            # this will be lower case
-        
-            self.user = desc.connectionProperties.user
-
-        else: 
-
-            self.user = None
-
+                
     def filterschema(self
                     ,gdbobjects):
         
         if self.user is None:
-            # file geodatabase
             return gdbobjects
 
-        # input
+        # input. user is CSCL
         #   CSCL.ADDRESSPOINT
         #   JDOE.FOO
         #   CSCL_PUB.ADDRESSPOINT
@@ -38,16 +36,13 @@ class DataOwner(object):
 
         cleangdbobjects = []
 
-        # must go case insensitive workspace user schema is lowercase
+        # must go case insensitive
+        # user is lowercase for some reason
 
         for gdbobject in gdbobjects:
             
             if gdbobject.lower().startswith('{0}.'.format(self.user.lower())):
                 cleangdbobjects.append(gdbobject.partition('.')[2])
-            
-            #elif not "." in gdbobject:
-            #    # this should not happen 
-            #    cleangdbobjects.append(gdbobject)
         
         return cleangdbobjects
 
@@ -64,6 +59,9 @@ class DataOwner(object):
 
     def get_relationshipclasses(self):
 
+        # yes this gets relationship classes from inside 
+        # deceitful feature datasets
+
         relclasses = []
         walk = arcpy.da.Walk(self.workspace
                             ,datatype="RelationshipClass")
@@ -75,6 +73,8 @@ class DataOwner(object):
         return self.filterschema(relclasses)
 
     def get_topologies(self):
+
+        # confirmed gets inside deceitful feature datasets 
 
         topologies = []
         walk = arcpy.da.Walk(self.workspace
@@ -88,6 +88,7 @@ class DataOwner(object):
 
     def get_tables(self):
 
+        # no tables allowed inside deceitful feature datasets
         return self.filterschema(arcpy.ListTables())
 
     def get_feature_datasets(self):
@@ -100,8 +101,7 @@ class DataOwner(object):
 
         for dataset in arcpy.ListDatasets():
             dataset_fcs = arcpy.ListFeatureClasses(feature_dataset = dataset)
-
-            #add feature classes to ongoing list
+            
             for fc in dataset_fcs:
                 feature_classes.append(fc)
 

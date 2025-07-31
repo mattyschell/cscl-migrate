@@ -48,12 +48,10 @@ if __name__ == "__main__":
         exit(1)
 
     gdb = dataownermanager.DataOwner(arcpy.env.workspace)
+
     # what can this user see
     existingobjects = gdb.getallobjects()
 
-    # this is typically "listoflists" 
-    # allfeatureclass
-    # allfeaturetable etc
     listnames = csclelementmgr.Resourcelistmanager(listname).names
 
     expectedobjects = []
@@ -64,7 +62,7 @@ if __name__ == "__main__":
 
         # must loop again due to deceitful feature datasets
         # we may get duplicates added to our lists when there are overlaps
-        # this is OK, we set(expectedobjects) below
+        # this is OK. we dedupe with set(expectedobjects) below 
 
         for objectname in objectnames:
 
