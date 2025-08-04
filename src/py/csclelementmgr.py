@@ -119,10 +119,11 @@ class CSCLElement(object):
 
         elementfullpath = os.path.join(ptargetgdb, self.itempath)
 
-        if  self.getgdbtype() not in ('relationshipclass','topology','domain'):
+        if  self.gdbtype not in ('relationshipclass','topology','domain') \
+        and self.featuredataset is None:
           
             if esripriv == 'VIEW':
-    
+
                 try:
                     arcpy.management.ChangePrivileges(elementfullpath
                                                      ,esriuser
@@ -131,7 +132,7 @@ class CSCLElement(object):
                     return 0
                 
                 except:
-                    
+
                     return 1
     
             elif esripriv == 'EDIT':

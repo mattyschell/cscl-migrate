@@ -36,6 +36,9 @@ class CsclelementmgrTestCase(unittest.TestCase):
 
         self.assertEqual(self.centerlinefeatureclass.tolerance, .00328083333333333)
 
+        # exit 0 success grants are NA for members of a deceitful feature dataset
+        self.assertEqual(self.charelationshipclass.grant('nope.sde','VIEW','MALTAGOYA'),0)
+
     def testbtable(self):
         
         self.assertEqual(self.streetnametable.name,'STREETNAME')
@@ -56,6 +59,9 @@ class CsclelementmgrTestCase(unittest.TestCase):
 
         self.assertEqual(self.csclfeaturedataset.tolerance, .00328083333333333)
 
+        # should attempt and fail to grant due to rinky-dinkitude of test setup
+        self.assertEqual(self.csclfeaturedataset.grant('nope.sde','VIEW','MALTAGOYA'),1)
+
     def testdrelationshipclass(self):
 
         self.assertEqual(self.charelationshipclass.name,'CenterlinesHaveAddresses')
@@ -65,6 +71,9 @@ class CsclelementmgrTestCase(unittest.TestCase):
         self.assertEqual(self.charelationshipclass.gdbtype, 'relationshipclass')
 
         self.assertIsNone(self.charelationshipclass.tolerance)
+
+        # exit 0 success grants are NA
+        self.assertEqual(self.charelationshipclass.grant('nope.sde','VIEW','MALTAGOYA'),0)
 
     def testetopology(self):
 
@@ -76,6 +85,9 @@ class CsclelementmgrTestCase(unittest.TestCase):
 
         self.assertIsNone(self.cscltopology.tolerance)
 
+        # exit 0 success grants are NA
+        self.assertEqual(self.cscltopology.grant('nope.sde','VIEW','MALTAGOYA'),0)
+
     def testfexists(self):
 
         self.assertFalse(self.centerlinefeatureclass.exists('C:\\dev\\null'))
@@ -83,9 +95,10 @@ class CsclelementmgrTestCase(unittest.TestCase):
     def testggrants(self):
 
         # fail
-        self.assertEqual(self.centerlinefeatureclass.grant('nope.sde','VIEW','MALTAGOYA'),1)
+        self.assertEqual(self.streetnametable.grant('nope.sde','VIEW','MALTAGOYA'),1)
 
-        # exit 0 success grants dont exist for these
+        # exit 0 success grants are not applicable for these
+        self.assertEqual(self.centerlinefeatureclass.grant('nope.sde','VIEW','MALTAGOYA'),0)
         self.assertEqual(self.cscltopology.grant('nope.sde','VIEW','MALTAGOYA'),0)
         self.assertEqual(self.charelationshipclass.grant('nope.sde','VIEW','MALTAGOYA'),0)
         self.assertEqual(self.domain.grant('nope.sde','VIEW','MALTAGOYA'),0)
