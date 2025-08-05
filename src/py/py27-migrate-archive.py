@@ -20,7 +20,7 @@ def copypaste(psrcgdb
     # so we will not check for pre-existence here
     # pre-existence would imply stickiness or an error
 
-    retval = 0
+    retval = 1
 
     srcitem = os.path.join(psrcgdb
                           ,pitempath)
@@ -33,7 +33,7 @@ def copypaste(psrcgdb
         arcpy.management.Copy(srcitem
                              ,targetitem)
 
-        retval = 1
+        retval = 0
 
     except arcpy.ExecuteError:
         logging.error("failure copying {0} to {1}".format(srcitem,targetitem))
@@ -70,6 +70,8 @@ if __name__ == '__main__':
 
     logging.info("migrating objects in list {0}".format(plistname))
 
+    anyfail = 0
+
     for archiveclassname in archiveclassnames:
 
         archiveobject = csclelementmgr.CSCLElement(archiveclassname)
@@ -84,9 +86,10 @@ if __name__ == '__main__':
                                 ,archiveobject.itempath
                                 ,ptargetgdb)
             
-            if migrated == 0:
+            if migrated == 1:
 
-                logging.info("failed to migrate {0}".format(archiveobject.name))
+                logging.error("failed to migrate {0}".format(archiveobject.name))
+                anyfail += 1
             
             else:
 
@@ -96,15 +99,18 @@ if __name__ == '__main__':
 
             if archiveobject.exists(psrcgdb):
 
-                logging.error("skipped {0} because it exists on the target".format(archiveobject.name))
+                logging.info("skipped {0} because it exists on the target".format(archiveobject.name))
 
             elif not archiveobject.exists(psrcgdb):
 
                 logging.error("skipped {0} because it doesnt exist on the source".format(archiveobject.name))
 
-                
+    if anyfail > 0:
 
-    logging.info("done migrating all archive classes in {0}".format(plistname))
+        logging.error("failed to migrate {0} archive datasets".format(anyfail))
 
-    sys.exit(0)
+
+    logging.info("completed migrating archive classes from list {0}".format(plistname))
+
+    sys.exit(anyfail)
 

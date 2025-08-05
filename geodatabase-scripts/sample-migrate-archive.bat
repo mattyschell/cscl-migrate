@@ -19,6 +19,12 @@ sqlplus %SRCSCHEMA%/"%SRCPASSWORD%"@%SRCDB% @src/sql/reveal_all_history.sql
 echo. >> %BATLOG% && echo finished reveal_all_history in %SRCSCHEMA% on %SRCDB% on %date% at %time% >> %BATLOG%
 echo. >> %BATLOG% && echo starting py27 migrate archive from %SRCGDB% to %TARGETGDB% on %date% at %time% >> %BATLOG%
 %OLDPY% %BASEPATH%\cscl-migrate\src\py\py27-migrate-archive.py %SRCGDB% %TARGETGDB% allarchiveclass
+if %ERRORLEVEL% NEQ 0 (
+    echo. >> %BATLOG% && echo second attempt: py27 migrate archive from %SRCGDB% to %TARGETGDB% on %date% at %time% >> %BATLOG%
+    REM https://github.com/mattyschell/cscl-migrate/issues/27
+    %OLDPY% %BASEPATH%\cscl-migrate\src\py\py27-migrate-archive.py %SRCGDB% %TARGETGDB% allarchiveclass
+    REM continue even if issues
+) 
 echo. >> %BATLOG% && echo finished py27 migrate archive from %SRCGDB% to %TARGETGDB% on %date% at %time% >> %BATLOG%
 sqlplus %TARGETSCHEMA%/"%TARGETPASSWORD%"@%TARGETDB% @src/sql/update_all_base_ids.sql %BASESQLLOG%update_all_base_ids.log %BASESQLLOG%-update_all_base_ids.log
 sqlplus %TARGETSCHEMA%/"%TARGETPASSWORD%"@%TARGETDB% @src/sql/%ENV%_register_all_archiving.sql %BASESQLLOG%register_all_archiving.log

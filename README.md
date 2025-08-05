@@ -96,6 +96,8 @@ Then migrate. This will transfer all archive data and update object ids on the t
 > geodatabase-scripts\sample-migrate-archive.bat
 ```
 
+Review the logs. One or two _H tables consistently fail to transfer and may require attention.
+
 ### Teardown 
 
 To prevent catastrophe the teardown script will only proceed if a registered table named UNLOCK_TEARDOWN exists in the schema. Manually create this empty table to unlock teardown. 
