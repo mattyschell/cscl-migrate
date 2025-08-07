@@ -13,7 +13,7 @@ from filegeodatabasemanager import localgdb
 # arcpy.topographic
 # requires an Esri ArcGIS Production Mapping license
 
-# This code was originally developed by Chris S. @ ESRI
+# This code was originally developed by Chris S. and colleagues @ ESRI
 # He copied and donatepasted the orinal "reproject" submodule
 # I think ESRI developed that sub to ingest CSCL into their locators?
 # We have modified and wrapped up reproject here
@@ -26,6 +26,7 @@ def reproject (
    ,gdbout
    ,logger
    ,workdir
+   ,srid
    ,input_spec_xlsx: str | None = None
    ,create_xlsx: bool = True
 ) -> None:
@@ -39,6 +40,10 @@ def reproject (
         object_map_fgdb (str | None, optional): Path to intermediate file geodatabase (written by this function)
         create_xlsx (bool, optional): Whether to create the intermediate Excel file from scratch. Defaults to True.
     """
+
+    logger.info('calling reproject on {0} to {1} with srid {2}'.format(gdbin.name
+                                                                      ,gdbout.name
+                                                                      ,srid))
 
     if not input_spec_xlsx:
         input_spec_xlsx = os.path.join(workdir
@@ -74,16 +79,40 @@ def reproject (
             for cell in row:
                 cell.value = None
         ws_sr["A2"] = 1
-        ws_sr["B2"] = "NAD_1983_StatePlane_New_York_Long_Island_FIPS_3104_Feet"
-        ws_sr["C2"] = 2263
-        ws_sr["D2"] = (  # ? Missing last line of constants.NY_STATE_PLANE?
-            'PROJCS["NAD_1983_StatePlane_New_York_Long_Island_FIPS_3104_Feet",GEOGCS["GCS_North_American_1983",'
-            'DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],'
-            'UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic"],'
-            'PARAMETER["False_Easting",984250.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-74.0],'
-            'PARAMETER["Standard_Parallel_1",40.66666666666666],PARAMETER["Standard_Parallel_2",41.03333333333333],'
-            'PARAMETER["Latitude_Of_Origin",40.16666666666666],UNIT["Foot_US",0.3048006096012192]]'
-        )
+
+        if int(srid) == 2263:
+            
+            ws_sr["B2"] = "NAD_1983_StatePlane_New_York_Long_Island_FIPS_3104_Feet"
+            ws_sr["C2"] = 2263
+            ws_sr["D2"] = (  # ? Missing last line of constants.NY_STATE_PLANE?
+                'PROJCS["NAD_1983_StatePlane_New_York_Long_Island_FIPS_3104_Feet",GEOGCS["GCS_North_American_1983",'
+                'DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],'
+                'UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic"],'
+                'PARAMETER["False_Easting",984250.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-74.0],'
+                'PARAMETER["Standard_Parallel_1",40.66666666666666],PARAMETER["Standard_Parallel_2",41.03333333333333],'
+                'PARAMETER["Latitude_Of_Origin",40.16666666666666],UNIT["Foot_US",0.3048006096012192]]'
+            )
+
+        elif int(srid) == 6539:
+
+            # mschell added this do not blame ESRI if it doesnt work
+
+            ws_sr["B2"] = "NAD_1983_2011_StatePlane_New_York_Long_Isl_FIPS_3104_Ft_US"
+            ws_sr["C2"] = 6539
+            ws_sr["D2"] = ( 
+                'PROJCS["NAD_1983_2011_StatePlane_New_York_Long_Isl_FIPS_3104_Ft_US",GEOGCS["GCS_NAD_1983_2011",'
+                'DATUM["D_NAD_1983_2011",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],'
+                'UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic"],'
+                'PARAMETER["False_Easting",984250.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-74.0],'
+                'PARAMETER["Standard_Parallel_1",40.66666666666666],PARAMETER["Standard_Parallel_2",41.03333333333333],'
+                'PARAMETER["Latitude_Of_Origin",40.16666666666666],UNIT["Foot_US",0.3048006096012192],AUTHORITY["EPSG",6539]]'
+            ) 
+
+        else:
+
+            logger.error(f"I dont know what to do with srid {srid}")
+            return 1        
+
         ws_sr["F2"] = -1
         # the inverse of the XY resolution
         # 1 / 0.000328083333333333 = 3048.006096012195121164435877261997627062
@@ -387,14 +416,18 @@ def reproject (
         logger.warning(f"@@@ {num_mismatch} Table record counts don't match")
 
     logger.info("CSCL REPROJECTION COMPLETE")
-    return
+    return 0
 
 if __name__ == '__main__':
-
 
     pingdb   = sys.argv[1]
     poutgdb  = sys.argv[2]
     pworkdir = sys.argv[3]
+
+    if len(sys.argv) == 5:
+        poutsrid = sys.argv[4]
+    else:
+        poutsrid = 2263
 
     # aka "Topographic Production Tools"
     # aka "ArcGIS Production Mapping"
@@ -412,7 +445,7 @@ if __name__ == '__main__':
                                                                   ,timestr))
 
     logging.basicConfig (
-        level=logging.DEBUG,  
+        level=logging.INFO,  
         format='%(asctime)s - %(levelname)s - %(message)s',  
         handlers=[
             logging.FileHandler(targetlog),  # log messages 
@@ -429,14 +462,15 @@ if __name__ == '__main__':
         logger.error("Extension {0} is not available".format(requiredextension))
         sys.exit(1)
 
-    reproject(localgdbin
-             ,localgdbout
-             ,logger
-             ,pworkdir)
+    retval = reproject(localgdbin
+                      ,localgdbout
+                      ,logger
+                      ,pworkdir
+                      ,poutsrid)
     
     arcpy.CheckInExtension(requiredextension)
 
-    logger.info("Completed reprojecting {0} to {1}".format(localgdbin.gdb
-                                                          ,localgdbout.gdb))
+    logger.info("Completed call to reproject {0} to {1}".format(localgdbin.gdb
+                                                               ,localgdbout.gdb))
     
-    sys.exit(0)
+    sys.exit(retval)
