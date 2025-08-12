@@ -45,7 +45,7 @@ if __name__ == "__main__":
         desc = arcpy.Describe(arcpy.env.workspace)
     except:
         logger.error("Cant validate this: {0} Check paths and sde file names".format(gdb2verify))
-        exit(1)
+        sys.exit(1)
 
     gdb = dataownermanager.DataOwner(arcpy.env.workspace)
 
@@ -87,11 +87,11 @@ if __name__ == "__main__":
         logger.info('Verified {0} geodatabase objects'.format(len(expectedobjects)))
         logger.info('PASS: completed qa of {0} at at {1}'.format(gdb2verify
                                                                 ,datetime.datetime.now()))
-        exit(0)
+        sys.exit(0)
     else:
         for missing in expectednotexisting:
             logger.warning('{0} is missing!'.format(missing))
-        exit(1)
+        sys.exit(1)
 
 
 

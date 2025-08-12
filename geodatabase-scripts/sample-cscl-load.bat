@@ -1,24 +1,31 @@
 set ENV=xx
 set TARGETDB=xxxxxxxx
-set TARGETGDB=C:\xxx\Connections\oracle19c\%ENV%\GIS-%TARGETDB%\xxxx.sde
 set BASEPATH=C:\xxx
+set TARGETGDB=%BASEPATH%\Connections\oracle19c\%ENV%\GIS-%TARGETDB%\xxxx.sde
+set SRCGDB=%BASEPATH%\Connections\oracle19c\%ENV%\xxxx\xxx.sde
 set TARGETLOGDIR=%BASEPATH%\cscl-migrate\geodatabase-scripts\logs\
-REM set PROPY = C:\Users\%USERNAME%\AppData\Local\Programs\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe
-set PROPY=C:\Progra~1\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe
+set PROPY=C:\Users\%USERNAME%\AppData\Local\Programs\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe
 set BATLOG=%TARGETLOGDIR%%ENV%-cscl-load.log
 echo starting %ENV% cscl-load on %date% at %time% > %BATLOG%
-%PROPY% %BASEPATH%\cscl-migrate\src\py\loadcscl.py %TARGETGDB%
-if %ERRORLEVEL% NEQ 0 (
-   echo. >> %BATLOG%
-   echo failed load of %INGDB% to %TARGETGDB% >> %BATLOG%
-   GOTO :EOF
-)
-%PROPY% %BASEPATH%\cscl-migrate\src\py\verifycatalog.py listoflists %TARGETGDB% 
+REM CALL is the way to get sys.exit error codes. final answer. for today.
+CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\finalizeloadcscl.py %TARGETGDB%
 if %ERRORLEVEL% NEQ 0 (
     echo. >> %BATLOG%
-    echo failed verification of output %TARGETGDB% >> %BATLOG%
-    GOTO :EOF
+    echo failed finalizeload of %INGDB% to %TARGETGDB% >> %BATLOG%
+    EXIT /B 0
+)
+echo. >> %BATLOG% && echo finalized load to %TARGETGDB% >> %BATLOG%
+CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\verifycatalog.py listoflists %TARGETGDB% 
+if %ERRORLEVEL% NEQ 0 (
+    echo. >> %BATLOG%
+    echo failed catalog verification of output %TARGETGDB% >> %BATLOG%
+    EXIT /B 0
 ) 
-echo. >> %BATLOG% && echo verified output %TARGETGDB% >> %BATLOG% 
-echo. >> %BATLOG% && echo finalized CSCL in %TARGETGDB% >> %BATLOG%
+CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\verifycounts.py listoftablelists %TARGETGDB% %SRCGDB%
+if %ERRORLEVEL% NEQ 0 (
+    echo. >> %BATLOG% && echo failed row count verification of output %TARGETGDB% >> %BATLOG% 
+    EXIT /B 0
+) 
+echo. >> %BATLOG% && echo verified catalog and counts of %TARGETGDB% >> %BATLOG% 
 echo. >> %BATLOG% && echo finished %ENV% cscl-load on %date% at %time% >> %BATLOG%
+EXIT /B 0

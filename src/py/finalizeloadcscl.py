@@ -146,9 +146,9 @@ if __name__ == '__main__':
 
     timestr = time.strftime("%Y%m%d-%H%M%S")
 
-    # ..\logs\loadcscl-20250403-160745.log
+    # ..\logs\finalizeloadcscl-20250403-160745.log
     targetlog = os.path.join(os.environ['TARGETLOGDIR']
-                            ,'loadcscl-{0}.log'.format(timestr))
+                            ,'finalizeloadcscl-{0}.log'.format(timestr))
 
     logging.basicConfig(
         level=logging.DEBUG,

@@ -27,6 +27,7 @@ class CSCLElement(object):
 
         # featureclass, featuredataset, etc
         self.gdbtype = self.getgdbtype()
+        self.istable = self.gettupletypes()
 
         # if this element is a child of a deceitful featuredataset
         # this is the deceitful parents name (spoiler: its CSCL)
@@ -84,7 +85,26 @@ class CSCLElement(object):
         if arcpy.Exists(os.path.join(gdb, self.itempath)):
             return True
         else:
-            return False    
+            return False   
+
+    def count(self
+             ,gdb):
+
+        if self.istable:
+            try:
+                kount = int(arcpy.management.GetCount(os.path.join(gdb,self.itempath))[0])
+            except arcpy.ExecuteError:
+                kount = 0
+            return kount
+        else:
+            return None
+
+    def gettupletypes(self):
+
+        if self.gdbtype in ('featureclass','featuretable','archiveclass'): 
+            return True
+        else:
+            return False
     
     def version(self
                ,ptargetgdb):
