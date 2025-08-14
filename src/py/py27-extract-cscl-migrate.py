@@ -73,7 +73,7 @@ if __name__ == '__main__':
 
             extracted = 0
 
-            if csclobject.gdbtype != 'topology':
+            if csclobject.gdbtype not in ('topology','domain'):
 
                 logging.info("extracting object {0}".format(csclobject.name))
 
