@@ -21,7 +21,7 @@ if %ERRORLEVEL% NEQ 0 (
     echo failed catalog verification of output %TARGETGDB% >> %BATLOG%
     EXIT /B 0
 ) 
-CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\verifycounts.py listoftablelists %TARGETGDB% %SRCGDB%
+CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\verifycounts.py listofbasetablelists %TARGETGDB% %SRCGDB%
 if %ERRORLEVEL% NEQ 0 (
     echo. >> %BATLOG% && echo failed row count verification of output %TARGETGDB% >> %BATLOG% 
     EXIT /B 0
