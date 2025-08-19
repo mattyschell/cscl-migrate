@@ -7,7 +7,6 @@ set TARGETLOGDIR=%BASEPATH%\cscl-migrate\geodatabase-scripts\logs\
 set PROPY=C:\Users\%USERNAME%\AppData\Local\Programs\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe
 set BATLOG=%TARGETLOGDIR%%ENV%-cscl-load.log
 echo starting %ENV% cscl-load on %date% at %time% > %BATLOG%
-REM CALL is the way to get sys.exit error codes. final answer. for today.
 CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\finalizeloadcscl.py %TARGETGDB%
 if %ERRORLEVEL% NEQ 0 (
     echo. >> %BATLOG%

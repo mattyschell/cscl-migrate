@@ -91,7 +91,7 @@ if __name__ == "__main__":
     else:
         for missing in expectednotexisting:
             logger.warning('{0} is missing!'.format(missing))
-        sys.exit(1)
+        sys.exit(len(expectednotexisting))
 
 
 

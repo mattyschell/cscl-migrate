@@ -64,13 +64,15 @@ Review and update the environmentals in the batch file.
 > geodatabase-scripts\sample-reprojectgdb.bat
 ```
 
-This step will end with a warning "CSCL_Topology is missing!" This is expected. We will manually recreate the topology in the next step.
+This step will end with a warning "CSCL_Topology is missing!" This is expected. We will manually recreate the topology in the next step. There will also be warnings about datasets with no records.  This is just how CSCL is.
 
 ### 4. Load To Enterprise Geodatabase
 
-In ArcGIS Pro copy all items in the file geodatabase. Paste into the enterprise geodatabase. This should run for about 2 hours. This step can't be scripted easily, only the magic GUI can deal with dependencies and avoid _1s.
+The default .bat files output a reprojected file geodatabase named cscl-migrate-reproj.gdb.  Using ArcGIS Pro copy all items in the file geodatabase. Paste into the enterprise geodatabase. 
 
-Then complete the load by applying topology rules, versioning, grants, etc.
+This should run for about an hour. This step can't be scripted easily, only the magic GUI can deal with dependencies and avoid _1s.
+
+Then complete the load by applying topology rules, versioning, grants, etc with this script.
 
 ```bat
 > geodatabase-scripts\sample-cscl-load.bat

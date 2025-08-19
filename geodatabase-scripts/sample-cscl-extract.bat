@@ -21,13 +21,18 @@ CALL %OLDPY% %BASEPATH%\cscl-migrate\src\py\py27-extract-cscl-migrate.py %WORKDI
 if %ERRORLEVEL% NEQ 0 (
     echo. >> %BATLOG%
     echo failed to extract %INGDB% >> %BATLOG%
-    GOTO :EOF
+    EXIT /B 0
 ) 
 CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\verifycatalog.py listoflists %WORKDIR%\cscl-migrate.gdb
 if %ERRORLEVEL% NEQ 0 (
     echo. >> %BATLOG%
     echo failed verification of output %WORKDIR%\cscl-migrate.gdb >> %BATLOG%
-    GOTO :EOF
+    EXIT /B 0
+) 
+CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\verifycounts.py listofbasetablelists %WORKDIR%\cscl-migrate.gdb %INGDB%
+if %ERRORLEVEL% NEQ 0 (
+    echo. >> %BATLOG% && echo failed row count verification of output %TARGETGDB% >> %BATLOG% 
+    EXIT /B 0
 ) 
 echo. >> %BATLOG% && echo verified output %WORKDIR%\cscl-migrate.gdb >> %BATLOG% 
 echo. >> %BATLOG% && echo extracted %INGDB% to %WORKDIR% >> %BATLOG%
