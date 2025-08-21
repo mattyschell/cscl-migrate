@@ -94,7 +94,7 @@ call owner_archive_utils.update_base_ids('STREETSHAVEINTERSECTIONS','STREETSHAVE
 call owner_archive_utils.update_base_ids('STREETTYPE','STREETTYPE_H');
 call owner_archive_utils.update_base_ids('SUBWAY','SUBWAY_H');
 call owner_archive_utils.update_base_ids('SUBWAYSTATION','SUBWAYSTATION_H');
---call owner_archive_utils.update_base_ids('SUBWAYSTATIONSHAVEFEATURENAMES_H','SUBWAYSTATIONSHAVEFEATURENA_H');
+--call owner_archive_utils.update_base_ids('SUBWAYSTATIONSHAVEFEATURENAMES','SUBWAYSTATIONSHAVEFEATURENA_H');
 call owner_archive_utils.update_base_ids('TOLLBOOTH','TOLLBOOTH_H');
 call owner_archive_utils.update_base_ids('TRAFFICCALMINGDEVICE','TRAFFICCALMINGDEVICE_H');
 call owner_archive_utils.update_base_ids('TRAFFICCAMERA','TRAFFICCAMERA_H');

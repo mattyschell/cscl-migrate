@@ -2,7 +2,7 @@
 
 We wish to migrate the New York City Citywide Street Centerline (CSCL) database from its legacy environment to some fancy new environments. Friends this our CSCL migration, our rules, the trick is never to be afraid.
 
-The New York City Department of City Planning will produce the editing software in the target environment.  This repo is initially focused on migrating data to support this future software development.
+The New York City Department of City Planning will produce the editing software in the target environment. This repo is initially focused on migrating data to support this future software development.
 
 ### Overall Migration Plan
 
@@ -45,7 +45,7 @@ From classic ArcCatalog 10.7 or superior. Administrator rights not required.
 1. Double click src/addin/ResetCLSIDs.esriaddin. In the utility window select "Install Add-In."  
 2. From ArcCatalog select Customize-Customize Mode - Toolbars. 
 3. Create a new toolbar named "removecalss" and check the box next it.
-4. From ArcCatalog Customize-Customize Mode select the commands tab.  Search  for "Reset CLSIDs." Drag it to the toolbar.
+4. From ArcCatalog Customize-Customize Mode select the commands tab. Search  for "Reset CLSIDs." Drag it to the toolbar.
 🔴DANGER ZONE. CODE RED🔴
 5. In ArcCatalog select the file geodatabase. 
 6. Click the ResetCLSIDs toolbar button.
@@ -64,11 +64,11 @@ Review and update the environmentals in the batch file.
 > geodatabase-scripts\sample-reprojectgdb.bat
 ```
 
-This step will end with a warning "CSCL_Topology is missing!" This is expected. We will manually recreate the topology in the next step. There will also be warnings about datasets with no records.  This is just how CSCL is.
+This step will include a warning "CSCL_Topology is missing!" This is expected. We will manually recreate the topology in the next step. There will also be warnings about datasets with no records. This is just how CSCL is. CSCL is a place of sky high blue tomorrows.
 
 ### 4. Load To Enterprise Geodatabase
 
-The default .bat files output a reprojected file geodatabase named cscl-migrate-reproj.gdb.  Using ArcGIS Pro copy all items in the file geodatabase. Paste into the enterprise geodatabase. 
+The default .bat files output a reprojected file geodatabase named cscl-migrate-reproj.gdb. Using ArcGIS Pro copy all items in the file geodatabase. Paste into the enterprise geodatabase. 
 
 This should run for about an hour. This step can't be scripted easily, only the magic GUI can deal with dependencies and avoid _1s.
 
@@ -80,7 +80,7 @@ Then complete the load by applying topology rules, versioning, grants, etc with 
 
 ### 5. Migrate Archive Classes
 
-When migrating the archive we will update the base table objectids on the target database. These base tables do not exist until successfully completing step 4.  Do not get clever and think that archive migration can be run in parallel to earlier steps.
+When migrating the archive we will update the base table objectids on the target database. These base tables do not exist until successfully completing step 4. Do not get clever and think that archive migration can be run in parallel to earlier steps.
 
 See [doc/archive-migration.md](doc/archive-migration.md) for details.
 
@@ -92,13 +92,31 @@ sqlplus sde/****@targetdb @geodatabase-scripts\setup-sde-target.sql
 sqlplus cscl/****@targetdb @geodatabase-scripts\setup-owner-target.sql
 ```
 
-Then migrate. This will transfer all archive data and update object ids on the target.  
+Then migrate. This will transfer all archive data and update object ids on the target. 
 
 ```bat
 > geodatabase-scripts\sample-migrate-archive.bat
 ```
 
-Review the logs. One or two _H tables consistently fail to transfer and may require attention.
+### 6. Manually Migrate Failed Archive Classes
+
+Review the archive migration logs, especially the final verifycounts-*.log. One or two _H tables consistently fail to transfer and likely require attention. We will use SCHOOLDISTRICT in the examples below. First reveal the _H table on the source. From an SQL prompt connected as CSCL:
+
+```sql
+> call sde.nyc_archive_utils.reveal_history('SCHOOLDISTRICT');
+```
+
+Attempt to manually copy/paste SCHOOLDISTRICT_H from the ArcCatalog GUI. Then update the values in this sample sql file.
+
+```bat
+> sqlplus %TARGETSCHEMA%/"%TARGETPASSWORD%"@%TARGETDB% @src/sql/sample_finalize_one_archive.sql
+```
+
+Then back to the source.
+
+```sql
+> call sde.nyc_archive_utils.conceal_history('SCHOOLDISTRICT');
+```
 
 ### Teardown 
 
@@ -110,7 +128,7 @@ To prevent catastrophe the teardown script will only proceed if a registered tab
 
 ### Time Estimates
 
-"A (work) day."
+"A day."
 
 | Step        | Duration in Hours        |
 |-------------|--------------------------|
@@ -118,6 +136,6 @@ To prevent catastrophe the teardown script will only proceed if a registered tab
 | 2. Remove Class Extensions          | 0 |
 | 3. Correct Resolution And Tolerance | .5 |
 | 4. Load To Enterprise Geodatabase   | 1 |
-| 5. Migrate Archive Classes          | 2  |
+| 5. Migrate Archive Classes          | 4  |
 | Teardown                            | .1 |
 
