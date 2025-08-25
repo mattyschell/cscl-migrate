@@ -26,6 +26,8 @@ class CsclelementmgrTestCase(unittest.TestCase):
 
         self.domain = csclelementmgr.CSCLElement('dYesNo')
 
+        self.attributedrelationshipclass = csclelementmgr.CSCLElement('COMMONPLACESHAVEFEATURENAMES')
+
     def test_afeatureclass(self):
         
         self.assertEqual(self.centerlinefeatureclass.name,'Centerline')
@@ -143,6 +145,21 @@ class CsclelementmgrTestCase(unittest.TestCase):
         # we verify the catalog for the base objects
         # .exists is NA for archive classes
         self.assertEqual(self.archiveclass.count('nope.sde'),0)
+
+    def testkattributedrelationshipclass(self):
+
+        self.assertEqual(self.attributedrelationshipclass.name,'COMMONPLACESHAVEFEATURENAMES')
+
+        self.assertIsNone(self.attributedrelationshipclass.featuredataset)
+
+        self.assertEqual(self.attributedrelationshipclass.gdbtype, 'attributedrelationshipclass')
+
+        self.assertIsNone(self.attributedrelationshipclass.tolerance)
+
+        self.assertTrue(self.attributedrelationshipclass.istable)
+
+        # countable but rinky dink test setup
+        self.assertEqual(self.attributedrelationshipclass.count('nope.sde'),0)
 
 
 if __name__ == '__main__':

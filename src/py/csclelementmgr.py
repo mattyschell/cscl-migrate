@@ -58,7 +58,8 @@ class CSCLElement(object):
                    ,'relationshipclass'
                    ,'topology'
                    ,'archiveclass'
-                   ,'domain']
+                   ,'domain'
+                   ,'attributedrelationshipclass']
         
         for itemtype in typelist:
             if self.name in Resourcelistmanager('all' + itemtype).names:
@@ -101,7 +102,7 @@ class CSCLElement(object):
 
     def gettupletypes(self):
 
-        if self.gdbtype in ('featureclass','featuretable','archiveclass'): 
+        if self.gdbtype in ('featureclass','featuretable','archiveclass','attributedrelationshipclass'): 
             return True
         else:
             return False
