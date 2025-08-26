@@ -298,15 +298,20 @@ def reproject (
 
                 logger.info(f"----- message_direction       = {desc['notification']}")
                 message_direction = desc["notification"]
+
                 if desc["cardinality"].upper() == "ONETOONE":
                     cardinality = "ONE_TO_ONE"
                 elif desc["cardinality"].upper() == "ONETOMANY":
                     cardinality = "ONE_TO_MANY"
                 elif desc["cardinality"].upper() == "MANYTOMANY":
                     cardinality = "MANY_TO_MANY"
-                    tables[filename] = (dirpath, target_gdb)
                 else:
                     raise RuntimeError(f"Unexpected Cardinality encountered - {desc['cardinality']} - Program stopped")
+
+                if desc["isAttributed"]:
+                    # https://github.com/mattyschell/cscl-migrate/issues/39
+                    logger.info('adding attributed relclass {0} {1}'.format(str(dirpath), str(target_gdb)))
+                    tables[filename] = (dirpath, target_gdb)
 
                 logger.info(f"----- cardinality             = {cardinality}")
 
