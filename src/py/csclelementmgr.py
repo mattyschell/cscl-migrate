@@ -5,23 +5,43 @@ import logging
 import arcpy
 
 
-class Resourcelistmanager(object):
+class GeodatabaseElement(object):
 
     def __init__(self
-                ,whichlist):
+                ,name):
 
-        with open(os.path.join(os.path.dirname(__file__)
-                              ,'resources'
-                              ,whichlist)) as l:
-            
-            contents = [line.strip() for line in l]
+        self.name = name
+        self.featuredataset = None
+        self.itempath = name
+        self.geodatabase = None
 
-        self.names = contents  
+    def fullpath(self
+                ,gdb):
 
-class CSCLElement(object):
+        return os.path.join(gdb
+                           ,self.itempath)
+
+    def exists(self
+              ,gdb=None):
+        
+        actualgdb = self.geodatabase if self.geodatabase is not None else gdb
+        return arcpy.Exists(self.fullpath(actualgdb))
+
+    def copyto(self
+              ,geodatabase):
+
+        # object copy not database copy
+        output = self.__class__.__new__(self.__class__)
+        output.__dict__ = self.__dict__.copy()
+        output.geodatabase = geodatabase
+        return output
+
+class CSCLElement(GeodatabaseElement):
 
     def __init__(self
                 ,elementname):
+
+        super().__init__(elementname)
          
         self.name = elementname
 
@@ -93,7 +113,8 @@ class CSCLElement(object):
 
         if self.istable:
             try:
-                kount = int(arcpy.management.GetCount(os.path.join(gdb,self.itempath))[0])
+                kount = int(arcpy.management.GetCount(os.path.join(
+                    gdb,self.itempath))[0])
             except arcpy.ExecuteError:
                 kount = 0
             return kount
@@ -102,7 +123,10 @@ class CSCLElement(object):
 
     def gettupletypes(self):
 
-        if self.gdbtype in ('featureclass','featuretable','archiveclass','attributedrelationshipclass'): 
+        if self.gdbtype in ('featureclass'
+                           ,'featuretable'
+                           ,'archiveclass'
+                           ,'attributedrelationshipclass'): 
             return True
         else:
             return False
@@ -125,11 +149,13 @@ class CSCLElement(object):
             arcpy.management.RegisterAsVersioned(elementfullpath)
             return 1
         except arcpy.ExecuteError:
-            logging.error('RegisterAsVersioned error on {0}: {1}'.format(elementfullpath
-                                                                        ,arcpy.GetMessages(2)))
+            logging.error('RegisterAsVersioned error on {0}: {1}'.format(
+                elementfullpath
+               ,arcpy.GetMessages(2)))
         except Exception as e:
-            print('RegisterAsVersioned unexpected error on {0}: {1}'.format(elementfullpath
-                                                                           ,e))
+            print('RegisterAsVersioned unexpected error on {0}: {1}'.format(
+                elementfullpath
+               ,e))
  
         return retval
     
@@ -174,6 +200,17 @@ class CSCLElement(object):
 
             return 0
 
-       
+  
+class Resourcelistmanager(object):
 
+    def __init__(self
+                ,whichlist):
+
+        with open(os.path.join(os.path.dirname(__file__)
+                              ,'resources'
+                              ,whichlist)) as l:
+            
+            contents = [line.strip() for line in l]
+
+        self.names = contents
     
