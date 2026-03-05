@@ -2,6 +2,7 @@ SET LINESIZE 200
 SET PAGESIZE 100
 DEFINE outfile = '&1'
 SPOOL &outfile
+-- commented lines are due to https://github.com/mattyschell/cscl-migrate/issues/40
 call owner_archive_utils.update_base_ids('ACCESSPOINT','ACCESSPOINT_H');
 --call owner_archive_utils.update_base_ids('ACCESSPOINTSTOENTRANCEPOINTS','ACCESSPOINTSTOENTRANCEPOINTS_H');
 --call owner_archive_utils.update_base_ids('ACCESSPOINTTOADDRESSPOINT','ACCESSPOINTTOADDRESSPOINT4_H');
@@ -16,7 +17,6 @@ call owner_archive_utils.update_base_ids('ATOMICPOLYGON','ATOMICPOLYGON_H');
 call owner_archive_utils.update_base_ids('BLOCKFACE','BLOCKFACE_H');
 call owner_archive_utils.update_base_ids('BOROUGH','BOROUGH_H');
 call owner_archive_utils.update_base_ids('BUSINESSIMPROVEMENTDISTRICT','BUSINESSIMPROVEMENTDISTRICT_H');
-call owner_archive_utils.update_base_ids('CADSOURCEADDRESS','CADSOURCEADDRESS_H');
 call owner_archive_utils.update_base_ids('CELLULARCALLBOX','CELLULARCALLBOX_H');
 call owner_archive_utils.update_base_ids('CENSUSBLOCK2000','CENSUSBLOCK2000_H');
 call owner_archive_utils.update_base_ids('CENSUSBLOCK2010','CENSUSBLOCK2010_H');

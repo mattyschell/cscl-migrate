@@ -39,7 +39,6 @@ and b.table_name in (
                     ,'BLOCKFACE_H'
                     ,'BOROUGH_H'
                     ,'BUSINESSIMPROVEMENTDISTRICT_H'
-                    ,'CADSOURCEADDRESS_H'
                     ,'CELLULARCALLBOX_H'
                     ,'CENSUSBLOCK2000_H'
                     ,'CENSUSBLOCK2010_H'

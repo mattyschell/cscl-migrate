@@ -14,7 +14,6 @@ call sde.nyc_archive_utils.reveal_history('ATOMICPOLYGON');
 call sde.nyc_archive_utils.reveal_history('BLOCKFACE');
 call sde.nyc_archive_utils.reveal_history('BOROUGH');
 call sde.nyc_archive_utils.reveal_history('BUSINESSIMPROVEMENTDISTRICT');
-call sde.nyc_archive_utils.reveal_history('CADSOURCEADDRESS');
 call sde.nyc_archive_utils.reveal_history('CELLULARCALLBOX');
 call sde.nyc_archive_utils.reveal_history('CENSUSBLOCK2000');
 call sde.nyc_archive_utils.reveal_history('CENSUSBLOCK2010');

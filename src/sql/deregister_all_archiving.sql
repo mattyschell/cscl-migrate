@@ -18,7 +18,6 @@ call sde.nyc_archive_utils.deregister_archiving('ATOMICPOLYGON' ,'ATOMICPOLYGON_
 call sde.nyc_archive_utils.deregister_archiving('BLOCKFACE' ,'BLOCKFACE_H');
 call sde.nyc_archive_utils.deregister_archiving('BOROUGH' ,'BOROUGH_H');
 call sde.nyc_archive_utils.deregister_archiving('BUSINESSIMPROVEMENTDISTRICT' ,'BUSINESSIMPROVEMENTDISTRICT_H');
-call sde.nyc_archive_utils.deregister_archiving('CADSOURCEADDRESS' ,'CADSOURCEADDRESS_H');
 call sde.nyc_archive_utils.deregister_archiving('CELLULARCALLBOX' ,'CELLULARCALLBOX_H');
 call sde.nyc_archive_utils.deregister_archiving('CENSUSBLOCK2000' ,'CENSUSBLOCK2000_H');
 call sde.nyc_archive_utils.deregister_archiving('CENSUSBLOCK2010' ,'CENSUSBLOCK2010_H');

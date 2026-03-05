@@ -7,6 +7,7 @@ call sde.nyc_archive_utils.register_archiving('ACCESSPOINTTOADDRESSPOINT' ,'ACCE
 call sde.nyc_archive_utils.register_archiving('ACCESSPOINT' ,'ACCESSPOINT_H' ,1273245334);
 call sde.nyc_archive_utils.register_archiving('ADDRESSPOINTLGCS' ,'ADDRESSPOINTLGCS_H' ,1272900564);
 call sde.nyc_archive_utils.register_archiving('ADDRESSPOINT' ,'ADDRESSPOINT_H' ,1273245334);
+call sde.nyc_archive_utils.register_archiving('ADJACENTBOROUGHBOUNDARY' ,'ADJACENTBOROUGHBOUNDARY_H' ,1748009919);
 call sde.nyc_archive_utils.register_archiving('ADMINBOUNDARIES' ,'ADMINBOUNDARIES_H' ,1272900568);
 call sde.nyc_archive_utils.register_archiving('ALARMBOXAREA' ,'ALARMBOXAREA_H' ,1273245334);
 call sde.nyc_archive_utils.register_archiving('ALARMBOX' ,'ALARMBOX_H' ,1273245334);
@@ -16,7 +17,6 @@ call sde.nyc_archive_utils.register_archiving('ATOMICPOLYGON' ,'ATOMICPOLYGON_H'
 call sde.nyc_archive_utils.register_archiving('BLOCKFACE' ,'BLOCKFACE_H' ,1272903360);
 call sde.nyc_archive_utils.register_archiving('BOROUGH' ,'BOROUGH_H' ,1273245334);
 call sde.nyc_archive_utils.register_archiving('BUSINESSIMPROVEMENTDISTRICT' ,'BUSINESSIMPROVEMENTDISTRICT_H' ,1273245334);
-call sde.nyc_archive_utils.register_archiving('CADSOURCEADDRESS' ,'CADSOURCEADDRESS_H' ,1272903363);
 call sde.nyc_archive_utils.register_archiving('CELLULARCALLBOX' ,'CELLULARCALLBOX_H' ,1273245334);
 call sde.nyc_archive_utils.register_archiving('CENSUSBLOCK2000' ,'CENSUSBLOCK2000_H' ,1273245334);
 call sde.nyc_archive_utils.register_archiving('CENSUSBLOCK2010' ,'CENSUSBLOCK2010_H' ,1273245334);

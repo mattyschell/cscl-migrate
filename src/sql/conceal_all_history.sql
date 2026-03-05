@@ -14,7 +14,6 @@ call sde.nyc_archive_utils.conceal_history('ATOMICPOLYGON');
 call sde.nyc_archive_utils.conceal_history('BLOCKFACE');
 call sde.nyc_archive_utils.conceal_history('BOROUGH');
 call sde.nyc_archive_utils.conceal_history('BUSINESSIMPROVEMENTDISTRICT');
-call sde.nyc_archive_utils.conceal_history('CADSOURCEADDRESS');
 call sde.nyc_archive_utils.conceal_history('CELLULARCALLBOX');
 call sde.nyc_archive_utils.conceal_history('CENSUSBLOCK2000');
 call sde.nyc_archive_utils.conceal_history('CENSUSBLOCK2010');
