@@ -1,9 +1,6 @@
 import os
 class listmanager(object):
 
-    # why is this little thing a class :0) clown?
-    # todo: refactor this
-
     def __init__(self
                 ,whichlist):
 

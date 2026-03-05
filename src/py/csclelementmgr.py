@@ -4,6 +4,8 @@ import sys
 import logging
 import arcpy
 
+from resourcemanager import listmanager
+
 
 class GeodatabaseElement(object):
 
@@ -80,22 +82,22 @@ class CSCLElement(GeodatabaseElement):
                    ,'archiveclass'
                    ,'domain'
                    ,'attributedrelationshipclass']
-        
+            
         for itemtype in typelist:
-            if self.name in Resourcelistmanager('all' + itemtype).names:
+            lm = listmanager('all' + itemtype)
+            if self.name in lm.names:
                 return itemtype
   
     def getfeaturedataset(self):
 
         # if self is in a feature dataset tell us the feature dataset name
 
-        featuredatasets = Resourcelistmanager('allfeaturedataset').names
+        featuredatasets = listmanager('allfeaturedataset').names
 
         for featuredatasetname in featuredatasets:
 
             # just one (for now) deceitful featuredataset to loop over
-        
-            if self.name in Resourcelistmanager(featuredatasetname).names:
+            if self.name in listmanager(featuredatasetname).names:
                 return featuredatasetname
             
         return None
@@ -199,19 +201,3 @@ class CSCLElement(GeodatabaseElement):
                                         ,'GRANT')
         else:
             return 0, None
-
-
-  
-class Resourcelistmanager(object):
-
-    def __init__(self
-                ,whichlist):
-
-        with open(os.path.join(os.path.dirname(__file__)
-                              ,'resources'
-                              ,whichlist)) as l:
-            
-            contents = [line.strip() for line in l]
-
-        self.names = contents
-    
