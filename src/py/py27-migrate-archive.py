@@ -6,6 +6,7 @@ import arcpy
 from filegeodatabasemanager import localgdb 
 # crossing the py2 py3 chasm
 import csclelementmgr
+from resourcemanager import listmanager
 
 # PY27 
 # source geodatabase has class extensions
@@ -66,7 +67,7 @@ if __name__ == '__main__':
     )
 
     # src/py/resources/allarchiving or similar 
-    archiveclassnames = csclelementmgr.Resourcelistmanager(plistname).names
+    archiveclassnames = csclelementmgr.listmanager(plistname).names
 
     logging.info("migrating objects in list {0}".format(plistname))
 

@@ -4,19 +4,7 @@ import sys
 import logging
 import arcpy
 
-
-class Resourcelistmanager(object):
-
-    def __init__(self,
-                 whichlist):
-
-        with open(os.path.join(os.path.dirname(__file__)
-                              ,'resources'
-                              ,whichlist)) as l:
-
-            contents = [line.strip() for line in l]
-
-        self.names = contents  
+from resourcemanager import listmanager
 
 def deleteitem(ptargetgdb
               ,pitem
@@ -81,11 +69,11 @@ if __name__ == '__main__':
         filemode='w'                         
     )
     
-    listbuckets = Resourcelistmanager(plist).names
+    listbuckets = listmanager(plist).names
     
     for listbucket in listbuckets:
 
-        gdbitems = Resourcelistmanager(listbucket).names
+        gdbitems = listmanager(listbucket).names
 
         for gdbitem in gdbitems:
     

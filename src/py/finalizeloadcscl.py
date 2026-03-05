@@ -2,26 +2,11 @@ import os
 import time
 import sys
 import logging
-
-import csclelementmgr
 import arcpy
 
+import csclelementmgr
+from resourcemanager import listmanager
 
-class Resourcelistmanager(object):
-
-    # why is this little thing a class :0) clown?
-    # todo: refactor this
-
-    def __init__(self
-                ,whichlist):
-
-        with open(os.path.join(os.path.dirname(__file__)
-                              ,'resources'
-                              ,whichlist)) as l:
-            
-            contents = [line.strip() for line in l if line.strip()]
-
-        self.names = contents
 
 def create_topology(gdb
                    ,topology_name = 'CSCL_Topology'):
@@ -168,15 +153,15 @@ if __name__ == '__main__':
             logging.error('create_topology bombed check the log')
             sys.exit(1)
 
-    listbuckets = Resourcelistmanager('listoflists').names
+    listbuckets = listmanager('listoflists').names
     logging.debug('lists in  play {0}'.format(listbuckets))
 
-    listisversioned = Resourcelistmanager('listofversionedlists').names
+    listisversioned = listmanager('listofversionedlists').names
     logging.debug('versioned lists in play {0}'.format(listisversioned))
 
     for listbucket in listbuckets:
 
-        gdbitems = Resourcelistmanager(listbucket).names
+        gdbitems = listmanager(listbucket).names
 
         for gdbitem in gdbitems:
             

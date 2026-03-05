@@ -3,10 +3,10 @@ import time
 import sys
 import logging
 import argparse
+import arcpy
 
 import csclelementmgr
-import arcpy
-import resourcemanager 
+from resourcemanager import listmanager
 
 
 def main():
@@ -29,13 +29,13 @@ def main():
         filemode='w'
     )
 
-    listbuckets   = resourcemanager.listmanager('listoflists')
-    readonlyusers = resourcemanager.listmanager('allreadonly')
-    editors       = resourcemanager.listmanager('alleditor')
+    listbuckets   = listmanager('listoflists')
+    readonlyusers = listmanager('allreadonly')
+    editors       = listmanager('alleditor')
 
     for listbucket in listbuckets.names:
 
-        gdbitems = resourcemanager.listmanager(listbucket)
+        gdbitems = listmanager(listbucket)
 
         for gdbitem in gdbitems.names:
 

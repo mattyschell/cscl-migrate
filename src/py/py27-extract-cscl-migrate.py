@@ -6,6 +6,7 @@ import arcpy
 from filegeodatabasemanager import localgdb 
 # pressing our luck here. crossing the py2 py3 chasm
 import csclelementmgr
+from resourcemanager import listmanager
 
 # PY27 
 # source geodatabase has class extensions
@@ -57,7 +58,7 @@ if __name__ == '__main__':
     targetgdb = localgdb(os.path.join(pworkdir
                                     ,'cscl-migrate.gdb'))
 
-    listnames = csclelementmgr.Resourcelistmanager(plistname).names
+    listnames = listmanager(plistname).names
 
     # allfeaturedataset CSCL should be first in the list of lists
 
@@ -65,7 +66,7 @@ if __name__ == '__main__':
 
         logging.info("extracting objects in list {0}".format(listname))
 
-        objectnames = csclelementmgr.Resourcelistmanager(listname).names
+        objectnames = listmanager(listname).names
 
         for objectname in objectnames:
 

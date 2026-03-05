@@ -5,6 +5,7 @@ import datetime
 import time
 
 import csclelementmgr
+from resourcemanager import listmanager
 
 
 if __name__ == "__main__":
@@ -37,13 +38,13 @@ if __name__ == "__main__":
     logger.info('starting count verification of {0} at {1}'.format(gdb2verify
                                                                   ,datetime.datetime.now()))
 
-    listnames = csclelementmgr.Resourcelistmanager(listname).names
+    listnames = listmanager(listname).names
 
     badkount = 0
     
     for listname in listnames:
 
-        objectnames = csclelementmgr.Resourcelistmanager(listname).names
+        objectnames = listmanager(listname).names
 
         for objectname in objectnames:
             

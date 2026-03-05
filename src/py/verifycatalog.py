@@ -7,6 +7,7 @@ import time
 import arcpy
 import csclelementmgr
 import dataownermanager
+from resourcemanager import listmanager
 
 
 if __name__ == "__main__":
@@ -52,13 +53,13 @@ if __name__ == "__main__":
     # what can this user see
     existingobjects = gdb.getallobjects()
 
-    listnames = csclelementmgr.Resourcelistmanager(listname).names
+    listnames = listmanager(listname).names
 
     expectedobjects = []
     
     for listname in listnames:
 
-        objectnames = csclelementmgr.Resourcelistmanager(listname).names
+        objectnames = listmanager(listname).names
 
         # must loop again due to deceitful feature datasets
         # we may get duplicates added to our lists when there are overlaps
@@ -70,7 +71,7 @@ if __name__ == "__main__":
 
             if csclelement.getgdbtype() == 'featuredataset':
 
-                deepobjectnames = csclelementmgr.Resourcelistmanager(csclelement.name).names
+                deepobjectnames = listmanager(csclelement.name).names
                 expectedobjects = expectedobjects + deepobjectnames
 
             else:
