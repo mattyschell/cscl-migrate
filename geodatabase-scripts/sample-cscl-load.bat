@@ -14,6 +14,12 @@ if %ERRORLEVEL% NEQ 0 (
     EXIT /B 0
 )
 echo. >> %BATLOG% && echo finalized load to %TARGETGDB% >> %BATLOG%
+CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\applygrants.py %TARGETGDB%
+if %ERRORLEVEL% NEQ 0 (
+    echo. >> %BATLOG%
+    echo failed applygrants on %TARGETGDB% >> %BATLOG%
+    EXIT /B 0
+)
 CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\verifycatalog.py listoflists %TARGETGDB% 
 if %ERRORLEVEL% NEQ 0 (
     echo. >> %BATLOG%

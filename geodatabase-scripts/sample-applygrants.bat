@@ -17,6 +17,6 @@ echo starting %ENV% applygrants on %date% at %time% > %BATLOG%
 CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\applygrants.py %TARGETGDB%
 if %ERRORLEVEL% NEQ 0 (
     echo. >> %BATLOG%
-    echo failed rerungrants on %TARGETGDB% >> %BATLOG%
+    echo failed applygrants on %TARGETGDB% >> %BATLOG%
     EXIT /B 0
 )

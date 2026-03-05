@@ -19,7 +19,7 @@ class Resourcelistmanager(object):
                               ,'resources'
                               ,whichlist)) as l:
             
-            contents = [line.strip() for line in l]
+            contents = [line.strip() for line in l if line.strip()]
 
         self.names = contents
 
@@ -190,39 +190,7 @@ if __name__ == '__main__':
 
                     logging.info("skipped or failed {0}".format(gdbitem))
  
-    readonlyusers = Resourcelistmanager('allreadonly').names
-    editors       = Resourcelistmanager('alleditor').names
-
-    for listbucket in listbuckets:
-
-        gdbitems = Resourcelistmanager(listbucket).names
-
-        for gdbitem in gdbitems:
-
-            csclelement = csclelementmgr.CSCLElement(gdbitem)
-
-            for readonlyuser in readonlyusers:
-
-                granted = csclelement.grant(ptargetgdb
-                                           ,'VIEW'
-                                           ,readonlyuser)
-                
-                if granted == 1:
-
-                    logging.info("failed to grant view on {0} to {1}".format(gdbitem
-                                                                            ,readonlyuser))
-                    
-            for editor in editors:
-
-                granted = csclelement.grant(ptargetgdb
-                                           ,'EDIT'
-                                           ,editor)
-                
-                if granted == 1:
-
-                    logging.info("failed to grant edit on {0} to {1}".format(gdbitem
-                                                                            ,editor))
-
-    logging.info("{0} load complete. Spread love. Its the Brooklyn way".format(ptargetgdb))
+    
+    logging.info("{0} finalize load complete. Spread love. Its the Brooklyn way".format(ptargetgdb))
 
     sys.exit(0)

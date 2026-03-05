@@ -67,6 +67,7 @@ def reproject (
         
         if os.path.exists(temp_xlsx):
             os.remove(temp_xlsx)
+
         arcpy.topographic.GenerateExcelFromGeodatabase(gdbin.gdb, temp_xlsx)
 
         # Load Excel into openpyxl and update spatial reference
@@ -153,12 +154,24 @@ def reproject (
 
     if not arcpy.Exists(input_spec_xlsx):
         raise RuntimeError(f"INPUT SPEC File {input_spec_xlsx} not found. Cannot continue.")
+             
 
-    if arcpy.Exists(gdbout.gdb):
+    if arcpy.Exists(gdbout.gdb): 
         gdbout.clean()
-
+    
     ## Begin reprojection process
     logger.info(f"Creating Target Geodatabase {gdbout.gdb}")
+
+    # this step generates an empty copy of CSCL
+    # globalid columns are present and geodatabase-managed
+    # change CorrectedProjection.xlsx Fields sheet globalid 
+    # FieldType to esriFieldTypeString
+    # FieldEditable to TRUE 
+    # Creates a dataset with GLOBALID that is not esri managed
+
+    # if gdbout is an enterprise geodatabase schema
+    # GenerateGeodatabaseFromExcel throws
+    # ERROR 087396: Not a valid SDE workspace. 
     arcpy.topographic.GenerateGeodatabaseFromExcel(input_spec_xlsx
                                                   ,gdbout.gdb)
 
@@ -167,15 +180,30 @@ def reproject (
     if arcpy.Exists(object_map_gdb.gdb):
         object_map_gdb.clean()
 
+    # no globalids in FieldMapping in the original version
+    # adding globalid as type text to gdbout does not create a globalid column in the 
+    # cross reference geodatabase (object_map_gdb)
+    
     arcpy.topographic.CreateCrossReferenceGeodatabase(gdbin.gdb
                                                      ,gdbout.gdb
                                                      ,object_map_gdb.gdb)
 
     logger.info(f"Loading Data from {gdbin.gdb} into {gdbout.gdb}")
     
+
+    # https://pro.arcgis.com/en/pro-app/latest/tool-reference/environment-settings/preserve-globalids.htm
+    # arcpy.env.preserveGlobalIds = True
+    # this does nothing in LoadData
+    # and causes table loads to fail due to 
+    #   arcgisscripting.ExecuteError: ERROR 003340: The target dataset must have a 
+    #   GlobalID field with a unique index in order to use the Preserve GlobalIDs 
+    #   geoprocessing environment setting.
+    # ie must be enterprise geodatabase as documented 
+
     arcpy.topographic.LoadData(object_map_gdb.gdb
                               ,gdbin.gdb
                               ,gdbout.gdb)
+
     # https://pro.arcgis.com/en/pro-app/latest/tool-reference/topographic-production/load-data.htm
     # LoadData row_level_errors = True (default)
     # Errors that occur during individual row-level inserts will be logged.
@@ -365,7 +393,7 @@ def reproject (
                     destination_foreign_key=destination_foreign_key,
                 )
 
-    logger.info("Loading Tables and MANY-TO-MANY relationship class tables")
+    logger.info("Loading Tables and attributed relationship class tables")
     for tbl_name in tables:
         source_gdb, target_gdb = tables[tbl_name]
         source_ds = os.path.join(source_gdb, tbl_name)
@@ -373,7 +401,10 @@ def reproject (
         logger.info(f"{tbl_name} - Copying {source_ds} to {target_ds}")
 
         arcpy.management.TruncateTable(target_ds)
-        arcpy.management.Append(source_ds, target_ds, schema_type="NO_TEST")
+        arcpy.management.Append(source_ds
+                               ,target_ds
+                               ,schema_type="TEST")
+        #arcpy.management.Append(source_ds, target_ds, schema_type="NO_TEST")
         load_count = int(arcpy.management.GetCount(target_ds)[0])  # type: ignore
         if load_count == 0:
             logger.warning(f"--- {tbl_name} has no records")
