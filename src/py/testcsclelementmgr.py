@@ -38,8 +38,11 @@ class CsclelementmgrTestCase(unittest.TestCase):
 
         self.assertEqual(self.centerlinefeatureclass.tolerance, .00328083333333333)
 
-        # exit 0 success grants are NA for members of a deceitful feature dataset
-        self.assertEqual(self.centerlinefeatureclass.grant('nope.sde','VIEW','MALTAGOYA'),0)
+        # grant returns code, errormsg(if any)
+        self.assertEqual(
+            self.centerlinefeatureclass.grant('nope.sde','VIEW','MALTAGOYA')[0]
+           ,0
+        )
 
         self.assertTrue(self.centerlinefeatureclass.istable)
 
@@ -66,7 +69,10 @@ class CsclelementmgrTestCase(unittest.TestCase):
         self.assertEqual(self.csclfeaturedataset.tolerance, .00328083333333333)
 
         # should attempt and fail to grant due to rinky-dinkitude of test setup
-        self.assertEqual(self.csclfeaturedataset.grant('nope.sde','VIEW','MALTAGOYA'),1)
+        self.assertEqual(
+            self.csclfeaturedataset.grant('nope.sde','VIEW','MALTAGOYA')[0]
+           ,1
+        )
 
         self.assertFalse(self.csclfeaturedataset.istable)
 
@@ -81,8 +87,11 @@ class CsclelementmgrTestCase(unittest.TestCase):
         self.assertIsNone(self.charelationshipclass.tolerance)
 
         # exit 0 success grants are NA
-        self.assertEqual(self.charelationshipclass.grant('nope.sde','VIEW','MALTAGOYA'),0)
-
+        self.assertEqual(
+            self.charelationshipclass.grant('nope.sde','VIEW','MALTAGOYA')[0]
+           ,0
+        )
+        
         self.assertFalse(self.charelationshipclass.istable)
 
     def testetopology(self):
@@ -96,7 +105,10 @@ class CsclelementmgrTestCase(unittest.TestCase):
         self.assertIsNone(self.cscltopology.tolerance)
 
         # exit 0 success grants are NA
-        self.assertEqual(self.cscltopology.grant('nope.sde','VIEW','MALTAGOYA'),0)
+        self.assertEqual(
+            self.cscltopology.grant('nope.sde','VIEW','MALTAGOYA')[0]
+           ,0
+        )
 
         self.assertFalse(self.cscltopology.istable)
 
@@ -107,13 +119,30 @@ class CsclelementmgrTestCase(unittest.TestCase):
     def testggrants(self):
 
         # fail
-        self.assertEqual(self.streetnametable.grant('nope.sde','VIEW','MALTAGOYA'),1)
-
+        retcode,exception = self.streetnametable.grant('nope.sde'
+                                                      ,'VIEW'
+                                                      ,'MALTAGOYA')
+        self.assertEqual(retcode,1)
+        #ERROR X: Input Dataset: Dataset X does not exist or is not supported"
+        self.assertIn('does not exist', exception)
+        
         # exit 0 success grants are not applicable for these
-        self.assertEqual(self.centerlinefeatureclass.grant('nope.sde','VIEW','MALTAGOYA'),0)
-        self.assertEqual(self.cscltopology.grant('nope.sde','VIEW','MALTAGOYA'),0)
-        self.assertEqual(self.charelationshipclass.grant('nope.sde','VIEW','MALTAGOYA'),0)
-        self.assertEqual(self.domain.grant('nope.sde','VIEW','MALTAGOYA'),0)
+        self.assertEqual(
+            self.centerlinefeatureclass.grant('nope.sde','VIEW','MALTAGOYA')[0]
+           ,0
+        )
+        self.assertEqual(
+            self.cscltopology.grant('nope.sde','VIEW','MALTAGOYA')[0]
+           ,0
+        )
+        self.assertEqual(
+            self.charelationshipclass.grant('nope.sde','VIEW','MALTAGOYA')[0]
+           ,0
+        )
+        self.assertEqual(
+            self.domain.grant('nope.sde','VIEW','MALTAGOYA')[0]
+           ,0
+        )        
         
     def testharchivclass(self):
 

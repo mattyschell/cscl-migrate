@@ -158,47 +158,48 @@ class CSCLElement(GeodatabaseElement):
                ,e))
  
         return retval
+
+    def _change_priv(self
+                    ,elementfullpath
+                    ,esriuser
+                    ,grant):
+
+        try:
+            arcpy.management.ChangePrivileges(
+                elementfullpath,
+                esriuser,
+                'GRANT',
+                grant
+            )
+            return 0, None   # success
+        except Exception as ex:
+            return 1, str(ex)  # failure + message
     
     def grant(self
              ,ptargetgdb
              ,esripriv
              ,esriuser):
 
-        elementfullpath = os.path.join(ptargetgdb, self.itempath)
+        elementfullpath = os.path.join(ptargetgdb
+                                      ,self.itempath)
 
-        if  self.gdbtype not in ('relationshipclass','topology','domain') \
+        if self.gdbtype not in ('relationshipclass'
+                               ,'topology'
+                               ,'domain') \
         and self.featuredataset is None:
-          
+
             if esripriv == 'VIEW':
+                return self._change_priv(elementfullpath
+                                        ,esriuser
+                                        ,'AS_IS')
 
-                try:
-                    arcpy.management.ChangePrivileges(elementfullpath
-                                                     ,esriuser
-                                                     ,'GRANT'
-                                                     ,'AS_IS') 
-                    return 0
-                
-                except:
-
-                    return 1
-    
             elif esripriv == 'EDIT':
-    
-                try:
-    
-                    arcpy.management.ChangePrivileges(elementfullpath
-                                                     ,esriuser
-                                                     ,'GRANT'
-                                                     ,'GRANT') 
-                    return 0
-                
-                except:
-                    
-                    return 1
-                
+                return self._change_priv(elementfullpath
+                                        ,esriuser
+                                        ,'GRANT')
         else:
+            return 0, None
 
-            return 0
 
   
 class Resourcelistmanager(object):
