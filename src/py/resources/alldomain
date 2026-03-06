@@ -4,7 +4,6 @@ LOC_METHOD
 YESNO
 dAccess
 dAccessMethod
-dAction
 dAddressSource
 dAddressState
 dAgency
@@ -15,7 +14,6 @@ dBorough
 dBoroughIndicator
 dCADCode
 dCDEligibility
-dCSCLAddress
 dCartoDisplayLevel
 dCollectionMethod
 dCommercial
@@ -54,7 +52,6 @@ dNodeCorrespondence_Ind
 dNonPed
 dPSGIS_PRINCIPAL
 dPatrolBorough
-dPlaceStatus
 dPublicSafety
 dRailType
 dRecreationalFacility
