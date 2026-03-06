@@ -403,8 +403,8 @@ def reproject (
         arcpy.management.TruncateTable(target_ds)
         arcpy.management.Append(source_ds
                                ,target_ds
-                               ,schema_type="TEST")
-        #arcpy.management.Append(source_ds, target_ds, schema_type="NO_TEST")
+                               ,schema_type="NO_TEST")
+        #arcpy.management.Append(source_ds, target_ds, schema_type="TEST")
         load_count = int(arcpy.management.GetCount(target_ds)[0])  # type: ignore
         if load_count == 0:
             logger.warning(f"--- {tbl_name} has no records")
