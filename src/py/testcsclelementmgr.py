@@ -1,6 +1,5 @@
 import unittest
 import os
-import pathlib
 
 import csclelementmgr
 
@@ -123,8 +122,12 @@ class CsclelementmgrTestCase(unittest.TestCase):
                                                       ,'VIEW'
                                                       ,'MALTAGOYA')
         self.assertEqual(retcode,1)
-        #ERROR X: Input Dataset: Dataset X does not exist or is not supported"
-        self.assertIn('does not exist', exception)
+        #ERROR X: Input Dataset: Dataset X does not exist or is not supported..
+        #ERROR X: Cannot open... (py27) 
+        # different in py27
+        self.assertTrue(
+            'Cannot open' in exception or 'does not exist' in exception
+        )
         
         # exit 0 success grants are not applicable for these
         self.assertEqual(

@@ -31,7 +31,7 @@ Step 1 exports to a file geodatabase. The data flowing into that pipeline must c
 Review and update the environmentals in the batch file.
 
 ```sh
-> geodatabase-scripts\sample-cscl-extract.bat
+> geodatabase-scripts\sample-extract.bat
 ```
 
 Step 1 creates an empty file geodatabase. Then it use python 2 arcpy with class extension readers to copy/paste from the Enterprise Geodatabase to cscl-migrate.gdb. 
@@ -75,7 +75,7 @@ This should run for about an hour. This step can't be scripted easily, only the 
 Then complete the load by applying topology rules, versioning, grants, etc with this script.
 
 ```bat
-> geodatabase-scripts\sample-cscl-load.bat
+> geodatabase-scripts\sample-post-load-processing.bat
 ```
 
 ### 5. Migrate Archive Classes
@@ -123,7 +123,7 @@ Then back to the source.
 To prevent catastrophe the teardown script will only proceed if a registered table named UNLOCK_TEARDOWN exists in the schema. Manually create this empty table to unlock teardown. 
 
 ```bat
-> geodatabase-scripts\sample-cscl-teardown.bat
+> geodatabase-scripts\sample-teardown.bat
 ```
 
 ### Time Estimates

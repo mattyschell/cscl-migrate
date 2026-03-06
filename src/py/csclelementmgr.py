@@ -43,7 +43,8 @@ class CSCLElement(GeodatabaseElement):
     def __init__(self
                 ,elementname):
 
-        super().__init__(elementname)
+        #python 2 and 3 compatible
+        super(CSCLElement, self).__init__(elementname)
          
         self.name = elementname
 
