@@ -7,6 +7,46 @@ import time
 import csclelementmgr
 from resourcemanager import listmanager
 
+def setup_logging(gdb2verify):
+
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+    targetlog = os.path.join(
+        os.environ['TARGETLOGDIR'],
+        'verifycounts-{0}-{1}.log'.format(
+            os.path.basename(gdb2verify).split(".")[0],
+            timestr
+        )
+    )
+
+    # Avoid duplicate handlers if called multiple times
+    logger = logging.getLogger(__name__)
+    if logger.handlers:
+        return logger
+
+    if sys.version_info >= (3, 3):
+            # Python 3.3+ path
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(levelname)s - %(message)s',
+            handlers=[
+                logging.FileHandler(targetlog),
+                logging.StreamHandler()
+            ]
+        )
+        return logging.getLogger(__name__)
+
+    # Python 2.7 fallback
+    logger.setLevel(logging.INFO)
+    fh = logging.FileHandler(targetlog)
+    sh = logging.StreamHandler()
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    fh.setFormatter(formatter)
+    sh.setFormatter(formatter)
+    logger.addHandler(fh)
+    logger.addHandler(sh)
+
+    return logger
+
 
 if __name__ == "__main__":
 
@@ -17,23 +57,7 @@ if __name__ == "__main__":
     gdb2verify = sys.argv[2]
     gdbsource  = sys.argv[3]
 
-    timestr = time.strftime("%Y%m%d-%H%M%S")
-    # ..\logs\verifycounts-ditcsdv1-20250403-160745.log
-    targetlog = \
-        os.path.join(os.environ['TARGETLOGDIR'] 
-                    ,'verifycounts-{0}-{1}.log'.format( \
-                        os.path.basename(gdb2verify).split(".")[0]
-                       ,timestr))
-
-    logging.basicConfig (
-        level=logging.INFO,  
-        format='%(asctime)s - %(levelname)s - %(message)s',  
-        handlers=[
-            logging.FileHandler(targetlog),  # log messages 
-            logging.StreamHandler()          # cc: screen 
-        ]
-    )
-    logger = logging.getLogger(__name__)
+    logger = setup_logging(gdb2verify)
     
     logger.info('starting count verification of {0} at {1}'.format(gdb2verify
                                                                   ,datetime.datetime.now()))

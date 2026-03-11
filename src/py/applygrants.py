@@ -20,7 +20,7 @@ def main():
 
     # ..\logs\finalizeloadcscl-20250403-160745.log
     targetlog = os.path.join(os.environ['TARGETLOGDIR']
-                            ,'rerungrants-{0}.log'.format(timestr))
+                            ,'applygrants-{0}.log'.format(timestr))
 
     logging.basicConfig(
         level=logging.DEBUG,
@@ -32,6 +32,8 @@ def main():
     listbuckets   = listmanager('listoflists')
     readonlyusers = listmanager('allreadonly')
     editors       = listmanager('alleditor')
+
+    badkount = 0
 
     for listbucket in listbuckets.names:
 
@@ -54,6 +56,8 @@ def main():
                             gdbitem
                            ,readonlyuser
                            ,gex))
+
+                    badkount+=1
                 
                 else:
 
@@ -75,15 +79,28 @@ def main():
                             gdbitem
                            ,editor
                            ,gex))
+
+                    badkount+=1
+
                 else:
 
                     logging.info("granted edit on {0} to {1}".format(gdbitem
                                                                     ,editor))
 
-    logging.info(
-        "{0} grants complete. Spread love. Its the Brooklyn way".format(args.targetgdb))
+    if badkount == 0:
 
-    sys.exit(0)
+        logging.info(
+            "Success applying grants on {0}. Spread love. Its the Brooklyn way".format(
+                args.targetgdb))
+
+    else:
+
+        logging.info(
+            "Failed to apply all grants on {0}. Review {1}".format(
+                args.targetgdb
+               ,targetlog))
+
+    sys.exit(badkount)
 
 
 if __name__ == "__main__":
