@@ -3,7 +3,6 @@ call sde.nyc_archive_utils.conceal_history('ACCESSPOINTSTOENTRANCEPOINTS');
 call sde.nyc_archive_utils.conceal_history('ACCESSPOINTTOADDRESSPOINT');
 call sde.nyc_archive_utils.conceal_history('ADDRESSPOINT');
 call sde.nyc_archive_utils.conceal_history('ADDRESSPOINTLGCS');
--- ADJACENTBOROUGHBOUNDARY only archives in production
 call sde.nyc_archive_utils.conceal_history('ADJACENTBOROUGHBOUNDARY');
 call sde.nyc_archive_utils.conceal_history('ADMINBOUNDARIES');
 call sde.nyc_archive_utils.conceal_history('ALARMBOX');

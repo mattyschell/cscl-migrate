@@ -6,6 +6,7 @@ AS
 -- data owner updates self
 -- only available on target
 
+--        MSCHELL         
 --   *****     *****
 --  ********* *********
 -- *********** **********
@@ -19,6 +20,7 @@ AS
 --            ***
 --             *
 --       P  L  /  S  Q  L
+--          4 E V E R
 
     PROCEDURE fetch_h_table (
         p_featureclass      IN VARCHAR2

@@ -7,6 +7,7 @@ AS
 -- this package is the only permitted updates to SDE data
 -- must be compiled and available on both source and target
 
+--        MSCHELL         
 --   *****     *****
 --  ********* *********
 -- *********** **********
@@ -20,6 +21,7 @@ AS
 --            ***
 --             *
 --       P  L  /  S  Q  L
+--          4 E V E R
 
     PROCEDURE fetch_h_table (
         p_featureclass      IN VARCHAR2
