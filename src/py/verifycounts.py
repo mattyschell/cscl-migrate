@@ -71,24 +71,39 @@ if __name__ == "__main__":
         objectnames = listmanager(listname).names
 
         for objectname in objectnames:
-            
+
             csclelement = csclelementmgr.CSCLElement(objectname)
 
-            targetkount = csclelement.count(gdb2verify)
-
-            if targetkount is not None:
+            try:
+                targetkount = csclelement.count(gdb2verify)
                 
-                sourcekount = csclelement.count(gdbsource)
+            except Exception as ex:
+                targetkount = 0
+                logging.error('Count failed for {0} in {1}: {2}'.format(
+                     objectname
+                    ,gdb2verify
+                    ,ex)
+                )
 
-                if int(sourcekount) == int(targetkount):
-                    logger.info('PASS:{0} | source:{1} | target:{2} | '.format(csclelement.name
-                                                                              ,sourcekount
-                                                                              ,targetkount))
-                else:
-                    badkount += 1
-                    logger.error('FAIL:{0} | source:{1} | target:{2} | '.format(csclelement.name
-                                                                               ,sourcekount
-                                                                               ,targetkount))
+            try:
+                sourcekount = csclelement.count(gdbsource)
+            except Exception as ex:
+                sourcekount = 0
+                logging.error('Count failed for {0} in {1}: {2}'.format(
+                     objectname
+                    ,gdbsource
+                    ,ex)
+                )
+
+            if int(sourcekount) == int(targetkount):
+                logger.info('PASS:{0} | source:{1} | target:{2} | '.format(csclelement.name
+                                                                            ,sourcekount
+                                                                            ,targetkount))
+            else:
+                badkount += 1
+                logger.error('FAIL:{0} | source:{1} | target:{2} | '.format(csclelement.name
+                                                                            ,sourcekount
+                                                                            ,targetkount))
     sys.exit(badkount)
 
 

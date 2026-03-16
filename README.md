@@ -68,7 +68,7 @@ This step will include a warning "CSCL_Topology is missing!" This is expected. W
 
 ### 4. Load To Enterprise Geodatabase
 
-The default .bat files output a reprojected file geodatabase named cscl-migrate-reproj.gdb. Using ArcGIS Pro copy all items in the file geodatabase. Paste into the enterprise geodatabase. 
+The default .bat files above output a reprojected file geodatabase named cscl-migrate-reproj.gdb. Using ArcGIS Pro copy all items in the file geodatabase. Paste into the enterprise geodatabase. 
 
 This should run for about an hour. This step can't be scripted easily, only the magic GUI can deal with dependencies and avoid _1s.
 

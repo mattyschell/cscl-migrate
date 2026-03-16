@@ -83,7 +83,7 @@ if %ERRORLEVEL% NEQ 0 (
     EXIT /B 0
 )
 
-CALL %PROPY% ^
+CALL %OLDPY% ^
     %BASEPATH%\cscl-migrate\src\py\verifycounts.py ^
     listoftablelists %TARGETGDB% %SRCGDB%
 

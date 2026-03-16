@@ -114,15 +114,16 @@ class CSCLElement(GeodatabaseElement):
     def count(self
              ,gdb):
 
-        if self.istable:
+        kount = 0
+        if self.istable and self.exists(gdb):
             try:
                 kount = int(arcpy.management.GetCount(os.path.join(
-                    gdb,self.itempath))[0])
+                                                      gdb
+                                                     ,self.itempath))[0])
             except arcpy.ExecuteError:
-                kount = 0
-            return kount
-        else:
-            return None
+                raise
+
+        return kount
 
     def gettupletypes(self):
 
