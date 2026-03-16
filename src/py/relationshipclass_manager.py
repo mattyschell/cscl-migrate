@@ -23,7 +23,8 @@ class RelationshipClass(GeodatabaseElement):
                 ,notification = 'NONE'):
 
         # fullpath,exists,copy inherited from csclelementmgr.GeodatabaseElement 
-        super().__init__(name)
+        # python 2 and 3 compatible
+        super(RelationshipClass, self).__init__(name)
 
         self.geodatabase    = geodatabase
         self.name           = name
@@ -95,13 +96,16 @@ class RelationshipClass(GeodatabaseElement):
         
         return self.__dict__.copy()
 
-    def describe_pretty(self
-                       ,data: dict): 
+    def describe_pretty(self, data):
 
-        # returns a string
-        return pformat(data
-                      ,indent=2
-                      ,width=80)  
+        """
+        Pretty print a dictionary.
+
+        :param dict data: The dictionary to format
+        :return: A formatted string
+        """
+        return pformat(data, indent=2, width=80)
+
 
     def create(self):
 
@@ -135,12 +139,19 @@ class RelationshipClass(GeodatabaseElement):
             except Exception as ex:
                 msg = (
                     'CreateRelationshipClass failed.\n'
-                    f'Origin path: {origin_path}\n'
-                    f'Destination path: {dest_path}\n'
-                    f'Relationship class: {self.fullpath(self.geodatabase)}\n'
-                    f'Parameters: {params}\n'
-                    f'Error: {ex}'
+                    'Origin path: {0}\n'
+                    'Destination path: {1}\n'
+                    'Relationship class: {2}\n'
+                    'Parameters: {3}\n'
+                    'Error: {4}'.format(
+                        origin_path,
+                        dest_path,
+                        self.fullpath(self.geodatabase),
+                        params,
+                        ex
+                    )
                 )
+
                 raise RuntimeError(msg)
         else:
             relationship_table = os.path.join(self.geodatabase

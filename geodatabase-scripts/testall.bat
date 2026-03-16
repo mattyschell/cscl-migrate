@@ -14,7 +14,9 @@ if exist "%OLDPY1%" (
     set OLDPY=%OLDPY22%
 ) 
 call %PROPY% .\src\py\testcsclelementmgr.py
-rem csclelementmgr is used in py27 extract
+rem csclelementmgr is used in py27 extract and source-target verification
 call %OLDPY% .\src\py\testcsclelementmgr.py
 call %PROPY% .\src\py\test_relationshipclass_manager.py 
+rem py27 compatibility for relationship classes is probably not required
+call %OLDPY% .\src\py\test_relationshipclass_manager.py
 

@@ -1,6 +1,6 @@
 import unittest
 import os
-from pathlib import Path
+#from pathlib import Path
 import tempfile
 
 import filegeodatabasemanager
@@ -11,7 +11,7 @@ class RelationshipClassManagerTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(self):
 
-        self.tempdir = Path(tempfile.gettempdir())
+        self.tempdir = tempfile.gettempdir()
         self.testdatadir = os.path.join(
             os.path.dirname(os.path.abspath(__file__))
            ,'testdata')
