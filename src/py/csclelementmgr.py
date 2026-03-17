@@ -43,7 +43,7 @@ class CSCLElement(GeodatabaseElement):
     def __init__(self
                 ,elementname):
 
-        #python 2 and 3 compatible
+        # python 2 and 3 compatible
         super(CSCLElement, self).__init__(elementname)
          
         self.name = elementname
@@ -101,15 +101,7 @@ class CSCLElement(GeodatabaseElement):
             if self.name in listmanager(featuredatasetname).names:
                 return featuredatasetname
             
-        return None
-
-    def exists(self
-              ,gdb):
-
-        if arcpy.Exists(os.path.join(gdb, self.itempath)):
-            return True
-        else:
-            return False   
+        return None 
 
     def count(self
              ,gdb):
