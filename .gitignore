@@ -7,3 +7,4 @@ test-*.bat
 dev-*
 stg-*
 prd-*
+*local.*

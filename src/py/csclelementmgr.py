@@ -23,6 +23,10 @@ class GeodatabaseElement(object):
         return os.path.join(gdb
                            ,self.itempath)
 
+    def schemaname(self):
+
+        return arcpy.Describe(self.geodatabase).connectionProperties.user.upper()
+
     def exists(self
               ,gdb=None):
         
