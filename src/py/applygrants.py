@@ -3,7 +3,6 @@ import time
 import sys
 import logging
 import argparse
-import arcpy
 
 import csclelementmgr
 from resourcemanager import listmanager
@@ -11,9 +10,9 @@ from resourcemanager import listmanager
 
 def main():
 
-    parser = argparse.ArgumentParser(description="QA a child CSCL dataset")
+    parser = argparse.ArgumentParser(description="Apply grants to CSCL data")
 
-    parser.add_argument("targetgdb", help="Dataset name in cscl")
+    parser.add_argument("targetgdb", help="Geodatabase")
     args = parser.parse_args()
 
     timestr = time.strftime("%Y%m%d-%H%M%S")

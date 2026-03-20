@@ -33,6 +33,12 @@ if %ERRORLEVEL% NEQ 0 (
     echo failed applygrants on %TARGETGDB% >> %BATLOG%
     EXIT /B 0
 )
+CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\createversions.py %TARGETGDB%
+if %ERRORLEVEL% NEQ 0 (
+    echo. >> %BATLOG%
+    echo failed createversions on %TARGETGDB% >> %BATLOG%
+    EXIT /B 0
+)
 CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\verifycatalog.py listoflists %TARGETGDB% 
 if %ERRORLEVEL% NEQ 0 (
     echo. >> %BATLOG%
