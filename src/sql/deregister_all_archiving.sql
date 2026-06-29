@@ -17,12 +17,16 @@ call sde.nyc_archive_utils.deregister_archiving('ATOMICPOLYGON' ,'ATOMICPOLYGON_
 call sde.nyc_archive_utils.deregister_archiving('BLOCKFACE' ,'BLOCKFACE_H');
 call sde.nyc_archive_utils.deregister_archiving('BOROUGH' ,'BOROUGH_H');
 call sde.nyc_archive_utils.deregister_archiving('BUSINESSIMPROVEMENTDISTRICT' ,'BUSINESSIMPROVEMENTDISTRICT_H');
+call sde.nyc_archive_utils.deregister_archiving('CDTA2020' ,'CDTA2020_H');
+call sde.nyc_archive_utils.deregister_archiving('CDTAEQUIV2020' ,'CDTAEQUIV2020_H');
 call sde.nyc_archive_utils.deregister_archiving('CELLULARCALLBOX' ,'CELLULARCALLBOX_H');
 call sde.nyc_archive_utils.deregister_archiving('CENSUSBLOCK2000' ,'CENSUSBLOCK2000_H');
 call sde.nyc_archive_utils.deregister_archiving('CENSUSBLOCK2010' ,'CENSUSBLOCK2010_H');
+call sde.nyc_archive_utils.deregister_archiving('CENSUSBLOCK2020' ,'CENSUSBLOCK2020_H');
 call sde.nyc_archive_utils.deregister_archiving('CENSUSTRACT1990' ,'CENSUSTRACT1990_H');
 call sde.nyc_archive_utils.deregister_archiving('CENSUSTRACT2000' ,'CENSUSTRACT2000_H');
 call sde.nyc_archive_utils.deregister_archiving('CENSUSTRACT2010' ,'CENSUSTRACT2010_H');
+call sde.nyc_archive_utils.deregister_archiving('CENSUSTRACT2020' ,'CENSUSTRACT2020_H');
 call sde.nyc_archive_utils.deregister_archiving('CENTERLINEHISTORY' ,'CENTERLINEHISTORY_H');
 call sde.nyc_archive_utils.deregister_archiving('CENTERLINE' ,'CENTERLINE_H1');
 call sde.nyc_archive_utils.deregister_archiving('CITYCOUNCILDISTRICT' ,'CITYCOUNCILDISTRICT_H');
@@ -66,6 +70,8 @@ call sde.nyc_archive_utils.deregister_archiving('NEIGHBORHOODPUMACODES' ,'NEIGHB
 call sde.nyc_archive_utils.deregister_archiving('NEIGHBORHOOD' ,'NEIGHBORHOOD_H');
 call sde.nyc_archive_utils.deregister_archiving('NODE' ,'NODE_H');
 call sde.nyc_archive_utils.deregister_archiving('NONSTREETFEATURE' ,'NONSTREETFEATURE_H');
+call sde.nyc_archive_utils.deregister_archiving('NTA2020' ,'NTA2020_H');
+call sde.nyc_archive_utils.deregister_archiving('NTAEQUIV2020' ,'NTAEQUIV2020_H');
 call sde.nyc_archive_utils.deregister_archiving('NYPDPATROLBOROUGH' ,'NYPDBOROUGHCOMMAND_H');
 call sde.nyc_archive_utils.deregister_archiving('NYPDPRECINCT' ,'NYPDPRECINCT_H');
 call sde.nyc_archive_utils.deregister_archiving('NYPDSECTOR' ,'NYPDSECTOR_NEW_H');

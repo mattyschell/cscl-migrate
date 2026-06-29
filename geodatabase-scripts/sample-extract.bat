@@ -1,6 +1,7 @@
 set ENV=xxx
 set SRCDB=xxxxxx1
 set BASEPATH=C:\xxx
+rem create this folder including \env
 set WORKDIR=C:\Temp\cscl-migrate\%ENV%
 set INGDB=%BASEPATH%\Connections\oracle19c\%ENV%\CSCL-%SRCDB%\cscl.sde
 set TARGETLOGDIR=%BASEPATH%\cscl-migrate\geodatabase-scripts\logs\

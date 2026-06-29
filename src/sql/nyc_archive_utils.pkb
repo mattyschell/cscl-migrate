@@ -171,6 +171,9 @@ AS
         -- sample call as data owner (CSCL)
         -- call sde.register_archiving('ACCESSPOINTSTOENTRANCEPOINTS' ,'ACCESSPOINTSTOENTRANCEPOINTS_H' ,1399742968);
         
+        -- see doc\generate_register_all_archiving.sql
+        -- to generate calls 
+        
         h_registration_id   number;
         psql                varchar2(4000);
         f_registration_id   number;

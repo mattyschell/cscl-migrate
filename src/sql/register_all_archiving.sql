@@ -17,12 +17,16 @@ call sde.nyc_archive_utils.register_archiving('ATOMICPOLYGON' ,'ATOMICPOLYGON_H'
 call sde.nyc_archive_utils.register_archiving('BLOCKFACE' ,'BLOCKFACE_H' ,1272903360);
 call sde.nyc_archive_utils.register_archiving('BOROUGH' ,'BOROUGH_H' ,1273245334);
 call sde.nyc_archive_utils.register_archiving('BUSINESSIMPROVEMENTDISTRICT' ,'BUSINESSIMPROVEMENTDISTRICT_H' ,1273245334);
+call sde.nyc_archive_utils.register_archiving('CDTA2020' ,'CDTA2020_H' ,1774579276);
+call sde.nyc_archive_utils.register_archiving('CDTAEQUIV2020' ,'CDTAEQUIV2020_H' ,1774579274);
 call sde.nyc_archive_utils.register_archiving('CELLULARCALLBOX' ,'CELLULARCALLBOX_H' ,1273245334);
 call sde.nyc_archive_utils.register_archiving('CENSUSBLOCK2000' ,'CENSUSBLOCK2000_H' ,1273245334);
 call sde.nyc_archive_utils.register_archiving('CENSUSBLOCK2010' ,'CENSUSBLOCK2010_H' ,1273245334);
+call sde.nyc_archive_utils.register_archiving('CENSUSBLOCK2020' ,'CENSUSBLOCK2020_H' ,1774579240);
 call sde.nyc_archive_utils.register_archiving('CENSUSTRACT1990' ,'CENSUSTRACT1990_H' ,1273245334);
 call sde.nyc_archive_utils.register_archiving('CENSUSTRACT2000' ,'CENSUSTRACT2000_H' ,1273245334);
 call sde.nyc_archive_utils.register_archiving('CENSUSTRACT2010' ,'CENSUSTRACT2010_H' ,1273245334);
+call sde.nyc_archive_utils.register_archiving('CENSUSTRACT2020' ,'CENSUSTRACT2020_H' ,1774579236);
 call sde.nyc_archive_utils.register_archiving('CENTERLINEHISTORY' ,'CENTERLINEHISTORY_H' ,1272903371);
 call sde.nyc_archive_utils.register_archiving('CENTERLINE' ,'CENTERLINE_H1' ,1273244647);
 call sde.nyc_archive_utils.register_archiving('CITYCOUNCILDISTRICT' ,'CITYCOUNCILDISTRICT_H' ,1273245334);
@@ -66,6 +70,8 @@ call sde.nyc_archive_utils.register_archiving('NEIGHBORHOODPUMACODES' ,'NEIGHBOR
 call sde.nyc_archive_utils.register_archiving('NEIGHBORHOOD' ,'NEIGHBORHOOD_H' ,1273245334);
 call sde.nyc_archive_utils.register_archiving('NODE' ,'NODE_H' ,1273244647);
 call sde.nyc_archive_utils.register_archiving('NONSTREETFEATURE' ,'NONSTREETFEATURE_H' ,1273244647);
+call sde.nyc_archive_utils.register_archiving('NTA2020' ,'NTA2020_H' ,1774579231);
+call sde.nyc_archive_utils.register_archiving('NTAEQUIV2020' ,'NTAEQUIV2020_H' ,1774579228);
 call sde.nyc_archive_utils.register_archiving('NYPDPATROLBOROUGH' ,'NYPDBOROUGHCOMMAND_H' ,1273245334);
 call sde.nyc_archive_utils.register_archiving('NYPDPRECINCT' ,'NYPDPRECINCT_H' ,1291155153);
 call sde.nyc_archive_utils.register_archiving('NYPDSECTOR' ,'NYPDSECTOR_NEW_H' ,1285258199);

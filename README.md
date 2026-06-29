@@ -34,7 +34,7 @@ Review and update the environmentals in the batch file.
 > geodatabase-scripts\sample-extract.bat
 ```
 
-Step 1 creates an empty file geodatabase. Then it use python 2 arcpy with class extension readers to copy/paste from the Enterprise Geodatabase to cscl-migrate.gdb. 
+Step 1 creates an empty file geodatabase. Then it uses python 2 Arcpy with class extension readers to copy/paste from the Enterprise Geodatabase to cscl-migrate.gdb. 
 
     \[dev|stg|prd]\cscl-migrate.gdb
 
