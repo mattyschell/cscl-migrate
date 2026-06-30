@@ -2,6 +2,7 @@ import os
 import time
 import sys
 import logging
+import gc
 import arcpy
 from filegeodatabasemanager import localgdb 
 # crossing the py2 py3 chasm
@@ -30,10 +31,14 @@ def copypaste(psrcgdb
                              ,pitempath)
         
     try:
+        copy_start = time.time()
         
         arcpy.management.Copy(srcitem
                              ,targetitem)
 
+        copy_time = time.time() - copy_start
+        logging.debug("Copy completed in {0:.2f} seconds".format(copy_time))
+        
         retval = 0
 
     except arcpy.ExecuteError:
@@ -43,6 +48,11 @@ def copypaste(psrcgdb
     except Exception as e:
         logging.error("failure copying {0} to {1}".format(srcitem,targetitem))
         logging.error("unexpected error {0}".format(e))
+    
+    finally:
+        # Force garbage collection and clear arcpy workspace cache
+        arcpy.ClearWorkspaceCache()
+        gc.collect()
         
     return retval
 

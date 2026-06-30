@@ -78,6 +78,8 @@ CALL %PROPY% ^
     listoflists %TARGETGDB%
 
 if %ERRORLEVEL% NEQ 0 (
+    echo.
+    echo failed catalog verification of output %TARGETGDB%
     echo. >> %BATLOG%
     echo failed catalog verification of output %TARGETGDB% >> %BATLOG%
     EXIT /B 0
@@ -88,6 +90,8 @@ CALL %OLDPY% ^
     listoftablelists %TARGETGDB% %SRCGDB%
 
 if %ERRORLEVEL% NEQ 0 (
+    echo.
+    echo failed row count verification of output %TARGETGDB%
     echo. >> %BATLOG% && echo failed row count verification of output ^
     %TARGETGDB% >> %BATLOG%
     EXIT /B 0
