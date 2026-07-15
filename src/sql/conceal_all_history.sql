@@ -22,7 +22,7 @@ call sde.nyc_archive_utils.conceal_history('CENSUSBLOCK2020');
 call sde.nyc_archive_utils.conceal_history('CENSUSTRACT1990');
 call sde.nyc_archive_utils.conceal_history('CENSUSTRACT2000');
 call sde.nyc_archive_utils.conceal_history('CENSUSTRACT2010');
-call sde.nyc_archive_utils.conceal_history('CENSUSTRACT2020')
+call sde.nyc_archive_utils.conceal_history('CENSUSTRACT2020');
 call sde.nyc_archive_utils.conceal_history('CENTERLINE');
 call sde.nyc_archive_utils.conceal_history('CENTERLINEHISTORY');
 call sde.nyc_archive_utils.conceal_history('CITYCOUNCILDISTRICT');
