@@ -18,19 +18,19 @@ We should think of the CSCL schema in the development environment as a shared in
 
 ### Shared Integration Schema
 
-* Ad hoc schema changes in a shared enviornment can break the environment and disrupt the work of others.
+* Ad hoc schema changes in a shared environment can break the environment and disrupt the work of others.
 * Schema changes should go through review and source control. All changes should be deliberate and traceable.
-* Separation of concerns: Database development should happen in sandbox schemas or similar environments, not in the shared integration schema.
+* Separation of concerns: Database development should happen in sandbox schemas or similar isolated environments, not in the shared integration schema.
 * Restricting access is a reliability measure, not a barrier to development.
-* Ad hoc database changes lead to configuration drift. The risk is creation of undocumented drift from the baseline that we have documented and tracked in source control.
+* Ad hoc database changes lead to configuration drift. The risk is undocumented divergence from the baseline that we have documented and tracked in source control.
 
-### Recommendations: In Order From Best Practice to YOLO Development
+### Recommendations: In Order From Best Practice to Highest Risk
 
-SDE.Default version should be made "Public" in development. This is data, not data definition. 
+SDE.Default version should be made "Public" in development. This change supports editing workflows without granting unrestricted access to shared schemas.
 
 1. Set up sandbox schema(s) for the development team.
-2. Developers file issues for schema changes in the shared integration schema and we implement them as a team. 
-3. "Share the schema owner credentials for Version Management/GDB Maintenance tasks" with the understanding that the developers own the database migration baseline.  
-4. "Share the schema owner credentials for Version Management/GDB Maintenance tasks" and the developers do not own divergence/issues from the baseline. Someone else must clean it up.
+2. Developers submit requests for schema changes to the shared integration schema and we implement them through the team-reviewed process. 
+3. "Share the schema owner credentials for Version Management/GDB Maintenance tasks" with the understanding that the developers are responsible for maintaining the database migration baseline.
+4. "Share the schema owner credentials for Version Management/GDB Maintenance tasks" and the developers are not resposible for remediating divergence. Someone else must clean it up.
 
 
