@@ -39,18 +39,13 @@ if %ERRORLEVEL% NEQ 0 (
     echo failed createversions on %TARGETGDB% >> %BATLOG%
     EXIT /B 0
 )
-CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\verifycatalog.py listoflists %TARGETGDB% 
+set VERIFY_TARGET_GDB=%TARGETGDB%
+set VERIFY_SOURCE_GDB=%SRCGDB%
+set VERIFYCOUNTS_MODE=listofbasetablelists
+set VERIFYCOUNTS_PY=%OLDPY%
+CALL %BASEPATH%\cscl-migrate\geodatabase-scripts\run-verification.bat
 if %ERRORLEVEL% NEQ 0 (
-    echo. >> %BATLOG%
-    echo failed catalog verification of output %TARGETGDB% >> %BATLOG%
     EXIT /B 0
-) 
-rem use py27 with class extensions to get source counts
-CALL %OLDPY% %BASEPATH%\cscl-migrate\src\py\verifycounts.py listofbasetablelists %TARGETGDB% %SRCGDB%
-if %ERRORLEVEL% NEQ 0 (
-    echo. >> %BATLOG% && echo failed row count verification of output %TARGETGDB% >> %BATLOG% 
-    EXIT /B 0
-) 
-echo. >> %BATLOG% && echo verified catalog and counts of %TARGETGDB% >> %BATLOG% 
+)
 echo. >> %BATLOG% && echo finished %ENV% cscl-load on %date% at %time% >> %BATLOG%
 EXIT /B 0

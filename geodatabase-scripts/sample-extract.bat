@@ -24,18 +24,15 @@ if %ERRORLEVEL% NEQ 0 (
     echo failed to extract %INGDB% >> %BATLOG%
     EXIT /B 0
 ) 
-CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\verifycatalog.py listoflists %WORKDIR%\cscl-migrate.gdb
+set VERIFY_TARGET_GDB=%WORKDIR%\cscl-migrate.gdb
+set VERIFY_SOURCE_GDB=%INGDB%
+set VERIFYCOUNTS_MODE=listofbasetablelists
+set VERIFYCOUNTS_PY=%PROPY%
+set VERIFY_LOG_LABEL=%WORKDIR%\cscl-migrate.gdb
+CALL %BASEPATH%\cscl-migrate\geodatabase-scripts\run-verification.bat
 if %ERRORLEVEL% NEQ 0 (
-    echo. >> %BATLOG%
-    echo failed verification of output %WORKDIR%\cscl-migrate.gdb >> %BATLOG%
     EXIT /B 0
-) 
-CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\verifycounts.py listofbasetablelists %WORKDIR%\cscl-migrate.gdb %INGDB%
-if %ERRORLEVEL% NEQ 0 (
-    echo. >> %BATLOG% && echo failed row count verification of output %TARGETGDB% >> %BATLOG% 
-    EXIT /B 0
-) 
-echo. >> %BATLOG% && echo verified output %WORKDIR%\cscl-migrate.gdb >> %BATLOG% 
+)
 echo. >> %BATLOG% && echo extracted %INGDB% to %WORKDIR% >> %BATLOG%
 echo. >> %BATLOG% && echo completed %ENV% cscl-extract on %date% at %time% >> %BATLOG%
    

@@ -73,32 +73,14 @@ sqlplus %SRCSCHEMA%/"%SRCPASSWORD%"@%SRCDB% ^
 sqlplus %TARGETSCHEMA%/"%TARGETPASSWORD%"@%TARGETDB% ^
     @src/sql/conceal_all_history.sql
 
-CALL %PROPY% ^
-    %BASEPATH%\cscl-migrate\src\py\verifycatalog.py ^
-    listoflists %TARGETGDB%
-
+set VERIFY_TARGET_GDB=%TARGETGDB%
+set VERIFY_SOURCE_GDB=%SRCGDB%
+set VERIFYCOUNTS_MODE=listoftablelists
+set VERIFYCOUNTS_PY=%OLDPY%
+CALL %BASEPATH%\cscl-migrate\geodatabase-scripts\run-verification.bat
 if %ERRORLEVEL% NEQ 0 (
-    echo.
-    echo failed catalog verification of output %TARGETGDB%
-    echo. >> %BATLOG%
-    echo failed catalog verification of output %TARGETGDB% >> %BATLOG%
     EXIT /B 0
 )
-
-CALL %OLDPY% ^
-    %BASEPATH%\cscl-migrate\src\py\verifycounts.py ^
-    listoftablelists %TARGETGDB% %SRCGDB%
-
-if %ERRORLEVEL% NEQ 0 (
-    echo.
-    echo failed row count verification of output %TARGETGDB%
-    echo. >> %BATLOG% && echo failed row count verification of output ^
-    %TARGETGDB% >> %BATLOG%
-    EXIT /B 0
-)
-
-echo. >> %BATLOG% && echo verified catalog and counts of ^
-%TARGETGDB% >> %BATLOG%
 
 echo. >> %BATLOG% && echo completed %ENV% migrate-archive on ^
 %date% at %time% >> %BATLOG%
