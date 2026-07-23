@@ -4,6 +4,8 @@ set BASEPATH=C:\xxx
 set TARGETGDB=%BASEPATH%\Connections\oracle19c\%ENV%\GIS-%TARGETDB%\xxxx.sde
 set SRCGDB=%BASEPATH%\Connections\oracle19c\%ENV%\xxxx\xxx.sde
 set TARGETLOGDIR=%BASEPATH%\cscl-migrate\geodatabase-scripts\logs\
+rem Set TARGETSCHEMA to the target database schema owner. Use CSCL for production, or another schema for sandbox
+set TARGETSCHEMA=CSCL
 set PYTHON1=C:\Progra~1\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe
 set PYTHON2=C:\Users\%USERNAME%\AppData\Local\Programs\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe
 if exist "%PYTHON1%" (
@@ -27,7 +29,11 @@ if %ERRORLEVEL% NEQ 0 (
     EXIT /B 0
 )
 echo. >> %BATLOG% && echo finalized load to %TARGETGDB% >> %BATLOG%
-CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\applygrants.py %TARGETGDB%
+if /i "%TARGETSCHEMA%"=="CSCL" (
+    CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\applygrants.py %TARGETGDB%
+) else (
+    CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\applygrants.py %TARGETGDB% --skip-grants
+)
 if %ERRORLEVEL% NEQ 0 (
     echo. >> %BATLOG%
     echo failed applygrants on %TARGETGDB% >> %BATLOG%

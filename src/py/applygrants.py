@@ -13,6 +13,8 @@ def main():
     parser = argparse.ArgumentParser(description="Apply grants to CSCL data")
 
     parser.add_argument("targetgdb", help="Geodatabase")
+    parser.add_argument("--skip-grants", action="store_true", default=False,
+                        help="Skip applying grants (useful for sandbox/non-production schemas)")
     args = parser.parse_args()
 
     timestr = time.strftime("%Y%m%d-%H%M%S")
@@ -27,6 +29,10 @@ def main():
         filename=targetlog,
         filemode='w'
     )
+
+    if args.skip_grants:
+        logging.info("Skipping grants application as requested")
+        return 0
 
     listbuckets   = listmanager('listoflists')
     readonlyusers = listmanager('allreadonly')
@@ -98,9 +104,9 @@ def main():
             "Failed to apply all grants on {0}. Review {1}".format(
                 args.targetgdb
                ,targetlog))
-
-    sys.exit(badkount)
+    
+    return badkount
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
