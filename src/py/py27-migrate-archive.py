@@ -50,8 +50,14 @@ def copypaste(psrcgdb
         logging.error("unexpected error {0}".format(e))
     
     finally:
-        # Force garbage collection and clear arcpy workspace cache
-        arcpy.ClearWorkspaceCache()
+        # ArcPy API differs across ArcMap/Pro; prefer 10.x tool name when present.
+        try:
+            if hasattr(arcpy, 'ClearWorkspaceCache_management'):
+                arcpy.ClearWorkspaceCache_management()
+            elif hasattr(arcpy, 'management') and hasattr(arcpy.management, 'ClearWorkspaceCache'):
+                arcpy.management.ClearWorkspaceCache()
+        except Exception as e:
+            logging.warning("workspace cache clear failed: {0}".format(e))
         gc.collect()
         
     return retval
