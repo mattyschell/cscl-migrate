@@ -61,17 +61,43 @@ echo. >> %BATLOG% && echo finished py27 migrate archive from ^
 sqlplus %TARGETSCHEMA%/"%TARGETPASSWORD%"@%TARGETDB% ^
     @src/sql/update_all_base_ids.sql ^
     %BASESQLLOG%update_all_base_ids.log ^
-    %BASESQLLOG%-update_all_base_ids.log
+    %BASESQLLOG%update_all_base_ids.log
+if %ERRORLEVEL% NEQ 0 (
+    echo. >> %BATLOG% && echo ERROR in update_all_base_ids on %date% at %time% >> %BATLOG%
+    EXIT /B %ERRORLEVEL%
+)
 
 sqlplus %TARGETSCHEMA%/"%TARGETPASSWORD%"@%TARGETDB% ^
     @src/sql/register_all_archiving.sql ^
     %BASESQLLOG%register_all_archiving.log
+if %ERRORLEVEL% NEQ 0 (
+    echo. >> %BATLOG% && echo ERROR in register_all_archiving on %date% at %time% >> %BATLOG%
+    EXIT /B %ERRORLEVEL%
+)
 
+echo. >> %BATLOG% && echo starting conceal_all_history in %SRCSCHEMA% on ^
+%SRCDB% on %date% at %time% >> %BATLOG%
 sqlplus %SRCSCHEMA%/"%SRCPASSWORD%"@%SRCDB% ^
-    @src/sql/conceal_all_history.sql
+    @src/sql/conceal_all_history.sql ^
+    %BASESQLLOG%conceal_all_history.log
+if %ERRORLEVEL% NEQ 0 (
+    echo. >> %BATLOG% && echo ERROR in conceal_all_history [%SRCSCHEMA%] on %date% at %time% >> %BATLOG%
+    EXIT /B %ERRORLEVEL%
+)
+echo. >> %BATLOG% && echo finished conceal_all_history in %SRCSCHEMA% on ^
+%SRCDB% on %date% at %time% >> %BATLOG%
 
+echo. >> %BATLOG% && echo starting conceal_all_history in %TARGETSCHEMA% on ^
+%TARGETDB% on %date% at %time% >> %BATLOG%
 sqlplus %TARGETSCHEMA%/"%TARGETPASSWORD%"@%TARGETDB% ^
-    @src/sql/conceal_all_history.sql
+    @src/sql/conceal_all_history.sql ^
+    %BASESQLLOG%conceal_all_history.log
+if %ERRORLEVEL% NEQ 0 (
+    echo. >> %BATLOG% && echo ERROR in conceal_all_history [%TARGETSCHEMA%] on %date% at %time% >> %BATLOG%
+    EXIT /B %ERRORLEVEL%
+)
+echo. >> %BATLOG% && echo finished conceal_all_history in %TARGETSCHEMA% on ^
+%TARGETDB% on %date% at %time% >> %BATLOG%
 
 set VERIFY_TARGET_GDB=%TARGETGDB%
 set VERIFY_SOURCE_GDB=%SRCGDB%

@@ -1,3 +1,5 @@
+WHENEVER SQLERROR EXIT SQL.SQLCODE;
+
 call sde.nyc_archive_utils.conceal_history('ACCESSPOINT');
 call sde.nyc_archive_utils.conceal_history('ACCESSPOINTSTOENTRANCEPOINTS');
 call sde.nyc_archive_utils.conceal_history('ACCESSPOINTTOADDRESSPOINT');
