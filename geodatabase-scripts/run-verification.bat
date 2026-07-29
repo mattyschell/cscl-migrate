@@ -40,6 +40,20 @@ if ERRORLEVEL %VERIFY_CATALOG_FAIL_LEVEL% (
     EXIT /B 1
 )
 
+if /i "%TARGETSCHEMA%"=="CSCL" (
+    CALL %VERIFYCATALOG_PY% %BASEPATH%\cscl-migrate\src\py\verifydomain.py alldomain %VERIFY_TARGET_GDB% %TARGETSCHEMA%
+    
+    if %ERRORLEVEL% NEQ 0 (
+        echo.
+        echo failed domain verification of output %VERIFY_TARGET_GDB%
+        if defined BATLOG (
+            echo. >> %BATLOG%
+            echo failed domain verification of output %VERIFY_TARGET_GDB% >> %BATLOG%
+        )
+        EXIT /B 1
+    )
+)
+
 CALL %VERIFYCOUNTS_PY% %BASEPATH%\cscl-migrate\src\py\verifycounts.py %VERIFYCOUNTS_MODE% %VERIFY_TARGET_GDB% %VERIFY_SOURCE_GDB%
 
 if %ERRORLEVEL% NEQ 0 (
