@@ -18,6 +18,7 @@ if __name__ == "__main__":
     listname    = sys.argv[1]
     gdb2verify  = sys.argv[2]
     targetschema = sys.argv[3]  # schema owner to verify domains against
+    readonly_user = sys.argv[4] if len(sys.argv) > 4 else None
 
     arcpy.env.workspace = gdb2verify
 
@@ -41,6 +42,8 @@ if __name__ == "__main__":
     
     logger.info('starting domain verification of {0} at {1}'.format(gdb2verify
                                                                    ,datetime.datetime.now()))
+    if readonly_user:
+        logger.info('read-only user context: {0}'.format(readonly_user))
     try:
         desc = arcpy.Describe(arcpy.env.workspace)
     except:

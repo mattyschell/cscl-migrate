@@ -108,6 +108,13 @@ if %ERRORLEVEL% NEQ 0 (
     EXIT /B 0
 )
 
+if /i "%TARGETSCHEMA%"=="CSCL" (
+    CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\verifyreadonlycounts.py %TARGETGDB% --data-owner-schema %TARGETSCHEMA%
+    if %ERRORLEVEL% NEQ 0 (
+        EXIT /B 0
+    )
+)
+
 echo. >> %BATLOG% && echo completed %ENV% migrate-archive on ^
 %date% at %time% >> %BATLOG%
 
