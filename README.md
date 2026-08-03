@@ -163,11 +163,13 @@ Complete verification does the following:
 1. Runs data-owner verification. This includes catalog verification, domain verification (if the owner is CSCL), and source vs target row count verification.
 2. Stops immediately if data-owner verification fails.
 3. When the target schema is CSCL, runs readonly-user verification
-4. For each readonly user, verifies access to all data owner content
-5. Returns failure if any readonly user verification fails
+4. For each readonly user, verifies access to all content
+5. Returns failure if any verification fails
 
 ```bat
 > geodatabase-scripts\sample-complete-verification.bat
+> rem or if you want to check readonly users and nothing else
+> rem geodatabase-scripts\sample-readonly-verification.bat
 ```
 
 ## Teardown 

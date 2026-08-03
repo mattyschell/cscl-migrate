@@ -83,19 +83,33 @@ def count_with_owner(csclelement, gdb, owner, readonly_user):
     if not csclelement.istable:
         return 0
 
+    attempts = []
+
     for itempath in candidate_itempaths(csclelement.itempath, owner):
         fullpath = os.path.join(gdb, itempath)
         if not arcpy.Exists(fullpath):
+            attempts.append('{0} [missing]'.format(fullpath))
             continue
         try:
             return int(arcpy.management.GetCount(fullpath)[0])
         except arcpy.ExecuteError:
+            errmsg = arcpy.GetMessages(2) or arcpy.GetMessages()
+            errmsg = errmsg.replace('\r', ' ').replace('\n', ' | ')
+            attempts.append('{0} [GetCount failed: {1}]'.format(fullpath, errmsg))
+            continue
+        except Exception as ex:
+            attempts.append('{0} [GetCount raised: {1}]'.format(fullpath, ex))
             continue
 
-    raise RuntimeError('unable to count {0}.{1} as {2}'.format(
+    details = ''
+    if attempts:
+        details = ' | attempted paths: {0}'.format(' || '.join(attempts))
+
+    raise RuntimeError('unable to count {0}.{1} as {2}{3}'.format(
         owner.upper(),
         csclelement.name,
-        readonly_user
+        readonly_user,
+        details
     ))
 
 
