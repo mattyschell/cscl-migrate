@@ -14,6 +14,8 @@ def main():
     parser = argparse.ArgumentParser(description="Create CSCL versions")
 
     parser.add_argument("targetgdb", help="Geodatabase")
+    parser.add_argument("--schema-name", default="CSCL",
+                        help="Expected calling schema/user (default: CSCL)")
     args = parser.parse_args()
 
     timestr = time.strftime("%Y%m%d-%H%M%S")
@@ -28,6 +30,25 @@ def main():
         filename=targetlog,
         filemode='w'
     )
+
+    try:
+        calling_schema = arcpy.Describe(args.targetgdb).connectionProperties.user.upper()
+    except Exception as ex:
+        logging.error('Unable to determine calling schema for {0}: {1}'.format(
+            args.targetgdb,
+            ex
+        ))
+        sys.exit(1)
+
+    expected_schema = args.schema_name.upper()
+
+    if calling_schema != expected_schema:
+        # https://github.com/mattyschell/cscl-migrate/issues/63
+        logging.info('Skipping createversions because schema is {0}, not expected {1}'.format(
+            calling_schema,
+            expected_schema
+        ))
+        sys.exit(0)
 
     badkount = 0
     # these must be ordered top to bottom

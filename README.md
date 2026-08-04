@@ -102,7 +102,7 @@ Then migrate. This will transfer all archive data and update object ids on the t
 
 ### 6a. Manually Migrate Catastrophically Failed Archive Classes
 
-Review the archive migration logs, especially the final verifycounts-*.log. One or two _H tables consistently fail to transfer completely and will require attention. Don't read into the ESRI errors that indicate memory issues.  "Memory" in this context appears to refer to some sort of internal constructor step, not memory exhaustion.
+Review the archive migration logs, especially the final verifycounts-*.log. Several _H tables may fail to transfer completely and will require attention. Don't read into the ESRI errors that indicate memory issues.  "Memory" in this context appears to refer to some sort of internal constructor step, not memory exhaustion.
 
 We will use HURRICANEEVACUATIONZONE in the examples below. 
 
