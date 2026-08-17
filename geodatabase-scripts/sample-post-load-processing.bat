@@ -6,6 +6,7 @@ set SRCGDB=%BASEPATH%\Connections\oracle19c\%ENV%\xxxx\xxx.sde
 set TARGETLOGDIR=%BASEPATH%\cscl-migrate\geodatabase-scripts\logs\
 rem Set TARGETSCHEMA to the target database schema owner. Use CSCL for production, or another schema for sandbox
 set TARGETSCHEMA=CSCL
+set TARGETPASSWORD=xxx
 set PYTHON1=C:\Progra~1\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe
 set PYTHON2=C:\Users\%USERNAME%\AppData\Local\Programs\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe
 if exist "%PYTHON1%" (
@@ -29,6 +30,14 @@ if %ERRORLEVEL% NEQ 0 (
     EXIT /B 0
 )
 echo. >> %BATLOG% && echo finalized load to %TARGETGDB% >> %BATLOG%
+sqlplus %TARGETSCHEMA%/"%TARGETPASSWORD%"@%TARGETDB% ^
+    @src/sql/create_sequences.sql ^
+    %TARGETLOGDIR%%ENV%-create_sequences.log
+if %ERRORLEVEL% NEQ 0 (
+    echo. >> %BATLOG%
+    echo failed create_sequences in %TARGETSCHEMA% on %TARGETDB% >> %BATLOG%
+    EXIT /B 0
+)
 if /i "%TARGETSCHEMA%"=="CSCL" (
     CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\applygrants.py %TARGETGDB%
 ) else (
