@@ -192,7 +192,7 @@ BEGIN
             'SEQ_TRANSITBOOTH_ID',
             'SEQ_TRANSITEMERGENCY_ID',
             'SEQ_TRANSITENTRANCE_ID',
-            'SEQ_TURNIDS'
+            'SEQ_TURNID'
         ))
         MINUS
         SELECT sequence_name
