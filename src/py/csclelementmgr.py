@@ -82,6 +82,7 @@ class CSCLElement(GeodatabaseElement):
         typelist = ['featureclass'
                    ,'featuredataset'
                    ,'featuretable'
+                   ,'table'
                    ,'relationshipclass'
                    ,'topology'
                    ,'archiveclass'
@@ -121,10 +122,23 @@ class CSCLElement(GeodatabaseElement):
 
         return kount
 
+    def preserve_globalid(self
+                         ,gdb):
+
+        if not self.istable:
+            raise ValueError(
+                'GLOBALID preservation requires a table or feature class: {0}'.format(
+                    self.name
+                )
+            )
+
+        globalid_manager.preserve_globalid(self.fullpath(gdb))
+
     def gettupletypes(self):
 
         if self.gdbtype in ('featureclass'
                            ,'featuretable'
+                           ,'table'
                            ,'archiveclass'
                            ,'attributedrelationshipclass'): 
             return True
