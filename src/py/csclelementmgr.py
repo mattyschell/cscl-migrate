@@ -5,6 +5,7 @@ import logging
 import arcpy
 
 from resourcemanager import listmanager
+import globalid_manager
 
 
 class GeodatabaseElement(object):

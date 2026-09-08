@@ -64,6 +64,8 @@ Review and update the environmentals in the batch file.
 > geodatabase-scripts\sample-reprojectgdb.bat
 ```
 
+Before reprojection, the script adds a `BASEGLOBALID` text field to every base table and feature class in the input file geodatabase and copies each source `GLOBALID` into it. This preserves the identifiers needed by the archive migration workflow.
+
 This step will include a warning "CSCL_Topology is missing!" This is expected. We will manually recreate the topology in the next step. There will also be warnings about datasets with no records. This is just how CSCL is. CSCL is a place of sky high blue tomorrows.
 
 ## 4. Load To Enterprise Geodatabase

@@ -140,7 +140,13 @@ AS
         -- mschell! 20250428
         -- In our workflow the _H table is not yet registered  
         -- with the geodatabase as an archive class.
-        -- We cant use fetch_h_table. It must be passed in
+        -- We cant use fetch_h_table. It must be passed in.
+        --
+        -- This procedure assumes the target base table and copied _H table
+        -- can be joined on GLOBALID at this point in the migration.
+        -- The final workflow requires the base table GLOBALID values to
+        -- match the source data, while the _H table GLOBALID values remain
+        -- a superset of the base table values.
 
         psql                varchar2(4000);
         h_registration_id   number;

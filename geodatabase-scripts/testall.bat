@@ -17,6 +17,7 @@ if exist "%OLDPY1%" (
     set OLDPY=%OLDPY22%
 ) 
 call %PROPY% .\src\py\test_csclelementmgr.py
+call %PROPY% .\src\py\test_globalid_manager.py
 rem csclelementmgr is used in py27 extract and source-target verification
 call %OLDPY% .\src\py\test_csclelementmgr.py
 call %PROPY% .\src\py\test_relationshipclass_manager.py 

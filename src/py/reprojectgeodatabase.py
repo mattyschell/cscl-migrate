@@ -2,12 +2,12 @@ import arcpy
 import sys
 import logging
 import os
-import openpyxl
 import time
-import shutil
-import stat
 
 from filegeodatabasemanager import localgdb 
+import csclelementmgr
+from resourcemanager import listmanager
+import xlsx_manager
 
 
 # arcpy.topographic
@@ -30,7 +30,13 @@ def reproject (
    ,input_spec_xlsx: str | None = None
    ,create_xlsx: bool = True
 ) -> None:
+    """Reproject CSCL file geodatabase
 
+    Args:
+        input_spec_xlsx (str | None, optional): Path to corrected Excel specification
+        object_map_fgdb (str | None, optional): Path to intermediate file geodatabase (written by this function)
+        create_xlsx (bool, optional): Whether to create the intermediate Excel file from scratch. Defaults to True.
+    """
     """Reproject CSCL file geodatabase
 
     Args:
@@ -49,160 +55,43 @@ def reproject (
         input_spec_xlsx = os.path.join(workdir
                                       ,"CorrectedProjection.xlsx")  # type: ignore
 
-    object_map_gdb = localgdb(os.path.join(workdir
-                                          ,"CSCL_OLD_TO_NEW.gdb"))  # type: ignore
-
     logger.info(
         f"Processing started to Re-project {gdbin.name} to {gdbout.name}"
     )
     logger.debug(f"{input_spec_xlsx=}")
 
-     
-    if create_xlsx:
+    logger.info("Preserving base table GLOBALID values")
+    for listname in listmanager('listofbasetablelists').names:
+        for objectname in listmanager(listname).names:
+            element = csclelementmgr.CSCLElement(objectname)
+            logger.info("Preserving GLOBALID values for {0} ({1})".format(
+                element.name,
+                element.fullpath(gdbin.gdb)
+            ))
+            element.preserve_globalid(gdbin.gdb)
 
-        # Generate Excel from Geodatabase
-        logger.info(f"Generating Excel from Geodatabase {gdbin.gdb}")
-        temp_xlsx = os.path.join(workdir
-                                ,"OriginalProjection.xlsx")  # type: ignore
-        
-        if os.path.exists(temp_xlsx):
-            os.remove(temp_xlsx)
+    temp_xlsx = os.path.join(workdir, "OriginalProjection.xlsx")
+    workbook_path = temp_xlsx if create_xlsx else input_spec_xlsx
 
-        arcpy.topographic.GenerateExcelFromGeodatabase(gdbin.gdb, temp_xlsx)
+    with xlsx_manager.ExcelFile(workbook_path) as workbook:
+        if create_xlsx:
+            logger.info(f"Generating Excel from Geodatabase {gdbin.gdb}")
+            workbook.delete()
+            workbook.generate_from_geodatabase(gdbin.gdb)
+            logger.info("Updating Spatial Reference in Excel file")
+            workbook.update_all_spatial_reference(srid)
+            if input_spec_xlsx != temp_xlsx:
+                workbook.copy(input_spec_xlsx)
 
-        # Load Excel into openpyxl and update spatial reference
-        logger.info("Updating Spatial Reference in Excel file")
-        wb = openpyxl.load_workbook(temp_xlsx)
+        if not arcpy.Exists(gdbin.gdb):
+            raise RuntimeError(f"Input Geodatabase {gdbin.gdb} not found. Cannot continue.")
 
-        # Overwrite SpatialReferences sheet
-        ws_sr = wb["SpatialReferences"]
-        for row in ws_sr.iter_rows(min_row=2):
-            for cell in row:
-                cell.value = None
-        ws_sr["A2"] = 1
+    # Walk through the objects in the geodatabase
+        if arcpy.Exists(gdbout.gdb):
+            gdbout.clean()
 
-        if int(srid) == 2263:
-            
-            ws_sr["B2"] = "NAD_1983_StatePlane_New_York_Long_Island_FIPS_3104_Feet"
-            ws_sr["C2"] = 2263
-            ws_sr["D2"] = (  # ? Missing last line of constants.NY_STATE_PLANE?
-                'PROJCS["NAD_1983_StatePlane_New_York_Long_Island_FIPS_3104_Feet",GEOGCS["GCS_North_American_1983",'
-                'DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],'
-                'UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic"],'
-                'PARAMETER["False_Easting",984250.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-74.0],'
-                'PARAMETER["Standard_Parallel_1",40.66666666666666],PARAMETER["Standard_Parallel_2",41.03333333333333],'
-                'PARAMETER["Latitude_Of_Origin",40.16666666666666],UNIT["Foot_US",0.3048006096012192]]'
-            )
-
-        elif int(srid) == 6539:
-
-            # mschell added this do not blame ESRI if it doesnt work
-
-            ws_sr["B2"] = "NAD_1983_2011_StatePlane_New_York_Long_Isl_FIPS_3104_Ft_US"
-            ws_sr["C2"] = 6539
-            ws_sr["D2"] = ( 
-                'PROJCS["NAD_1983_2011_StatePlane_New_York_Long_Isl_FIPS_3104_Ft_US",GEOGCS["GCS_NAD_1983_2011",'
-                'DATUM["D_NAD_1983_2011",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],'
-                'UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic"],'
-                'PARAMETER["False_Easting",984250.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-74.0],'
-                'PARAMETER["Standard_Parallel_1",40.66666666666666],PARAMETER["Standard_Parallel_2",41.03333333333333],'
-                'PARAMETER["Latitude_Of_Origin",40.16666666666666],UNIT["Foot_US",0.3048006096012192],AUTHORITY["EPSG",6539]]'
-            ) 
-
-        else:
-
-            logger.error(f"I dont know what to do with srid {srid}")
-            return 1        
-
-        ws_sr["F2"] = -1
-        # the inverse of the XY resolution
-        # 1 / 0.000328083333333333 = 3048.006096012195121164435877261997627062
-        # reminder: This is the size of the squares of the graph paper
-        # This is not the real world decimal places being collected and maintained 
-        # These extra digits do not significantly change the distance between lines on the paper
-        # CCHEN wisely:
-        # "I want .5 pounds of Virginia Ham vs I want .5123456789 pounds of Virginia ham"
-        # "--> same price" 
-        ws_sr["K2"] = "3048.006096012195121164435877261997627062" 
-        # previously 
-        # ws_sr["K2"] = "3048.006096"  
-        ws_sr["N2"] = "10000."
-        ws_sr["Q2"] = "10000."
-
-        # Fix spatial reference in DatasetContainers sheet (col E)
-        ws_dc = wb["DatasetContainers"]
-        for row in ws_dc.iter_rows(min_row=2, min_col=5, max_col=5):
-            for cell in row:
-                if cell.value and cell.value != -1:
-                    cell.value = 1
-
-        # Fix spatial reference in ObjectClasses sheet (col J)
-        ws_oc = wb["ObjectClasses"]
-        for row in ws_oc.iter_rows(min_row=2, min_col=10, max_col=10):
-            for cell in row:
-                if cell.value and cell.value != -1:
-                    cell.value = 1
-
-        # Save updated Excel
-        logger.info(f"Saving updated Excel to {input_spec_xlsx}")
-        if os.path.exists(input_spec_xlsx):
-            os.remove(input_spec_xlsx)
-        wb.save(input_spec_xlsx)
-
-    if not arcpy.Exists(gdbin.gdb):
-        raise RuntimeError(f"Input Geodatabase {gdbin.gdb} not found. Cannot continue.")
-
-    if not arcpy.Exists(input_spec_xlsx):
-        raise RuntimeError(f"INPUT SPEC File {input_spec_xlsx} not found. Cannot continue.")
-             
-
-    if arcpy.Exists(gdbout.gdb): 
-        gdbout.clean()
-    
-    ## Begin reprojection process
-    logger.info(f"Creating Target Geodatabase {gdbout.gdb}")
-
-    # this step generates an empty copy of CSCL
-    # globalid columns are present and geodatabase-managed
-    # change CorrectedProjection.xlsx Fields sheet globalid 
-    # FieldType to esriFieldTypeString
-    # FieldEditable to TRUE 
-    # Creates a dataset with GLOBALID that is not esri managed
-
-    # if gdbout is an enterprise geodatabase schema
-    # GenerateGeodatabaseFromExcel throws
-    # ERROR 087396: Not a valid SDE workspace. 
-    arcpy.topographic.GenerateGeodatabaseFromExcel(input_spec_xlsx
-                                                  ,gdbout.gdb)
-
-    logger.info(f"Creating object mapping database for data Load Process - {object_map_gdb.gdb}")
-    
-    if arcpy.Exists(object_map_gdb.gdb):
-        object_map_gdb.clean()
-
-    # no globalids in FieldMapping in the original version
-    # adding globalid as type text to gdbout does not create a globalid column in the 
-    # cross reference geodatabase (object_map_gdb)
-    
-    arcpy.topographic.CreateCrossReferenceGeodatabase(gdbin.gdb
-                                                     ,gdbout.gdb
-                                                     ,object_map_gdb.gdb)
-
-    logger.info(f"Loading Data from {gdbin.gdb} into {gdbout.gdb}")
-    
-
-    # https://pro.arcgis.com/en/pro-app/latest/tool-reference/environment-settings/preserve-globalids.htm
-    # arcpy.env.preserveGlobalIds = True
-    # this does nothing in LoadData
-    # and causes table loads to fail due to 
-    #   arcgisscripting.ExecuteError: ERROR 003340: The target dataset must have a 
-    #   GlobalID field with a unique index in order to use the Preserve GlobalIDs 
-    #   geoprocessing environment setting.
-    # ie must be enterprise geodatabase as documented 
-
-    arcpy.topographic.LoadData(object_map_gdb.gdb
-                              ,gdbin.gdb
-                              ,gdbout.gdb)
+        logger.info(f"Creating and loading Target Geodatabase {gdbout.gdb}")
+        workbook.copygeodatabase(gdbin.gdb, gdbout.gdb)
 
     # https://pro.arcgis.com/en/pro-app/latest/tool-reference/topographic-production/load-data.htm
     # LoadData row_level_errors = True (default)
@@ -465,10 +354,6 @@ if __name__ == '__main__':
     else:
         poutsrid = 2263
 
-    # aka "Topographic Production Tools"
-    # aka "ArcGIS Production Mapping"
-    requiredextension = 'Foundation'
-
     localgdbin  = localgdb(pingdb)
     localgdbout = localgdb(poutgdb)
     
@@ -492,20 +377,12 @@ if __name__ == '__main__':
     # Create a logger object
     logger = logging.getLogger(__name__)
 
-    if arcpy.CheckExtension(requiredextension) == "Available":
-        arcpy.CheckOutExtension(requiredextension)
-    else:
-        logger.error("Extension {0} is not available".format(requiredextension))
-        sys.exit(1)
-
     retval = reproject(localgdbin
                       ,localgdbout
                       ,logger
                       ,pworkdir
                       ,poutsrid)
     
-    arcpy.CheckInExtension(requiredextension)
-
     logger.info("Completed call to reproject {0} to {1}".format(localgdbin.gdb
                                                                ,localgdbout.gdb))
     
