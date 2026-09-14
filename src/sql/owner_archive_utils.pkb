@@ -157,8 +157,10 @@ AS
 
         psql := 'merge into '
              || '   ' || p_featureclass || ' a '
-             || 'using '
-             || '   ' || p_htable_name || ' b '
+             || 'using ( '
+             || '   select distinct globalid, objectid '
+             || '   from ' || p_htable_name || ' '
+             || ') b '
              || 'on '
              || '   (a.globalid = b.globalid) '
              || 'when matched then '
@@ -181,6 +183,118 @@ AS
                                                    ,p_htable_name);
 
     END update_base_ids;
+
+
+    PROCEDURE verify_globalids
+    AS
+
+        -- mschell!
+        -- https://github.com/mattyschell/cscl-migrate/issues/40
+        -- every GLOBALID present in a registered base table/featureclass
+        -- must also be present in its archive (_H) table
+
+        psql            varchar2(4000);
+        badcount        number := 0;
+        missingcount    number;
+
+    BEGIN
+
+        FOR rec IN (
+            SELECT
+                c.table_name AS base_table
+               ,b.table_name AS h_table
+            FROM
+                sde.sde_archives a
+            JOIN
+                sde.table_registry b ON a.history_regid = b.registration_id
+            JOIN
+                sde.table_registry c ON a.archiving_regid = c.registration_id
+            WHERE
+                b.owner = SYS_CONTEXT('USERENV','CURRENT_USER')
+            ORDER BY
+                c.table_name
+        )
+        LOOP
+
+            psql := 'select count(*) '
+                 || 'from ' || rec.base_table || ' t '
+                 || 'where not exists (select 1 '
+                 || '                  from ' || rec.h_table || ' h '
+                 || '                  where h.globalid = t.globalid) ';
+
+            begin
+                execute immediate psql into missingcount;
+            exception
+            when others then
+                missingcount := -1;
+                dbms_output.put_line('ERROR:' || rec.base_table || ' | ' || SQLERRM);
+            end;
+
+            if missingcount = 0 then
+                dbms_output.put_line('PASS:' || rec.base_table
+                                    || ' | archive:' || rec.h_table
+                                    || ' | missing:0');
+            else
+                badcount := badcount + 1;
+                dbms_output.put_line('FAIL:' || rec.base_table
+                                    || ' | archive:' || rec.h_table
+                                    || ' | missing:' || missingcount);
+            end if;
+
+        END LOOP;
+
+        if badcount > 0 then
+            raise_application_error(-20002
+                ,badcount || ' feature classes/tables have GLOBALIDs missing from their archive (_H) table');
+        end if;
+
+    END verify_globalids;
+
+
+    PROCEDURE restore_globalids
+    AS
+
+        -- mschell!
+        -- https://github.com/mattyschell/cscl-migrate/issues/40
+        -- loading into the enterprise geodatabase assigns each base row a new
+        -- GLOBALID. BASEGLOBALID (added by globalid_manager.preserve_globalid
+        -- for the same universe of FeatureClass/Table/RelationshipClass) holds
+        -- the original value. Restore it here in SQL, before update_base_ids
+        -- relies on GLOBALID to join base rows to their migrated _H rows.
+
+        psql        varchar2(4000);
+
+    BEGIN
+
+        FOR rec IN (
+            SELECT DISTINCT
+                table_name
+            FROM
+                user_tab_columns
+            WHERE
+                column_name = 'BASEGLOBALID'
+            ORDER BY
+                table_name
+        )
+        LOOP
+
+            psql := 'update ' || rec.table_name || ' '
+                 || 'set globalid = baseglobalid '
+                 || 'where baseglobalid is not null';
+
+            begin
+                execute immediate psql;
+                commit;
+                dbms_output.put_line('PASS:' || rec.table_name || ' | globalid restored from baseglobalid');
+            exception
+            when others then
+                raise_application_error(-20003, 'ERROR > ' || SQLERRM || ' < on '
+                                     || psql);
+            end;
+
+        END LOOP;
+
+    END restore_globalids;
 
 
 END OWNER_ARCHIVE_UTILS;
