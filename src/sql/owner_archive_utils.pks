@@ -40,6 +40,9 @@ AS
        ,p_htable_name   IN VARCHAR2
     );
 
+    PROCEDURE verify_globalids;
+
+    PROCEDURE restore_globalids;
 
 END OWNER_ARCHIVE_UTILS;
 /

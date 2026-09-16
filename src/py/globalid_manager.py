@@ -82,3 +82,29 @@ def preserve_globalid(dataset_path):
         raise
 
     return 1
+
+
+def drop_baseglobalid(dataset_path):
+    """Drop a dataset's BASEGLOBALID field, once GLOBALID has been restored."""
+
+    description = arcpy.Describe(dataset_path)
+    dataset_type = getattr(description, 'datasetType', None)
+    if dataset_type not in SUPPORTED_DATASET_TYPES:
+        raise ValueError(
+            'BASEGLOBALID removal is not supported for {0}: {1}'.format(
+                dataset_type,
+                dataset_path
+            )
+        )
+
+    fields = {
+        field.name.upper(): field
+        for field in arcpy.ListFields(dataset_path)
+    }
+
+    if BASEGLOBALID_FIELD not in fields:
+        return 0
+
+    arcpy.management.DeleteField(dataset_path, BASEGLOBALID_FIELD)
+
+    return 1

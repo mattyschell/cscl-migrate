@@ -135,6 +135,18 @@ class CSCLElement(GeodatabaseElement):
 
         globalid_manager.preserve_globalid(self.fullpath(gdb))
 
+    def drop_baseglobalid(self
+                         ,gdb):
+
+        if not self.istable:
+            raise ValueError(
+                'BASEGLOBALID removal requires a table or feature class: {0}'.format(
+                    self.name
+                )
+            )
+
+        globalid_manager.drop_baseglobalid(self.fullpath(gdb))
+
     def gettupletypes(self):
 
         if self.gdbtype in ('featureclass'

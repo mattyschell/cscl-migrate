@@ -58,6 +58,30 @@ if %ERRORLEVEL% NEQ 0 (
 echo. >> %BATLOG% && echo finished py27 migrate archive from ^
 %SRCGDB% to %TARGETGDB% on %date% at %time% >> %BATLOG%
 
+echo. >> %BATLOG% && echo starting restore_all_globalids in %TARGETSCHEMA% on ^
+%TARGETDB% on %date% at %time% >> %BATLOG%
+sqlplus %TARGETSCHEMA%/"%TARGETPASSWORD%"@%TARGETDB% ^
+    @src/sql/restore_all_globalids.sql ^
+    %BASESQLLOG%restore_all_globalids.log
+if %ERRORLEVEL% NEQ 0 (
+    echo. >> %BATLOG% && echo ERROR in restore_all_globalids on %date% at %time% >> %BATLOG%
+    EXIT /B %ERRORLEVEL%
+)
+echo. >> %BATLOG% && echo finished restore_all_globalids in %TARGETSCHEMA% on ^
+%TARGETDB% on %date% at %time% >> %BATLOG%
+
+echo. >> %BATLOG% && echo starting drop_all_baseglobalid on ^
+%TARGETGDB% on %date% at %time% >> %BATLOG%
+CALL %PROPY% ^
+    %BASEPATH%\cscl-migrate\src\py\drop_all_baseglobalid.py ^
+    %TARGETGDB%
+if %ERRORLEVEL% NEQ 0 (
+    echo. >> %BATLOG% && echo ERROR in drop_all_baseglobalid on %date% at %time% >> %BATLOG%
+    EXIT /B %ERRORLEVEL%
+)
+echo. >> %BATLOG% && echo finished drop_all_baseglobalid on ^
+%TARGETGDB% on %date% at %time% >> %BATLOG%
+
 sqlplus %TARGETSCHEMA%/"%TARGETPASSWORD%"@%TARGETDB% ^
     @src/sql/update_all_base_ids.sql ^
     %BASESQLLOG%update_all_base_ids.log ^
@@ -74,6 +98,18 @@ if %ERRORLEVEL% NEQ 0 (
     echo. >> %BATLOG% && echo ERROR in register_all_archiving on %date% at %time% >> %BATLOG%
     EXIT /B %ERRORLEVEL%
 )
+
+echo. >> %BATLOG% && echo starting verify_all_globalids in %TARGETSCHEMA% on ^
+%TARGETDB% on %date% at %time% >> %BATLOG%
+sqlplus %TARGETSCHEMA%/"%TARGETPASSWORD%"@%TARGETDB% ^
+    @src/sql/verify_all_globalids.sql ^
+    %BASESQLLOG%verify_all_globalids.log
+if %ERRORLEVEL% NEQ 0 (
+    echo. >> %BATLOG% && echo ERROR in verify_all_globalids on %date% at %time% >> %BATLOG%
+    EXIT /B %ERRORLEVEL%
+)
+echo. >> %BATLOG% && echo finished verify_all_globalids in %TARGETSCHEMA% on ^
+%TARGETDB% on %date% at %time% >> %BATLOG%
 
 echo. >> %BATLOG% && echo starting conceal_all_history in %SRCSCHEMA% on ^
 %SRCDB% on %date% at %time% >> %BATLOG%
