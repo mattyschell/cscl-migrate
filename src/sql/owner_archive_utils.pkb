@@ -150,16 +150,34 @@ AS
 
         psql                varchar2(4000);
         h_registration_id   number;
+        zero_globalid       varchar2(38) := '{00000000-0000-0000-0000-000000000000}';
+        zero_base_count     number;
 
     BEGIN
 
         owner_archive_utils.refresh_stats();
+
+        psql := 'select count(*) '
+             || 'from ' || p_featureclass || ' '
+             || 'where globalid = :p_zero_globalid ';
+
+        execute immediate psql
+            into zero_base_count
+            using zero_globalid;
+
+        if zero_base_count > 0
+        then
+            raise_application_error(-20004
+                ,zero_base_count || ' sentinel GLOBALIDs found in base table ' || p_featureclass);
+        end if;
 
         psql := 'merge into '
              || '   ' || p_featureclass || ' a '
              || 'using ( '
              || '   select distinct globalid, objectid '
              || '   from ' || p_htable_name || ' '
+             || '   where globalid is not null '
+             || '   and globalid <> :p_zero_globalid '
              || ') b '
              || 'on '
              || '   (a.globalid = b.globalid) '
@@ -169,7 +187,7 @@ AS
         
         begin
 
-            execute immediate psql;
+            execute immediate psql using zero_globalid;
             commit;
 
         exception
