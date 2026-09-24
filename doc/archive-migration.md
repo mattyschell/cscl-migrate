@@ -16,7 +16,6 @@ This requirement is the hard part of the workflow. The file geodatabase reprojec
 
 See doc\confirm-globalid.sql for helper sql.
 
-
 ![Archive issue](archive-issue.png)
 
 ### Compile Packages
@@ -31,17 +30,27 @@ sqlplus cscl/****@targetdb @geodatabase-scripts\setup-owner-target.sql
 
 ### Migrate Archive
 
-In the commit history of this file we started with 3 archive migration strategies. This one was creatively named "approach 2" in our initial exploration.
-
-1.	Copy the feature class to the target schema. It will be registered with the geodatabase. Register as versioned. Do not register as archiving.
-
-In the real workflow the data will move to the target via an interim file geodatabase or two. The file geodatabase processing will involve all datasets and can take place prior to or in parallel to the archive steps below.
-
-During this base data migration, preserve the source GLOBALID values for each base table so they can be restored to the target base table GLOBALID column before the archive workflow is finalized. The target base tables created by the reprojection process will otherwise contain fresh managed GlobalIDs.
+In the commit history of this file we started with 3 archive migration strategies. The core of this strategy we creatively named "approach 2." 
 
 ![Archive issue plan](archive-issue-plan.png)
 
-2.	Source: Make the _H table visible to ESRI clients.
+#### Migrate Archive: Base Tables
+
+The base table will move to the target via an interim file geodatabase or two. The file geodatabase processing includes all datasets.
+
+During this base table migration we must preserve the source GLOBALID values for each base table so they can be restored to the target base table GLOBALID column. The target base tables created by the reprojection process will otherwise contain fresh managed GLOBALIDs.
+
+1.	Copy the base table feature class from the file geodatabase to the target schema. It will be registered with the geodatabase. 
+
+2. Register the base table feature class as versioned. Do not register as archiving.
+
+3. Transfer temporary BASEGLOBALIDs to GLOBALID.
+
+4. Using arcpy DeleteField, drop the BASEGLOBALID column.
+
+#### Migrate Archive: History Tables
+
+1.	Source database: Make the _H table visible to ESRI clients.
 
 Call from CSCL to this utility in SDE. Then refresh the ESRI client to see the _H table.
 
@@ -49,40 +58,39 @@ Call from CSCL to this utility in SDE. Then refresh the ESRI client to see the _
 call sde.nyc_archive_utils.reveal_history('BOROUGH');
 ```
 
-3.	Copy the _H table to target schema using 32 bit ESRI clients and paste-NOT-special. It will be named FEATURECLASSNAME_H (or similar) just like the source.
+2. Copy the _H table to the target database schema using 32 bit ESRI clients and paste (using arcpy). It will be named FEATURECLASSNAME_H (or similar) just like the source.
 
-4. Source: Hide _H table from ESRI clients.
+3. Source database: Hide the _H table from ESRI clients.
 
 ```sql
 call sde.nyc_archive_utils.conceal_history('BOROUGH');
 ```
 
-5. Target: objectid update 
+#### Migrate Archive: Objectid Updates
 
-The row count in the base table should be less than the _H table. The _H table contains a superset of all possible objectids. Unmatched objectids will exist in _H. This is OK they are history.
+The base and _H tables hold different record sets. Unmatched objectids will exist on both sides. This is OK and expected (see diagrams).
 
-Since objectids don't matter to anyone (they are synthetic keys) we will update the base table objectids to match their _H table bretheren and sisteren. Then we will modify the feature class objectid sequence.
+Geodatabase objectids are synthetic keys with no expectation that they will remain attached to a row. What matters is that the values match internally in the geodatabase.  We will update the base table objectids where necessary. 
 
-This join assumes the target base table can still be matched to the copied _H table by GLOBALID. If an intermediate temporary column is used during reprojection, it must support restoring the final base GLOBALID values before archive registration is completed.
+1. Prevent collisions by updating all base table OBJECTIDs to a value greater than the maximum _H table OBJECTID.
+2. Joining on GLOBALID, update base table OBJECTIDs to match their _H table bretheren and sisteren.
+3. Alter the feature class OBJECTID sequence (RXXXX).
+
+All three are in this stored procedure.
 
 ```sql
-call cscl.owner_archive_utils.update_base_ids('BOROUGH');
+call owner_archive_utils.update_base_ids('BOROUGH');
 ```
 
-6. Target: Restore source GLOBALID values to the base table GLOBALID column.
+#### Finalize Geodatabase Archive
 
-This step is required for the final state of the migration. The base table GLOBALID values must match the source data, while the copied _H table GLOBALID values remain a superset of the base table.
+On the target database “register” the parent as archiving and the _H table as the history table. Call from CSCL to this utility in SDE.
 
-This step must be validated carefully. Directly overriding geodatabase-managed GlobalIDs may or may not be tolerated by ArcGIS and the enterprise geodatabase. Before adopting this as the standard workflow, test one representative archived feature class end to end, including versioning, archive registration, ArcGIS Describe behavior, and ordinary edit/read operations.
-
-7. Target: Manually “register” the parent as archiving and _H table is the history table. Call from CSCL to this utility in SDE.
-
-Archive date should be set to archive_date in the source sde.table_registry. 
+The archive date (parameter 2) should be set to the archive_date in the source sde.table_registry. 
 
 ```sql
 call sde.nyc_archive_utils.register_archiving('BOROUGH',1273245334);
 ```
-
 The copied _H table must be concealed. Call from CSCL on the target.
 
 ```sql

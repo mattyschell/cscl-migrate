@@ -22,7 +22,7 @@ if exist "%PYTHON107%" (
     set OLDPY=%PYTHON108%
 )
 set BATLOG=%TARGETLOGDIR%%ENV%-cscl-load.log
-echo starting %ENV% cscl-load on %date% at %time% > %BATLOG%
+echo starting %ENV% post-load-processing on %date% at %time% > %BATLOG%
 CALL %PROPY% %BASEPATH%\cscl-migrate\src\py\finalizeloadcscl.py %TARGETGDB%
 if %ERRORLEVEL% NEQ 0 (
     echo. >> %BATLOG%

@@ -63,6 +63,9 @@ def preserve_globalid(dataset_path):
         field_length=38
     )
 
+    # CalculateField was either tricky or impossible to use
+    # with a managed globalid column (if i recall)
+    # that is why we use this slower UpdateCursor
     editor = arcpy.da.Editor(_file_geodatabase_path(dataset_path))
     editor.startEditing(False, False)
     editor.startOperation()

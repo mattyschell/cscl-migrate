@@ -84,7 +84,7 @@ call owner_archive_utils.update_base_ids('PHYSICALRESTRICTION','PHYSICALRESTRICT
 call owner_archive_utils.update_base_ids('QUARTERSECTIONALMAP','QUARTERSECTIONALMAP_H');
 call owner_archive_utils.update_base_ids('RAIL','RAIL_H');
 call owner_archive_utils.update_base_ids('RAILSTATION','RAILSTATION_H');
---call owner_archive_utils.update_base_ids('RAILSTATIONSHAVEFEATURENAMES','RAILSTATIONSHAVEFEATURENAMES_H');
+call owner_archive_utils.update_base_ids('RAILSTATIONSHAVEFEATURENAMES','RAILSTATIONSHAVEFEATURENAMES_H');
 call owner_archive_utils.update_base_ids('REFERENCEMARKER','REFERENCEMARKER_H');
 call owner_archive_utils.update_base_ids('ROADBEDPOINTERLIST','ROADBEDPOINTERLIST_H');
 call owner_archive_utils.update_base_ids('SCHOOLDISTRICT','SCHOOLDISTRICT_H');

@@ -84,7 +84,6 @@ echo. >> %BATLOG% && echo finished drop_all_baseglobalid on ^
 
 sqlplus %TARGETSCHEMA%/"%TARGETPASSWORD%"@%TARGETDB% ^
     @src/sql/update_all_base_ids.sql ^
-    %BASESQLLOG%update_all_base_ids.log ^
     %BASESQLLOG%update_all_base_ids.log
 if %ERRORLEVEL% NEQ 0 (
     echo. >> %BATLOG% && echo ERROR in update_all_base_ids on %date% at %time% >> %BATLOG%

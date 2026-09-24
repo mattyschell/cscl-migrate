@@ -66,15 +66,13 @@ Review and update the environmentals in the batch file.
 
 Before reprojection, the script adds a `BASEGLOBALID` text field to every base table and feature class in the input file geodatabase and copies each source `GLOBALID` into it. This preserves the identifiers needed by the archive migration workflow.
 
-This step will include a warning "CSCL_Topology is missing!" This is expected. We will manually recreate the topology in the next step. There will also be warnings about datasets with no records. This is just how CSCL is. CSCL is a place of sky high blue tomorrows.
+Catalog verification at the end of this step includes a warning "CSCL_Topology is missing!" This is expected. Reprojection is not topology-aware. We will recreate the topology later. 
 
 ## 4. Load To Enterprise Geodatabase
 
-The default .bat files above output a reprojected file geodatabase named cscl-migrate-reproj.gdb. Using ArcGIS Pro copy all items in the file geodatabase. Paste into the enterprise geodatabase. 
+The default .bat files above output a reprojected file geodatabase named cscl-migrate-reproj.gdb. Using ArcGIS Pro copy all items in the file geodatabase. Paste into the enterprise geodatabase. This copy/paste with the GUI is the currently validated approach. 
 
-This should run for about an hour. This step can't be scripted easily, only the magic GUI can deal with dependencies and avoid _1s.
-
-Then complete the load by applying topology rules, versioning, grants, etc with this script.
+This should run for about an hour. Then complete the load by applying topology rules, versioning, grants, etc with this script.
 
 ```bat
 > geodatabase-scripts\sample-post-load-processing.bat
@@ -190,7 +188,7 @@ To prevent catastrophe the teardown script will only proceed if a registered tab
 |-------------|-----------------------------------|
 | 1. Extract And Prepare CSCL                 | 1 |
 | 2. Remove Class Extensions                  | 0 |
-| 3. Correct Resolution And Tolerance        | .5 |
+| 3. Correct Resolution And Tolerance        | 1 |
 | 4. Load To Enterprise Geodatabase           | 1 |
 | 5. Migrate Archive Classes                 | 4  |
 | 6. Manually Migrate Failed Archive Classes | .5 |

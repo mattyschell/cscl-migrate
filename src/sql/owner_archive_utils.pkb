@@ -158,18 +158,35 @@ AS
         owner_archive_utils.refresh_stats();
 
         psql := 'select count(*) '
-             || 'from ' || p_featureclass || ' '
-             || 'where globalid = :p_zero_globalid ';
+             || 'from ' 
+             ||     p_featureclass || ' '
+             || 'where ' 
+             || '   globalid = :p1 ';
 
-        execute immediate psql
-            into zero_base_count
-            using zero_globalid;
+        execute immediate psql into zero_base_count
+                               using zero_globalid;
 
         if zero_base_count > 0
         then
             raise_application_error(-20004
                 ,zero_base_count || ' sentinel GLOBALIDs found in base table ' || p_featureclass);
         end if;
+
+        -- prevent objectid collisions
+        -- ORA-00001: unique constraint (CSCL.Rxxxx_SDE_ROWID_UK) violated
+        -- update all base table objectids to a minimum that is greater than 
+        -- any  incoming objectid from the _H table
+        -- This update will be recognized in alter_objectid_sequence below
+        psql := 'update ' 
+             ||     p_featureclass || ' a '
+             || 'set '
+             || '    a.objectid = a.objectid + ( '
+             || '        select nvl(max(objectid), :p1) + :p2 '
+             || '        from ' || p_htable_name || ') ';
+
+           execute immediate psql using 0
+                                       ,1;
+        commit;
 
         psql := 'merge into '
              || '   ' || p_featureclass || ' a '
@@ -193,8 +210,7 @@ AS
         exception
         when others 
         then
-            raise_application_error(-20001, 'ERROR > ' || SQLERRM || ' < on ' 
-                                          || psql);
+            raise_application_error(-20001, 'ERROR > ' || SQLERRM || ' < on ' || psql);
         end;
 
         owner_archive_utils.alter_objectid_sequence(p_featureclass
