@@ -98,23 +98,10 @@ if %ERRORLEVEL% NEQ 0 (
     EXIT /B %ERRORLEVEL%
 )
 
-echo. >> %BATLOG% && echo starting verify_all_globalids in %TARGETSCHEMA% on ^
-%TARGETDB% on %date% at %time% >> %BATLOG%
-sqlplus %TARGETSCHEMA%/"%TARGETPASSWORD%"@%TARGETDB% ^
-    @src/sql/verify_all_globalids.sql ^
-    %BASESQLLOG%verify_all_globalids.log
-if %ERRORLEVEL% NEQ 0 (
-    echo. >> %BATLOG% && echo ERROR in verify_all_globalids on %date% at %time% >> %BATLOG%
-    EXIT /B %ERRORLEVEL%
-)
-echo. >> %BATLOG% && echo finished verify_all_globalids in %TARGETSCHEMA% on ^
-%TARGETDB% on %date% at %time% >> %BATLOG%
-
 echo. >> %BATLOG% && echo starting conceal_all_history in %SRCSCHEMA% on ^
 %SRCDB% on %date% at %time% >> %BATLOG%
 sqlplus %SRCSCHEMA%/"%SRCPASSWORD%"@%SRCDB% ^
-    @src/sql/conceal_all_history.sql ^
-    %BASESQLLOG%conceal_all_history.log
+    @src/sql/conceal_all_history.sql
 if %ERRORLEVEL% NEQ 0 (
     echo. >> %BATLOG% && echo ERROR in conceal_all_history [%SRCSCHEMA%] on %date% at %time% >> %BATLOG%
     EXIT /B %ERRORLEVEL%
@@ -125,13 +112,24 @@ echo. >> %BATLOG% && echo finished conceal_all_history in %SRCSCHEMA% on ^
 echo. >> %BATLOG% && echo starting conceal_all_history in %TARGETSCHEMA% on ^
 %TARGETDB% on %date% at %time% >> %BATLOG%
 sqlplus %TARGETSCHEMA%/"%TARGETPASSWORD%"@%TARGETDB% ^
-    @src/sql/conceal_all_history.sql ^
-    %BASESQLLOG%conceal_all_history.log
+    @src/sql/conceal_all_history.sql
 if %ERRORLEVEL% NEQ 0 (
     echo. >> %BATLOG% && echo ERROR in conceal_all_history [%TARGETSCHEMA%] on %date% at %time% >> %BATLOG%
     EXIT /B %ERRORLEVEL%
 )
 echo. >> %BATLOG% && echo finished conceal_all_history in %TARGETSCHEMA% on ^
+%TARGETDB% on %date% at %time% >> %BATLOG%
+
+echo. >> %BATLOG% && echo starting verify_all_globalids in %TARGETSCHEMA% on ^
+%TARGETDB% on %date% at %time% >> %BATLOG%
+sqlplus %TARGETSCHEMA%/"%TARGETPASSWORD%"@%TARGETDB% ^
+    @src/sql/verify_all_globalids.sql ^
+    %BASESQLLOG%verify_all_globalids.log
+if %ERRORLEVEL% NEQ 0 (
+    echo. >> %BATLOG% && echo ERROR in verify_all_globalids on %date% at %time% >> %BATLOG%
+    EXIT /B %ERRORLEVEL%
+)
+echo. >> %BATLOG% && echo finished verify_all_globalids in %TARGETSCHEMA% on ^
 %TARGETDB% on %date% at %time% >> %BATLOG%
 
 set VERIFY_TARGET_GDB=%TARGETGDB%

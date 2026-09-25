@@ -98,61 +98,23 @@ Then migrate. This will transfer all archive data and update object ids on the t
 > geodatabase-scripts\sample-migrate-archive.bat
 ```
 
+### 5a. Review Archive Migration
+
+Review the logs.
+
+1. py27-migrate-archive-xxx-xxx.log
+2. *-restore_all_globalids.log
+3. drop-all-baseglobalid-xxx-xxx.log
+4. *-migrate-archive.log
+5. *-update_all_base_ids.log
+6. *-register_all_archiving.log
+7. *-verify_all_globalids.log (see [issue 72](https://github.com/mattyschell/cscl-migrate/issues/72))
+8. verifycatalog-xxx-xxx-xxx.log
+9. verifycounts-xxx-xxx-xxx.log
+
 ## 6. Manually Migrate Failed Archive Classes
 
-### 6a. Manually Migrate Catastrophically Failed Archive Classes
-
-Review the archive migration logs, especially the final verifycounts-*.log. Several _H tables may fail to transfer completely and will require attention. Don't read into the ESRI errors that indicate memory issues.  "Memory" in this context appears to refer to some sort of internal constructor step, not memory exhaustion.
-
-We will use HURRICANEEVACUATIONZONE in the examples below. 
-
-1. Source: Reveal the _H table. From an SQL prompt connected as CSCL.
-
-```sql
-> call sde.nyc_archive_utils.reveal_history('HURRICANEEVACUATIONZONE');
-```
-
-2. Using ArcCatalog classic ([reminder why](https://github.com/mattyschell/cscl-migrate/issues/11)) manually copy/paste HURRICANEEVACUATIONZONE_H from source to target. This step may take a suspiciously long time. 
-
-3. Target: Update the values in src/sql/sample_finalize_one_archive.sql or use a premade src\sql\finalize_*_archive.sql script if we have been through these steps before.
-
-```bat
-> sqlplus %TARGETSCHEMA%/"%TARGETPASSWORD%"@%TARGETDB% @src/sql/sample_finalize_one_archive.sql
-```
-
-4. Source: Conceal the history table
-
-```sql
-> call sde.nyc_archive_utils.conceal_history('HURRICANEEVACUATIONZONE');
-```
-
-### 6b. Manually Migrate Partially Transferred Archive Classes
-
-These steps apply to _H tables that exist and are populated with some, but not all, rows. We will use SCHOOLDISTRICT as the example. 
-
-The steps must be followed precisely ([details](https://github.com/mattyschell/cscl-migrate/issues/28)). 
-
-1. Target: Using ArcGIS Pro disable archiving and choose the option to delete the _H table
-
-2. Source: Reveal the _H table. From an SQL prompt connected as CSCL.
-
-```sql
-> call sde.nyc_archive_utils.reveal_history('SCHOOLDISTRICT');
-```
-
-3. Using ArcCatalog classic ([reminder why](https://github.com/mattyschell/cscl-migrate/issues/11)) manually copy/paste SCHOOLDISTRICT from source to target. This step may take a suspiciously long time. 
-
-4. Target: Update the values in src\sql\sample_finalize_one_archive.sql or use a premade src\sql\finalize_*_archive.sql script if it exists.
-
-```bat
-> sqlplus %TARGETSCHEMA%/"%TARGETPASSWORD%"@%TARGETDB% @src/sql/sample_finalize_one_archive.sql
-```
-
-5. Source: Conceal the history table
-
-```sql
-> call sde.nyc_archive_utils.conceal_history('SCHOOLDISTRICT');
-```
+This section may not be applicable. See [doc/manual-archive-migration.md](doc/manual-archive-migration.md) for details.
 
 ## 7. Complete Verification
 
@@ -182,7 +144,7 @@ To prevent catastrophe the teardown script will only proceed if a registered tab
 
 ## Time Estimates
 
-"A day."
+"A day or two"
 
 | Step        | Duration in Hours                 |
 |-------------|-----------------------------------|

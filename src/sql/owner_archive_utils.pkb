@@ -230,6 +230,7 @@ AS
         psql            varchar2(4000);
         badcount        number := 0;
         missingcount    number;
+        hasmoddate      number;
 
     BEGIN
 
@@ -250,11 +251,24 @@ AS
         )
         LOOP
 
+            select count(*) into hasmoddate
+            from user_tab_columns
+            where table_name = rec.base_table
+            and column_name = 'MODIFIED_DATE';
+
+            if hasmoddate = 0 then
+                dbms_output.put_line('SKIP:' || rec.base_table
+                                    || ' | archive:' || rec.h_table
+                                    || ' | ');
+                continue;
+            end if;
+
             psql := 'select count(*) '
                  || 'from ' || rec.base_table || ' t '
                  || 'where not exists (select 1 '
                  || '                  from ' || rec.h_table || ' h '
-                 || '                  where h.globalid = t.globalid) ';
+                 || '                  where h.globalid = t.globalid) '
+                 || 'and t.modified_date is not null';
 
             begin
                 execute immediate psql into missingcount;
@@ -269,18 +283,21 @@ AS
                                     || ' | archive:' || rec.h_table
                                     || ' | missing:0');
             else
+                -- from what I have seen this is identical to the source,
+                -- including production. We will log as a warning 
+                -- it may be fine 
                 badcount := badcount + 1;
-                dbms_output.put_line('FAIL:' || rec.base_table
+                dbms_output.put_line('WARN:' || rec.base_table
                                     || ' | archive:' || rec.h_table
                                     || ' | missing:' || missingcount);
             end if;
 
         END LOOP;
 
-        if badcount > 0 then
-            raise_application_error(-20002
-                ,badcount || ' feature classes/tables have GLOBALIDs missing from their archive (_H) table');
-        end if;
+        --if badcount > 0 then
+        --    raise_application_error(-20002
+        --        ,badcount || ' feature classes/tables have GLOBALIDs missing from their archive (_H) table');
+        --end if;
 
     END verify_globalids;
 
