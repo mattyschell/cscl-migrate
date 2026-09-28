@@ -312,22 +312,76 @@ AS
         -- for the same universe of FeatureClass/Table/RelationshipClass) holds
         -- the original value. Restore it here in SQL, before update_base_ids
         -- relies on GLOBALID to join base rows to their migrated _H rows.
+        -- join to table_registry so adds/deletes tables (e.g. A1353) and
+        -- versioned views (e.g. ACCESSPOINT_EVW) are never touched, only
+        -- real registered base tables.
+        -- A populated adds/deletes table at this point means something is
+        -- wrong
 
-        psql        varchar2(4000);
+        psql            varchar2(4000);
+        adds_table      varchar2(64);
+        deletes_table   varchar2(64);
+        rowcount_check  number;
 
     BEGIN
 
         FOR rec IN (
             SELECT DISTINCT
-                table_name
+                utc.table_name
+               ,tr.registration_id
             FROM
-                user_tab_columns
+                user_tab_columns utc
+            JOIN
+                sde.table_registry tr
+                ON tr.table_name = utc.table_name
+               AND tr.owner = SYS_CONTEXT('USERENV','CURRENT_USER')
             WHERE
-                column_name = 'BASEGLOBALID'
+                utc.column_name = 'BASEGLOBALID'
+            -- excludes _H, _H1, _H2, etc archive tables
+            AND NOT REGEXP_LIKE(tr.table_name, '_H[0-9]*$')
             ORDER BY
-                table_name
+                utc.table_name
         )
         LOOP
+
+            adds_table    := 'A' || rec.registration_id;
+            deletes_table := 'D' || rec.registration_id;
+
+            begin
+                execute immediate 'select count(*) from ' || adds_table into rowcount_check;
+            exception
+                when others then
+                    if sqlcode = -942 then
+                        rowcount_check := 0;
+                    else
+                        raise;
+                    end if;
+            end;
+
+            if rowcount_check > 0
+            then
+                raise_application_error(-20005, rowcount_check || ' rows found in adds table '
+                                     || adds_table || ' for base table ' || rec.table_name
+                                     || ' - unexpected at this point in the migration');
+            end if;
+
+            begin
+                execute immediate 'select count(*) from ' || deletes_table into rowcount_check;
+            exception
+                when others then
+                    if sqlcode = -942 then
+                        rowcount_check := 0;
+                    else
+                        raise;
+                    end if;
+            end;
+
+            if rowcount_check > 0
+            then
+                raise_application_error(-20005, rowcount_check || ' rows found in deletes table '
+                                     || deletes_table || ' for base table ' || rec.table_name
+                                     || ' - unexpected at this point in the migration');
+            end if;
 
             psql := 'update ' || rec.table_name || ' '
                  || 'set globalid = baseglobalid '
