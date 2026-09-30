@@ -80,6 +80,8 @@ AS
     PROCEDURE alter_objectid_sequence (
         p_featureclass      IN VARCHAR2
        ,p_htable_name       IN VARCHAR2
+       ,p_idcolumn          IN VARCHAR2 DEFAULT 'OBJECTID'
+       ,p_hidcolumn         IN VARCHAR2 DEFAULT NULL
     )
     AS
 
@@ -106,12 +108,12 @@ AS
         psql := 'select '
              || '   max(a.maxid) + 1 '
              || 'from (select '
-             || '          nvl(max(objectid),0) as maxid '
+             || '          nvl(max(' || p_idcolumn || '),0) as maxid '
              || '      from '
              || '          ' || p_featureclass || ' '
              || '      union '
              || '      select '
-             || '         nvl(max(objectid),0) as maxid '
+             || '         nvl(max(' || nvl(p_hidcolumn, p_idcolumn) || '),0) as maxid '
              || '      from '
              || '         ' || p_htable_name || ') a ';
 
@@ -134,6 +136,8 @@ AS
     PROCEDURE update_base_ids (
         p_featureclass  IN VARCHAR2
        ,p_htable_name   IN VARCHAR2
+       ,p_idcolumn      IN VARCHAR2 DEFAULT 'OBJECTID'
+       ,p_hidcolumn     IN VARCHAR2 DEFAULT NULL
     )
     AS
 
@@ -152,8 +156,22 @@ AS
         h_registration_id   number;
         zero_globalid       varchar2(38) := '{00000000-0000-0000-0000-000000000000}';
         zero_base_count     number;
+        hidcolumn           varchar2(30) := nvl(p_hidcolumn, p_idcolumn);
 
     BEGIN
+
+        -- attributed relationship classes use RID instead of OBJECTID
+        if upper(p_idcolumn) not in ('OBJECTID','RID')
+        then
+            raise_application_error(-20007
+                ,'unsupported id column ' || p_idcolumn || ' for ' || p_featureclass);
+        end if;
+
+        if upper(hidcolumn) not in ('OBJECTID','RID','GDB_ARCHIVE_OID')
+        then
+            raise_application_error(-20007
+                ,'unsupported id column ' || hidcolumn || ' for ' || p_htable_name);
+        end if;
 
         owner_archive_utils.refresh_stats();
 
@@ -180,8 +198,8 @@ AS
         psql := 'update ' 
              ||     p_featureclass || ' a '
              || 'set '
-             || '    a.objectid = a.objectid + ( '
-             || '        select nvl(max(objectid), :p1) + :p2 '
+             || '    a.' || p_idcolumn || ' = a.' || p_idcolumn || ' + ( '
+             || '        select nvl(max(' || hidcolumn || '), :p1) + :p2 '
              || '        from ' || p_htable_name || ') ';
 
            execute immediate psql using 0
@@ -191,7 +209,7 @@ AS
         psql := 'merge into '
              || '   ' || p_featureclass || ' a '
              || 'using ( '
-             || '   select distinct globalid, objectid '
+             || '   select distinct globalid, ' || hidcolumn || ' as hid '
              || '   from ' || p_htable_name || ' '
              || '   where globalid is not null '
              || '   and globalid <> :p_zero_globalid '
@@ -200,7 +218,7 @@ AS
              || '   (a.globalid = b.globalid) '
              || 'when matched then '
              || 'update '
-             || '   set a.objectid = b.objectid ';
+             || '   set a.' || p_idcolumn || ' = b.hid ';
         
         begin
 
@@ -214,9 +232,108 @@ AS
         end;
 
         owner_archive_utils.alter_objectid_sequence(p_featureclass
-                                                   ,p_htable_name);
+                                                   ,p_htable_name
+                                                   ,p_idcolumn
+                                                   ,hidcolumn);
 
     END update_base_ids;
+
+
+    PROCEDURE update_baseglobalids
+    AS
+
+        -- mschell!
+        -- https://github.com/mattyschell/cscl-migrate/issues/40
+        -- calls update_base_ids for every registered base table paired with
+        -- a registered _H table, both having GLOBALID and their registered rowid column.
+        -- The _H id column is the base rowid column (OBJECTID/RID) when present,
+        -- otherwise the _H registered rowid column (GDB_ARCHIVE_OID).
+        -- The _H tables are not yet in sde.sde_archives so pairs are by name.
+
+        paircount   number := 0;
+
+    BEGIN
+
+        FOR rec IN (
+            WITH eligible AS (
+                -- table_registry columns are NVARCHAR2, avoid ORA-12704 in CASE/NVL below
+                SELECT
+                    TO_CHAR(tr.table_name)   AS table_name
+                   ,TO_CHAR(tr.rowid_column) AS rowid_column
+                FROM
+                    sde.table_registry tr
+                WHERE
+                    tr.owner = SYS_CONTEXT('USERENV','CURRENT_USER')
+                AND EXISTS (SELECT 1
+                            FROM user_tab_columns g
+                            WHERE g.table_name = tr.table_name
+                            AND g.column_name = 'GLOBALID')
+                AND EXISTS (SELECT 1
+                            FROM user_tab_columns r
+                            WHERE r.table_name = tr.table_name
+                            AND r.column_name = tr.rowid_column)
+            )
+            ,pairs AS (
+                SELECT
+                    b.table_name AS base_table
+                   ,b.rowid_column AS id_column
+                    -- archive names inherited from the source that break the convention
+                    -- good news: source is now consistently breaking the 
+                    -- convention in dev, stg, and prd. 
+                   ,CASE b.table_name
+                        WHEN 'CENTERLINE'        THEN 'CENTERLINE_H1'
+                        WHEN 'NYPDPATROLBOROUGH' THEN 'NYPDBOROUGHCOMMAND_H'
+                        WHEN 'NYPDSECTOR'        THEN 'NYPDSECTOR_NEW_H'
+                        WHEN 'ACCESSPOINTTOADDRESSPOINT'      THEN 'ACCESSPOINTTOADDRESSPOINT4_H'
+                        WHEN 'COMMONPLACESHAVEADDRESSPOINTS'  THEN 'COMMONPLACESHAVEADDRESSPOIN_H'
+                        WHEN 'SUBWAYSTATIONSHAVEFEATURENAMES' THEN 'SUBWAYSTATIONSHAVEFEATURENA_H'
+                        ELSE b.table_name || '_H'
+                    END AS h_table
+                FROM
+                    eligible b
+                WHERE
+                    NOT REGEXP_LIKE(b.table_name, '_H[0-9]*$')
+                AND b.rowid_column IN ('OBJECTID','RID')
+            )
+            SELECT
+                p.base_table
+               ,p.h_table
+               ,p.id_column
+               ,NVL(hc.column_name, h.rowid_column) AS h_id_column
+            FROM
+                pairs p
+            JOIN
+                eligible h
+                ON  h.table_name = p.h_table
+            LEFT JOIN
+                user_tab_columns hc
+                ON  hc.table_name  = p.h_table
+                AND hc.column_name = p.id_column
+            ORDER BY
+                p.base_table
+        )
+        LOOP
+
+            owner_archive_utils.update_base_ids(rec.base_table
+                                               ,rec.h_table
+                                               ,rec.id_column
+                                               ,rec.h_id_column);
+
+            paircount := paircount + 1;
+            dbms_output.put_line('PASS:' || rec.base_table
+                                || ' | archive:' || rec.h_table
+                                || ' | ' || rec.id_column || ' from ' || rec.h_id_column);
+
+        END LOOP;
+
+        if paircount = 0
+        then
+            raise_application_error(-20006
+                ,'no eligible base and _H table pairs found for '
+                 || SYS_CONTEXT('USERENV','CURRENT_USER'));
+        end if;
+
+    END update_baseglobalids;
 
 
     PROCEDURE verify_globalids

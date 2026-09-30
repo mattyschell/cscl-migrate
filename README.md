@@ -92,7 +92,7 @@ sqlplus sde/****@targetdb @geodatabase-scripts\setup-sde-target.sql
 sqlplus cscl/****@targetdb @geodatabase-scripts\setup-owner-target.sql
 ```
 
-Then migrate. This will transfer all archive data and update object ids on the target. 
+Then migrate. This will transfer all archive data and update base table object ids on the target to match the archive. 
 
 ```bat
 > geodatabase-scripts\sample-migrate-archive.bat

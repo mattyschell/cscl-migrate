@@ -33,12 +33,18 @@ AS
      PROCEDURE alter_objectid_sequence (
         p_featureclass      IN VARCHAR2
        ,p_htable_name       IN VARCHAR2
+       ,p_idcolumn          IN VARCHAR2 DEFAULT 'OBJECTID'
+       ,p_hidcolumn         IN VARCHAR2 DEFAULT NULL
     );
 
     PROCEDURE update_base_ids (
         p_featureclass  IN VARCHAR2
        ,p_htable_name   IN VARCHAR2
+       ,p_idcolumn      IN VARCHAR2 DEFAULT 'OBJECTID'
+       ,p_hidcolumn     IN VARCHAR2 DEFAULT NULL
     );
+
+    PROCEDURE update_baseglobalids;
 
     PROCEDURE verify_globalids;
 
