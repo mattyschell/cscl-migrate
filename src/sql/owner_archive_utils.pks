@@ -48,6 +48,8 @@ AS
 
     PROCEDURE verify_globalids;
 
+    PROCEDURE verify_empty_delta_tables;
+
     PROCEDURE restore_globalids;
 
 END OWNER_ARCHIVE_UTILS;

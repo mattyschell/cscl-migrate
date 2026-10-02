@@ -1,0 +1,10 @@
+WHENEVER SQLERROR EXIT SQL.SQLCODE;
+
+SET SERVEROUTPUT ON SIZE UNLIMITED
+SET LINESIZE 200
+SET PAGESIZE 100
+DEFINE outfile = '&1'
+SPOOL &outfile
+call owner_archive_utils.verify_empty_delta_tables();
+SPOOL OFF
+EXIT

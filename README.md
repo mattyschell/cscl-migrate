@@ -16,7 +16,7 @@ Here's a picture of the big picture.
 2. arcpy from ArcMap (32 bit classic)
 3. Classic 32 bit ArcCatalog (developed with 10.7.1)
 4. ArcGIS Pro (developed with 3.5.x)
-5. ArcGIS Pro Topographic Production toolbox license
+5. ArcGIS Pro Topographic Production toolbox license (Pro 3.6+  included in "ArcGIS Topographic Mapping")
 6. sqlplus.exe
 7. SQL access to the source database as the data owner and as SDE
 8. SQL access to the target database as the data owner and as SDE
@@ -127,6 +127,7 @@ Complete verification does the following:
 3. When the target schema is CSCL, runs readonly-user verification
 4. For each readonly user, verifies access to all content
 5. Returns failure if any verification fails
+6. Checks that registered base tables have no rows in their adds or deletes tables.
 
 ```bat
 > geodatabase-scripts\sample-complete-verification.bat
